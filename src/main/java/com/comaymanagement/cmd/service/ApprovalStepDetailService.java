@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.constant.Message;
-import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
