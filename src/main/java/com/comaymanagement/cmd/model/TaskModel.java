@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.Entity;
 
 import com.comaymanagement.cmd.entity.Status;
-import com.comaymanagement.cmd.entity.TaskHis;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

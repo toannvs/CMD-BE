@@ -28,7 +28,8 @@ public class ApprovalStepRepositoryImpl implements IApprovalStepRepository{
 		StringBuilder hql = new StringBuilder();
 		List<ApprovalStep> approvalSteps = new ArrayList<>();
 		hql.append("from approval_steps app_step ");
-		hql.append("where app_step.proposalType.id = :proposalTypeId");
+		hql.append("where app_step.proposalType.id = :proposalTypeId ");
+		hql.append("order by app_step.approvalStepIndex asc");
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("proposalTypeId", proposalTypeId);
@@ -42,10 +43,56 @@ public class ApprovalStepRepositoryImpl implements IApprovalStepRepository{
 			LOGGER.error(e.getMessage());
 			return null;
 		}
-	
-	
 	}
-	
+	public ApprovalStep findById(Integer id) {
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from approval_steps app_step ");
+		hql.append("where app_step.id = :id ");
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("id", id);
+			LOGGER.info(hql.toString());
+			ApprovalStep approvalStep = (ApprovalStep) query.getSingleResult();
+			return approvalStep;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+	}
+	public Integer add(ApprovalStep appro) {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			Integer id = (Integer) session.save(appro);
+			return id;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at add() ", e);
+		}
+		return -1;
+	}
+	public Integer edit(ApprovalStep appro) {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			session.update(appro);
+			return 1;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at edit() ", e);
+			return 0;
+		}
+	}
+	public Integer delete(Integer id) {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			ApprovalStep appro = new ApprovalStep();
+			appro = session.find(ApprovalStep.class, id);
+			session.remove(appro);
+			return 1;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at delete() ", e);
+			return 0;
+		}
+
+	}
 	public List<ApprovalStepModel> toModel(List<ApprovalStep> approvalSteps){
 		List<ApprovalStepModel> approvalStepModels = new ArrayList<>();
 		for(ApprovalStep approvalStep : approvalSteps) {

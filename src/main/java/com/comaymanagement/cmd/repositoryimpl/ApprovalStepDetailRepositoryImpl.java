@@ -15,8 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.entity.ApprovalStepDetail;
-import com.comaymanagement.cmd.entity.Position;
-import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.repository.IApprovalStepDetailRepository;
 @Repository
 @Transactional(rollbackFor = Exception.class)
@@ -42,5 +40,38 @@ public class ApprovalStepDetailRepositoryImpl implements IApprovalStepDetailRepo
 				LOGGER.error("Error has occured in findAllByDepartmentId() ", e);
 				return null;
 			}
+	}
+	public Integer add(ApprovalStepDetail approDetail) {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			Integer id = (Integer) session.save(approDetail);
+			return id;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at add() ", e);
+		}
+		return -1;
+	}
+	public Integer edit(ApprovalStepDetail approDetail) {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			session.update(approDetail);
+			return 1;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at edit() ", e);
+			return 0;
+		}
+	}
+	public Integer delete(Integer id) {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			ApprovalStepDetail approDetail = new ApprovalStepDetail();
+			approDetail = session.find(ApprovalStepDetail.class, id);
+			session.remove(approDetail);
+			return 1;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at delete() ", e);
+			return -1;
+		}
+
 	}
 }

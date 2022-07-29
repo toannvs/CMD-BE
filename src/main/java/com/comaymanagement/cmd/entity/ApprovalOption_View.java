@@ -1,7 +1,5 @@
 package com.comaymanagement.cmd.entity;
 
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

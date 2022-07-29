@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ProposalTypeDetail;
 import com.comaymanagement.cmd.model.ProposalTypeDetailModel;
-import com.comaymanagement.cmd.model.ProposalTypeModel;
 import com.comaymanagement.cmd.repository.IProposalTypeDetailRepository;
 @Repository
 @Transactional(rollbackFor = Exception.class)
