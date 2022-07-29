@@ -1,7 +1,6 @@
 package com.comaymanagement.cmd.service;
 
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.ApprovalOption_View;
 import com.comaymanagement.cmd.entity.ResponseObject;
-import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalOption_ViewRepository;
-import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
-import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 
 @Service
 @Transactional(rollbackFor = Exception.class)

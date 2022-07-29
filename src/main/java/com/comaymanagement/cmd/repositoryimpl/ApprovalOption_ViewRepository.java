@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.entity.ApprovalOption_View;
-import com.comaymanagement.cmd.entity.ApprovalStep;
 import com.comaymanagement.cmd.repository.IApprovalOption_ViewRepository;
 
 @Repository

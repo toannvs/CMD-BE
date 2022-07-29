@@ -22,7 +22,6 @@ import com.comaymanagement.cmd.entity.Role;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
-import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -37,7 +36,7 @@ public class DepartmentService {
 	
 	@Autowired
 	Message message;
-	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeRepositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentService.class);
 
 	public ResponseEntity<Object> findAll(String name) {
 		name = name == null ? "" : name.trim();
