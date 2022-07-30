@@ -78,9 +78,9 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			String order, Integer offset, Integer limit) {
 		List<ApprovalStep> appSteps = new ArrayList<>();
 		List<Proposal> proposals = new ArrayList<>();
+		List<ProposalModel> proposalModelResult = new ArrayList<>();
 		List<Integer> positionIds = new ArrayList<>();
 		List<Integer> departmentIds = new ArrayList<>();
-		List<ProposalModel> proposalModelResult = new ArrayList<>();
 		List<Position> positionTMPs = positionRepository.findAllByEmployeeId(employeeId);
 		List<Department> departmentTMPs = departmentRepository.findAllByEmployeeId(employeeId);
 		for(Department d : departmentTMPs) {

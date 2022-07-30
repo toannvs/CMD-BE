@@ -1,7 +1,9 @@
 package com.comaymanagement.cmd.entity;
 
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,20 +31,22 @@ public class ProposalType {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
+	@Column(name="active_flag")
+	private boolean activeFlag;
+	
+	@OneToMany
+	@JoinColumn(name = "proposal_type_id")
+	@JsonBackReference
+	private List<ProposalPermission> proposalPermissions;
 
 	@OneToMany
 	@JoinColumn(name = "proposal_type_id")
 	@JsonBackReference
-	private Set<ProposalPermission> proposalPermissionList;
+	private List<Proposal> proposals;
 
 	@OneToMany
 	@JoinColumn(name = "proposal_type_id")
 	@JsonBackReference
-	private Set<Proposal> proposalList;
-
-	@OneToMany
-	@JoinColumn(name = "proposal_type_id")
-	@JsonBackReference
-	private Set<ApprovalStep> approvalStepList;
+	private List<ApprovalStep> approvalSteps;
 
 }
