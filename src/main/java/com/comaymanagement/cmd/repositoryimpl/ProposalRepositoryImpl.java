@@ -457,11 +457,11 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			LOGGER.info(hql.toString());
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("id", id);
-
+			Proposal proposal = new Proposal();
 			List<ContentModel> contents = new ArrayList<ContentModel>();
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] obj = (Object[]) it.next();
-				Proposal proposal = (Proposal) obj[0];
+				proposal = (Proposal) obj[0];
 				Status status = (Status) obj[1];
 				Employee e = (Employee) obj[2];
 				Employee r = (Employee) obj[3];
@@ -531,6 +531,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				contentModel.setFieldName(proposalDetail.getFieldName());
 				contents.add(contentModel);
 			}
+			proposalModel.setCurrentStep(proposal.getCurrentStep());
 			proposalModel.setContents(contents);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

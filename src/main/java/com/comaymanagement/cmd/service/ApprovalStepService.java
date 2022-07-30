@@ -39,7 +39,25 @@ public class ApprovalStepService {
 	ApprovalStepDetailRepositoryImpl approvalStepDetailRepository;
 	@Autowired
 	ApprovalOption_ViewRepository approvalOptionReposiroty;
-
+	
+	public ResponseEntity<Object> findAllByProposalId(Integer proposalTypeId) {
+			
+		List<ApprovalStepModel> approvalStepModels = approvalStepRepository.toModel(approvalStepRepository.findByProposalTypeId(proposalTypeId));
+			if (approvalStepModels!=null ) {
+				if(approvalStepModels.size() > 0) {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("OK", "OK", approvalStepModels));
+				}else {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("OK", "Not found", ""));
+				}
+			}else {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
+			}
+			
+	}
+	
 	public ResponseEntity<Object> add(String json) {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectApprovalStep;
@@ -108,12 +126,12 @@ public class ApprovalStepService {
 								.body(new ResponseObject("ERROR", "Thêm bước duyệt thất bại", ""));
 					}
 				}
-
+				
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Thêm bước duyệt thất bại", ""));
 			}
-
+			
 			approvalOptionViews = new ArrayList<>();
 			for (ApprovalStepDetail appStepDetail : approvalStepDetails) {
 				// have list of all emp or dep or position in all step of proposal
@@ -132,7 +150,7 @@ public class ApprovalStepService {
 				if (approvalOptionPos != null) {
 					approvalOptionViews.add(approvalOptionPos);
 				}
-
+				
 			}
 			ApprovalStepModel approvalStepModel = new ApprovalStepModel();
 			approvalStepModel.setId(approvalStep.getId());

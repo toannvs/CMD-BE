@@ -17,10 +17,19 @@ public class StatusController {
 	
 	@Autowired
 	StatusService statusService;
-	@GetMapping
+	
+	
+	
+	@GetMapping("/task")
 	@PreAuthorize("@customRoleService.canView('task',principal)")
-	public ResponseEntity<Object> findAll(){
-		return statusService.findAll();
+	public ResponseEntity<Object> findAllForTask(){
+		return statusService.findAllForTask();
+	}
+	
+	@GetMapping("/proposal")
+	@PreAuthorize("@customRoleService.canView('proposal',principal)")
+	public ResponseEntity<Object> findAllForProposal(){
+		return statusService.findAllForProposal();
 	}
 	
 }

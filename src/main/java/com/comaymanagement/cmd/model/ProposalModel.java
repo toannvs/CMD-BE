@@ -2,6 +2,8 @@ package com.comaymanagement.cmd.model;
 
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,4 +27,5 @@ public class ProposalModel {
 	private List<ContentModel> contents;
 	private String createdDate;
 	private Status status;
+	private String currentStep;
 }

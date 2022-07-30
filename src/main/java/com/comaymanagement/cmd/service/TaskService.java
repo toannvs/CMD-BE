@@ -501,7 +501,7 @@ public class TaskService {
 					order = "desc";
 				}
 				if (statusIds.size() == 0) {
-					List<Status> statuses = statusRepositotyImpl.findAll();
+					List<Status> statuses = statusRepositotyImpl.findAllForTask();
 					for (Status status : statuses) {
 						statusIds.add(status.getId());
 					}
@@ -593,7 +593,7 @@ public ResponseEntity<Object> findAllTaskTaskCreatedByMe(String json, String sor
 					order = "desc";
 				}
 				if (statusIds.size() == 0) {
-					List<Status> statuses = statusRepositotyImpl.findAll();
+					List<Status> statuses = statusRepositotyImpl.findAllForTask();
 					for (Status status : statuses) {
 						statusIds.add(status.getId());
 					}
