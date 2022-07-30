@@ -19,8 +19,10 @@ import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Post;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.model.LikeModel;
+import com.comaymanagement.cmd.model.PostModel;
 import com.comaymanagement.cmd.repository.IPostRepository;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.PostRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
@@ -29,7 +31,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 public class PostService {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
-	IPostRepository postRepositoryImpl;
+	PostRepositoryImpl postRepositoryImpl;
 	
 	@Autowired
 	EmployeeRepositoryImpl employeeRepositoryImpl;
@@ -50,10 +52,15 @@ public class PostService {
 			order = "desc";
 		}
 		posts = postRepositoryImpl.findAll(title, content,sort, order);
+		
 		if (posts.size() > 0) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", posts));
+			List<PostModel> postModels = new ArrayList<>();
+			for(Post p : posts) {
+				postModels.add(postRepositoryImpl.toModel(p));
+			}
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", postModels));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", posts));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
 		}
 	}
 	public ResponseEntity<Object> add(String json) {

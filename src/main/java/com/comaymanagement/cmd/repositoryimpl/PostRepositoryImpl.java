@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Post;
 import com.comaymanagement.cmd.model.LikeModel;
+import com.comaymanagement.cmd.model.PostModel;
 import com.comaymanagement.cmd.repository.IPostRepository;
 import com.comaymanagement.cmd.service.UserDetailsImpl;
 @Repository
@@ -148,6 +149,20 @@ public class PostRepositoryImpl implements IPostRepository{
 		String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 		likeModel.setCreateDate(createDate);
 		return likeModel;
+	}
+	
+	public PostModel toModel(Post post) {
+		PostModel postModel = new PostModel();
+		postModel.setId(post.getId());
+		postModel.setTitle(post.getTitle());
+		postModel.setContent(post.getContent());
+		postModel.setPulished(post.isPulished());
+		postModel.setCreator(post.getCreator());
+		postModel.setEditor(post.getEditor());
+		postModel.setContent(post.getCreateDate());
+		postModel.setModifyDate(post.getModifyDate());
+		postModel.setLikeTotal(post.getLikeTotal());
+		return postModel;
 	}
 
 }
