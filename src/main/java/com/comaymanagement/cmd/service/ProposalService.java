@@ -94,7 +94,7 @@ public class ProposalService {
 				statusIds.add(Integer.valueOf(statusId.toString()));
 			}
 			if (statusIds.size() == 0) {
-				List<Status> statuses = statusRepositotyImpl.findAll();
+				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}
@@ -178,7 +178,7 @@ public class ProposalService {
 				statusIds.add(Integer.valueOf(statusId.toString()));
 			}
 			if (statusIds.size() == 0) {
-				List<Status> statuses = statusRepositotyImpl.findAll();
+				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}
@@ -260,7 +260,7 @@ public class ProposalService {
 				statusIds.add(Integer.valueOf(statusId.toString()));
 			}
 			if (statusIds.size() == 0) {
-				List<Status> statuses = statusRepositotyImpl.findAll();
+				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}

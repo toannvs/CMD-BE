@@ -103,7 +103,7 @@ public class Employee{
 					@JoinColumn(name = "team_id", referencedColumnName = "id") })
 	private List<Team> teams;
 
-	@ManyToMany()
+	@ManyToMany
 	@JsonIgnore
 	@JoinTable(name = "post_favourite", joinColumns = {
 			@JoinColumn(name = "employee_id", referencedColumnName = "id") }, inverseJoinColumns = {
