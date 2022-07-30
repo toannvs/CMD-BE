@@ -47,18 +47,17 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	@Autowired
 	PositionRepositoryImpl positionRepository;
 
-	private final Logger LOGGER = LoggerFactory.getLogger(This.class);
-	
+	private final Logger LOGGER = LoggerFactory.getLogger(ProposalRepositoryImpl.class);
+
 	// proposals
 
-	public List<ProposalModel> findAllProposalForAll(Integer proposalTypeId, 
-			List<Integer> statusIds, Integer creator, String createDateFrom, String createDateTo, String sort, String order,
+	public List<ProposalModel> findAllProposalForAll(List<Integer> proposalTypeIds, List<Integer> statusIds,
+			List<Integer> creatorIds, String createDateFrom, String createDateTo, String sort, String order,
 			Integer offset, Integer limit) {
 		List<Proposal> proposals = new ArrayList<>();
 		List<ProposalModel> proposalModelResult = new ArrayList<>();
 		Set<Proposal> proposalsTMP = new LinkedHashSet();
-		proposalsTMP = findAllForAll(proposalTypeId, statusIds, creator, createDateFrom,
-				createDateTo, sort, order);
+		proposalsTMP = findAllForAll(proposalTypeIds, statusIds, creatorIds, createDateFrom, createDateTo, sort, order);
 		// store proposal of each proposalType and step
 		if (proposalsTMP != null && proposalsTMP.size() > 0) {
 			for (Proposal pro : proposalsTMP) {
@@ -72,32 +71,41 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposalModelResult;
 	}
-	
+
 	@Override
-	public List<ProposalModel> findAllProposalApproveByMe(Integer employeeId, Integer proposalTypeId, 
-			List<Integer> statusIds, Integer creator, String createDateFrom, String createDateTo, String sort, String order,
-			Integer offset, Integer limit) {
+	public List<ProposalModel> findAllProposalApproveByMe(Integer employeeId, List<Integer> proposalTypeIds,
+			List<Integer> statusIds, List<Integer> creatorIds, String createDateFrom, String createDateTo, String sort,
+			String order, Integer offset, Integer limit) {
 		List<ApprovalStep> appSteps = new ArrayList<>();
-		List<Department> departments = new ArrayList<>();
-		List<Position> positions = new ArrayList<>();
 		List<Proposal> proposals = new ArrayList<>();
+		List<Integer> positionIds = new ArrayList<>();
+		List<Integer> departmentIds = new ArrayList<>();
 		List<ProposalModel> proposalModelResult = new ArrayList<>();
-		positions = positionRepository.findAllByEmployeeId(employeeId);
-		departments = departmentRepository.findAllByEmployeeId(employeeId);
-		appSteps = findApprovalStepDetail(employeeId, positions, departments);
+		List<Position> positionTMPs = positionRepository.findAllByEmployeeId(employeeId);
+		List<Department> departmentTMPs = departmentRepository.findAllByEmployeeId(employeeId);
+		for(Department d : departmentTMPs) {
+			departmentIds.add(d.getId());
+		}
+		for(Position p : positionTMPs) {
+			positionIds.add(p.getId());
+		}
+		
+		appSteps = findApprovalStepDetail(employeeId, positionIds, departmentIds);
 
 		for (ApprovalStep appStep : appSteps) {
 			// Check if fillter with proposal type id
-			if (proposalTypeId != null) {
-				if (proposalTypeId == appStep.getProposalType().getId()) {
-					String step = appStep.getApprovalStepIndex();
-					Set<Proposal> proposalsTMP = new LinkedHashSet();
-					proposalsTMP = findAllApproveByMe(proposalTypeId, statusIds, creator, createDateFrom,
-							createDateTo, step, sort, order);
-					// store proposal of each proposalType and step
-					if (proposalsTMP != null && proposalsTMP.size() > 0) {
-						for (Proposal pro : proposalsTMP) {
-							proposals.add(pro);
+			if (proposalTypeIds.size() > 0) {
+				for (Integer proposalTypeId : proposalTypeIds) {
+					if (proposalTypeId == appStep.getProposalType().getId()) {
+						String step = appStep.getApprovalStepIndex();
+						Set<Proposal> proposalsTMP = new LinkedHashSet();
+						proposalsTMP = findAllApproveByMe(proposalTypeId, statusIds, creatorIds, createDateFrom,
+								createDateTo, step, sort, order);
+						// store proposal of each proposalType and step
+						if (proposalsTMP != null && proposalsTMP.size() > 0) {
+							for (Proposal pro : proposalsTMP) {
+								proposals.add(pro);
+							}
 						}
 					}
 				}
@@ -105,7 +113,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				Integer currentEmpProposalTypeId = appStep.getProposalType().getId();
 				String step = appStep.getApprovalStepIndex();
 				Set<Proposal> proposalsTMP = new LinkedHashSet();
-				proposalsTMP = findAllApproveByMe(currentEmpProposalTypeId, statusIds, creator, createDateFrom,
+				proposalsTMP = findAllApproveByMe(currentEmpProposalTypeId, statusIds, creatorIds, createDateFrom,
 						createDateTo, step, sort, order);
 				// store proposal of each proposalType and step
 				if (proposalsTMP != null && proposalsTMP.size() > 0) {
@@ -123,14 +131,15 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposalModelResult;
 	}
-	public List<ProposalModel> findAllProposalCratedByMe(Integer employeeId, Integer proposalTypeId, 
-			List<Integer> statusIds, Integer creator, String createDateFrom, String createDateTo, String sort, String order,
-			Integer offset, Integer limit) {
+
+	public List<ProposalModel> findAllProposalCratedByMe(Integer employeeId, List<Integer> proposalTypeIds,
+			List<Integer> statusIds, String createDateFrom, String createDateTo, String sort,
+			String order, Integer offset, Integer limit) {
 		List<Proposal> proposals = new ArrayList<>();
 		List<ProposalModel> proposalModelResult = new ArrayList<>();
 		Set<Proposal> proposalsTMP = new LinkedHashSet();
-		proposalsTMP = findAllCreatedByMe(employeeId,proposalTypeId, statusIds, creator, createDateFrom,
-				createDateTo, sort, order);
+		proposalsTMP = findAllCreatedByMe(employeeId, proposalTypeIds, statusIds, createDateFrom, createDateTo,
+				sort, order);
 		// store proposal of each proposalType and step
 		if (proposalsTMP != null && proposalsTMP.size() > 0) {
 			for (Proposal pro : proposalsTMP) {
@@ -152,8 +161,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	}
 
 	// select with empId, departmentIds, positionIds
-	public List<ApprovalStep> findApprovalStepDetail(Integer employeeId, List<Position> positions,
-			List<Department> departments) {
+	public List<ApprovalStep> findApprovalStepDetail(Integer employeeId, List<Integer> positions,
+			List<Integer> departments) {
 		StringBuilder hql = new StringBuilder();
 		List<ApprovalStep> approvalSteps = new ArrayList<>();
 		// Checl if employeeId cannot found => check employeeId in department and
@@ -163,29 +172,25 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		hql.append("from approval_steps appStep ");
 		hql.append("inner join appStep.approvalStepDetails as appStepDetail ");
 		hql.append("where appStepDetail.employeeId = :employeeId ");
-		hql.append("or appStepDetail.positionId in (");
 		if (positions != null && positions.size() > 0) {
-			String listPosition = positions.stream().map(pos -> pos.getId() + "").collect(Collectors.joining(","));
-			hql.append(listPosition);
-		} else {
-			hql.append("''");
+			hql.append("or appStepDetail.positionId IN (:positions) ");
 		}
 
-		hql.append(") ");
-		hql.append("or appStepDetail.departmentId in (");
 		if (departments != null && departments.size() > 0) {
-			String listDepartment = departments.stream().map(dep -> dep.getId() + "").collect(Collectors.joining(","));
-			hql.append(listDepartment);
-		} else {
-			hql.append("''");
+			hql.append("or appStepDetail.departmentId IN (:departments) ");
 		}
-
-		hql.append(") ");
 		LOGGER.info(hql.toString());
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql.toString());
-			query.setParameter("employeeId", employeeId + "");
+			query.setParameter("employeeId", employeeId);
+			if (positions != null && positions.size() > 0) {
+
+				query.setParameter("positions", positions);
+			}
+			if (departments != null && departments.size() > 0) {
+				query.setParameter("departments", departments);
+			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] objects = (Object[]) it.next();
 				ApprovalStep approvalStep = (ApprovalStep) objects[0];
@@ -194,13 +199,14 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 
 		} catch (Exception e) {
 			LOGGER.error(e.toString());
+			e.printStackTrace();
 			return null;
 		}
 		return approvalSteps;
 	}
 
-	public Set<Proposal> findAllApproveByMe(Integer proposalTypeId, List<Integer> statusIds,
-			Integer creator, String createDateFrom, String createDateTo, String step, String sort, String order) {
+	public Set<Proposal> findAllApproveByMe(Integer proposalTypeId, List<Integer> statusIds, List<Integer> creatorIds,
+			String createDateFrom, String createDateTo, String step, String sort, String order) {
 		Set<Proposal> proposals = new LinkedHashSet();
 		StringBuilder hql = new StringBuilder("FROM proposals AS pro ");
 		hql.append("INNER JOIN pro.creator AS em ");
@@ -216,13 +222,13 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //		hql.append("AND pd.content LIKE CONCAT('%',:content,'%') ");
 //		hql.append("AND pro.createDate LIKE CONCAT('%',:createDate,'%') ");
 //		hql.append("AND pt.id LIKE CONCAT('%',:proposalTypeId,'%') ");
-		if (creator != null && creator!=0) {
-			hql.append("AND em.id = :creator ");
+		if (creatorIds.size() > 0) {
+			hql.append("AND em.id IN (:creatorIds) ");
 		}
-		if (createDateFrom != null&& createDateTo == null ) {
+		if (createDateFrom != null && createDateTo == null) {
 			hql.append("AND pro.createDate = :createDateFrom ");
 		}
-		if (createDateFrom != null  && createDateTo != null) {
+		if (createDateFrom != null && createDateTo != null) {
 			hql.append("AND pro.createDate BETWEEN :createDateFrom AND :createDateTo ");
 		}
 		hql.append("ORDER BY " + sort + " " + order);
@@ -237,14 +243,16 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //			query.setParameter("createDate", createDate);
 //			query.setParameter("proposalTypeId", proposalTypeId);
 			query.setParameter("step", step);
-			if (creator != null && creator!=0) {
-				query.setParameter("creator", creator);
+			if (creatorIds.size() > 0) {
+				query.setParameter("creatorIds", creatorIds);
 			}
-			if ((createDateFrom != null && !createDateFrom.equals(""))&& (createDateTo == null || createDateTo.equals(""))) {
+			if ((createDateFrom != null && !createDateFrom.equals(""))
+					&& (createDateTo == null || createDateTo.equals(""))) {
 				query.setParameter("createDateFrom", createDateFrom);
 
 			}
-			if ((createDateFrom != null && !createDateFrom.equals("")) && (createDateTo != null && !createDateTo.equals(""))) {
+			if ((createDateFrom != null && !createDateFrom.equals(""))
+					&& (createDateTo != null && !createDateTo.equals(""))) {
 				query.setParameter("createDateFrom", createDateFrom);
 				query.setParameter("createDateTo", createDateTo);
 
@@ -263,15 +271,16 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposals;
 	}
-	public Set<Proposal> findAllForAll(Integer  proposalTypeId, List<Integer> statusIds,
-			Integer creator, String createDateFrom, String createDateTo, String sort, String order){
+
+	public Set<Proposal> findAllForAll(List<Integer> proposalTypeIds, List<Integer> statusIds, List<Integer> creatorIds,
+			String createDateFrom, String createDateTo, String sort, String order) {
 		Set<Proposal> proposals = new LinkedHashSet();
 		StringBuilder hql = new StringBuilder("FROM proposals AS pro ");
 		hql.append("INNER JOIN pro.creator AS em ");
 		hql.append("INNER JOIN pro.proposalType AS pt ");
 		hql.append("INNER JOIN pro.status AS st ");
 		hql.append("INNER JOIN pro.proposalDetails AS pd ");
-		
+
 //		hql.append("WHERE pd.fieldId = 1 ");
 //		hql.append("AND pt.name LIKE CONCAT('%',:proposalType,'%') ");
 		hql.append("WHERE st.id IN (:statusIds) ");
@@ -279,11 +288,11 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //		hql.append("AND pd.content LIKE CONCAT('%',:content,'%') ");
 //		hql.append("AND pro.createDate LIKE CONCAT('%',:createDate,'%') ");
 //		hql.append("AND pt.id LIKE CONCAT('%',:proposalTypeId,'%') ");
-		if(proposalTypeId!=null) {
-			hql.append("AND pt.id = :proposalTypeId ");
+		if (proposalTypeIds!=null && proposalTypeIds.size() > 0) {
+			hql.append("AND pt.id IN (:proposalTypeIds) ");
 		}
-		if (creator != null) {
-			hql.append("AND em.id = :creator ");
+		if (creatorIds!=null && creatorIds.size() > 0) {
+			hql.append("AND em.id IN (:creatorIds) ");
 		}
 		if (createDateFrom != null && createDateTo == null) {
 			hql.append("AND pro.createDate = :createDateFrom ");
@@ -296,12 +305,12 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			Session session = sessionFactory.getCurrentSession();
 			LOGGER.info(hql.toString());
 			Query query = session.createQuery(hql.toString());
-			if(proposalTypeId!=null) {
-				query.setParameter("proposalTypeId", proposalTypeId);
+			if (proposalTypeIds.size() > 0) {
+				query.setParameter("proposalTypeIds", proposalTypeIds);
 			}
 			query.setParameter("statusIds", statusIds);
-			if (creator != null ) {
-				query.setParameter("creator", creator);
+			if (creatorIds.size() > 0) {
+				query.setParameter("creatorIds", creatorIds);
 			}
 			if (createDateFrom != null && createDateTo == null) {
 				query.setParameter("createDateFrom", createDateFrom);
@@ -325,15 +334,16 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposals;
 	}
-	public Set<Proposal> findAllCreatedByMe(Integer employeeId, Integer  proposalTypeId, List<Integer> statusIds,
-			Integer creator, String createDateFrom, String createDateTo, String sort, String order){
+
+	public Set<Proposal> findAllCreatedByMe(Integer employeeId, List<Integer> proposalTypeIds, List<Integer> statusIds,
+			String createDateFrom, String createDateTo, String sort, String order) {
 		Set<Proposal> proposals = new LinkedHashSet();
 		StringBuilder hql = new StringBuilder("FROM proposals AS pro ");
 		hql.append("INNER JOIN pro.creator AS em ");
 		hql.append("INNER JOIN pro.proposalType AS pt ");
 		hql.append("INNER JOIN pro.status AS st ");
 		hql.append("INNER JOIN pro.proposalDetails AS pd ");
-		
+
 //		hql.append("WHERE pd.fieldId = 1 ");
 //		hql.append("AND pt.name LIKE CONCAT('%',:proposalType,'%') ");
 		hql.append("WHERE st.id IN (:statusIds) ");
@@ -341,13 +351,9 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //		hql.append("AND pd.content LIKE CONCAT('%',:content,'%') ");
 //		hql.append("AND pro.createDate LIKE CONCAT('%',:createDate,'%') ");
 //		hql.append("AND pt.id LIKE CONCAT('%',:proposalTypeId,'%') ");
-		if(proposalTypeId!=null) {
-			hql.append("AND pt.id = :proposalTypeId ");
-		}
-		if (creator != null) {
-			hql.append("AND em.id = :creator ");
-		}else {
-			hql.append("AND em.id = :employeeId ");
+		hql.append("AND em.id = :employeeId ");
+		if (proposalTypeIds != null && proposalTypeIds.size() > 0) {
+			hql.append("AND pt.id IN (:proposalTypeIds) ");
 		}
 		if (createDateFrom != null && createDateTo == null) {
 			hql.append("AND pro.createDate = :createDateFrom ");
@@ -360,15 +366,11 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			Session session = sessionFactory.getCurrentSession();
 			LOGGER.info(hql.toString());
 			Query query = session.createQuery(hql.toString());
-			if(proposalTypeId!=null) {
-				query.setParameter("proposalTypeId", proposalTypeId);
+			if (proposalTypeIds != null && proposalTypeIds.size() > 0) {
+				query.setParameter("proposalTypeIds", proposalTypeIds);
 			}
 			query.setParameter("statusIds", statusIds);
-			if (creator != null ) {
-				query.setParameter("creator", creator);
-			}else {
-				query.setParameter("employeeId", employeeId);
-			}
+			query.setParameter("employeeId", employeeId);
 			if (createDateFrom != null && createDateTo == null) {
 				query.setParameter("createDateFrom", createDateFrom);
 			}
@@ -391,6 +393,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposals;
 	}
+
 	@Override
 	public Integer countAllPaging(Integer employeeId, Integer proposal, String content, String status, String creator,
 			String createDate, String finishDate, String sort, String order, Integer offset, Integer limit) {

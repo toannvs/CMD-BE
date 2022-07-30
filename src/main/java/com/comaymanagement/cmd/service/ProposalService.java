@@ -57,19 +57,25 @@ public class ProposalService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
 		String content = null;
-		Integer creator = null;
 		String createDateFrom = null;
 		String createDateTo = null;
-		Integer proposalTypeId = null;
-
+		List<Integer> creatorIds = new ArrayList<Integer>();
+		List<Integer> proposalTypeIds = new ArrayList<>();
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
-			creator = (jsonObject.get("creator") != null && !jsonObject.get("creator").asText().equals("null")
-					&& jsonObject.get("creator").asInt() != 0) ? jsonObject.get("creator").asInt() : null;
+			JsonNode jsonCreatorIds = jsonObject.get("creatorIds");
+			JsonNode jsonProposalTypeIds = jsonObject.get("proposalTypeIds");
+			
+			for (JsonNode creatorId : jsonCreatorIds) {
+				creatorIds.add(Integer.valueOf(creatorId.toString()));
+			}
+			for(JsonNode proposalTypeId : jsonProposalTypeIds) {
+				proposalTypeIds.add(Integer.valueOf(proposalTypeId.toString()));
+			}
 			createDateFrom = (jsonObject.get("createDateFrom") != null
 					&& !jsonObject.get("createDateFrom").asText().equals("null")
 					&& !jsonObject.get("createDateFrom").asText().equals(""))
@@ -79,9 +85,6 @@ public class ProposalService {
 					&& !jsonObject.get("createDateTo").asText().equals("null")
 					&& !jsonObject.get("createDateTo").asText().equals("")) ? jsonObject.get("createDateTo").asText()
 							: null;
-			proposalTypeId = (jsonObject.get("proposalTypeId") != null
-					&& !jsonObject.get("proposalTypeId").asText().equals("null")
-					&& jsonObject.get("proposalTypeId").asInt() != 0) ? jsonObject.get("proposalTypeId").asInt() : null;
 			page = page == null ? "1" : page.trim();
 			int limit = CMDConstrant.LIMIT;
 			int offset = (Integer.parseInt(page) - 1) * limit;
@@ -103,8 +106,8 @@ public class ProposalService {
 			if (order == null || order == "") {
 				order = "desc";
 			}
-			proposalModels = proposalRepositoryImpl.findAllProposalForAll(proposalTypeId,
-					statusIds, creator, createDateFrom, createDateTo, sort, order, offset, limit);
+			proposalModels = proposalRepositoryImpl.findAllProposalForAll(proposalTypeIds,
+					statusIds, creatorIds, createDateFrom, createDateTo, sort, order, offset, limit);
 
 //			Integer totalProposal  = 0;
 //			totalProposal = proposalRepositoryImpl.countAllPaging(userDetail.getId(), proposal, content, status, creator, createDate, finishDate, sort, order, offset, limit);
@@ -138,19 +141,25 @@ public class ProposalService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
 		String content = null;
-		Integer creator = null;
 		String createDateFrom = null;
 		String createDateTo = null;
-		Integer proposalTypeId = null;
-
+		List<Integer> creatorIds = new ArrayList<Integer>();
+		List<Integer> proposalTypeIds = new ArrayList<>();
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
-			creator = (jsonObject.get("creator") != null && !jsonObject.get("creator").asText().equals("null")
-					&& jsonObject.get("creator").asInt() != 0) ? jsonObject.get("creator").asInt() : null;
+			JsonNode jsonCreatorIds = jsonObject.get("creatorIds");
+			JsonNode jsonProposalTypeIds = jsonObject.get("proposalTypeIds");
+			
+			for (JsonNode creatorId : jsonCreatorIds) {
+				creatorIds.add(Integer.valueOf(creatorId.toString()));
+			}
+			for(JsonNode proposalTypeId : jsonProposalTypeIds) {
+				proposalTypeIds.add(Integer.valueOf(proposalTypeId.toString()));
+			}
 			createDateFrom = (jsonObject.get("createDateFrom") != null
 					&& !jsonObject.get("createDateFrom").asText().equals("null")
 					&& !jsonObject.get("createDateFrom").asText().equals(""))
@@ -160,9 +169,6 @@ public class ProposalService {
 					&& !jsonObject.get("createDateTo").asText().equals("null")
 					&& !jsonObject.get("createDateTo").asText().equals("")) ? jsonObject.get("createDateTo").asText()
 							: null;
-			proposalTypeId = (jsonObject.get("proposalTypeId") != null
-					&& !jsonObject.get("proposalTypeId").asText().equals("null")
-					&& jsonObject.get("proposalTypeId").asInt() != 0) ? jsonObject.get("proposalTypeId").asInt() : null;
 			page = page == null ? "1" : page.trim();
 			int limit = CMDConstrant.LIMIT;
 			int offset = (Integer.parseInt(page) - 1) * limit;
@@ -184,8 +190,8 @@ public class ProposalService {
 			if (order == null || order == "") {
 				order = "desc";
 			}
-			proposalModels = proposalRepositoryImpl.findAllProposalApproveByMe(userDetail.getId(), proposalTypeId,
-					statusIds, creator, createDateFrom, createDateTo, sort, order, offset, limit);
+			proposalModels = proposalRepositoryImpl.findAllProposalApproveByMe(userDetail.getId(), proposalTypeIds,
+					statusIds, creatorIds, createDateFrom, createDateTo, sort, order, offset, limit);
 
 //			Integer totalProposal  = 0;
 //			totalProposal = proposalRepositoryImpl.countAllPaging(userDetail.getId(), proposal, content, status, creator, createDate, finishDate, sort, order, offset, limit);
@@ -222,7 +228,7 @@ public class ProposalService {
 		Integer creator = null;
 		String createDateFrom = null;
 		String createDateTo = null;
-		Integer proposalTypeId = null;
+		List<Integer> proposalTypeIds = new ArrayList<>();
 
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
@@ -230,8 +236,12 @@ public class ProposalService {
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
-			creator = (jsonObject.get("creator") != null && !jsonObject.get("creator").asText().equals("null")
-					&& jsonObject.get("creator").asInt() != 0) ? jsonObject.get("creator").asInt() : null;
+			JsonNode jsonProposalTypeIds = jsonObject.get("proposalTypeIds");
+			for(JsonNode proposalTypeId : jsonProposalTypeIds) {
+				proposalTypeIds.add(Integer.valueOf(proposalTypeId.toString()));
+			}
+//			creator = (jsonObject.get("creator") != null && !jsonObject.get("creator").asText().equals("null")
+//					&& jsonObject.get("creator").asInt() != 0) ? jsonObject.get("creator").asInt() : null;
 			createDateFrom = (jsonObject.get("createDateFrom") != null
 					&& !jsonObject.get("createDateFrom").asText().equals("null")
 					&& !jsonObject.get("createDateFrom").asText().equals(""))
@@ -241,9 +251,6 @@ public class ProposalService {
 					&& !jsonObject.get("createDateTo").asText().equals("null")
 					&& !jsonObject.get("createDateTo").asText().equals("")) ? jsonObject.get("createDateTo").asText()
 							: null;
-			proposalTypeId = (jsonObject.get("proposalTypeId") != null
-					&& !jsonObject.get("proposalTypeId").asText().equals("null")
-					&& jsonObject.get("proposalTypeId").asInt() != 0) ? jsonObject.get("proposalTypeId").asInt() : null;
 			page = page == null ? "1" : page.trim();
 			int limit = CMDConstrant.LIMIT;
 			int offset = (Integer.parseInt(page) - 1) * limit;
@@ -265,8 +272,9 @@ public class ProposalService {
 			if (order == null || order == "") {
 				order = "desc";
 			}
-			proposalModels = proposalRepositoryImpl.findAllProposalCratedByMe(userDetail.getId(), proposalTypeId,
-					statusIds, creator, createDateFrom, createDateTo, sort, order, offset, limit);
+			// creator alway null
+			proposalModels = proposalRepositoryImpl.findAllProposalCratedByMe(userDetail.getId(), proposalTypeIds,
+					statusIds, createDateFrom, createDateTo, sort, order, offset, limit);
 
 //			Integer totalProposal  = 0;
 //			totalProposal = proposalRepositoryImpl.countAllPaging(userDetail.getId(), proposal, content, status, creator, createDate, finishDate, sort, order, offset, limit);
