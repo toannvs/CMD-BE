@@ -159,7 +159,7 @@ public class PostRepositoryImpl implements IPostRepository{
 		postModel.setPulished(post.isPulished());
 		postModel.setCreator(post.getCreator());
 		postModel.setEditor(post.getEditor());
-		postModel.setContent(post.getCreateDate());
+		postModel.setCreateDate(post.getCreateDate());
 		postModel.setModifyDate(post.getModifyDate());
 		postModel.setLikeTotal(post.getLikeTotal());
 		return postModel;
