@@ -29,7 +29,8 @@ public class Status {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
-
+	private Integer index;
+	private String type;
 	@OneToMany
 	@JoinColumn(name = "status_id")
 	@JsonBackReference

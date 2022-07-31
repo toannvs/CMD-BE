@@ -24,10 +24,10 @@ public class StatusService {
 	StatusRepositotyImpl statusRepositoty;
 
 	private static final Logger LOOGER = LoggerFactory.getLogger(This.class); 
-	public ResponseEntity<Object> findAll() {
+	public ResponseEntity<Object> findAllForTask() {
 		List<Status> statuses = null;
 		try {
-			statuses = statusRepositoty.findAll();
+			statuses = statusRepositoty.findAllForTask();
 			
 			if ( statuses != null) {
 				return ResponseEntity.status(HttpStatus.OK)
@@ -41,6 +41,24 @@ public class StatusService {
 		}
 		return null;
 
+	}
+	public ResponseEntity<Object> findAllForProposal() {
+		List<Status> statuses = null;
+		try {
+			statuses = statusRepositoty.findAllForProposal();
+			
+			if ( statuses != null) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "SUCCESSFULLY: ", statuses));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR", "NOT FOUND", ""));
+			}
+		} catch (Exception e) {
+			LOOGER.error(e.getMessage());
+		}
+		return null;
+		
 	}
 
 	

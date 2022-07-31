@@ -20,6 +20,12 @@ import com.comaymanagement.cmd.repository.IStatusRepositoty;
 import net.bytebuddy.asm.Advice.This;
 @Repository
 @Transactional
+/**
+The Desciption of the method to explain what the method does
+@param the parameters used by the method
+@return the value returned by the method
+@throws what kind of exception does this method throw
+*/
 public class StatusRepositotyImpl implements IStatusRepositoty {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(This.class);
@@ -48,12 +54,40 @@ public class StatusRepositotyImpl implements IStatusRepositoty {
 	}
 
 	@Override
-	public List<Status> findAll() {
+	public List<Status> findAllForTask() {
+		
 		List<Status> statuses = null;
-		String hql = "FROM statuses AS st";
+		StringBuilder hql = new StringBuilder();
+		hql.append("FROM statuses AS st ");
+		hql.append("where st.type = :type ");
+		hql.append("order by st.index asc");
 		try {
 			Session session = sessionFactory.getCurrentSession();
-			Query query = session.createQuery(hql);
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("type", "task");
+			statuses = new ArrayList<>();
+			for(Iterator it = query.getResultList().iterator();it.hasNext();) {
+				Object object = it.next();
+				Status status = new Status();
+				status = (Status) object;
+				statuses.add(status);
+			}
+			
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return statuses;
+	}
+	public List<Status> findAllForProposal() {
+		List<Status> statuses = null;
+		StringBuilder hql = new StringBuilder();
+		hql.append("FROM statuses AS st ");
+		hql.append("where st.type = :type ");
+		hql.append("order by st.index asc");
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("type", "proposal");
 			statuses = new ArrayList<>();
 			for(Iterator it = query.getResultList().iterator();it.hasNext();) {
 				Object object = it.next();

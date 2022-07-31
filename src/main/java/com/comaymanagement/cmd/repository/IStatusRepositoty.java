@@ -9,5 +9,5 @@ import com.comaymanagement.cmd.entity.Status;
 @Repository
 public interface IStatusRepositoty {
 	Status findById(Integer id);
-	List<Status> findAll();
+	List<Status> findAllForTask();
 }
