@@ -34,7 +34,7 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 	@Override
 	public Set<DepartmentModel> findAll(String name) {
 		Session session = sessionFactory.getCurrentSession();
-		String hql = "from departments dep inner join dep.positions as pos where dep.name like CONCAT('%',:name,'%')";
+		String hql = "from departments dep where dep.name like CONCAT('%',:name,'%')";
 		Set<DepartmentModel> departmentModelSet = new LinkedHashSet<DepartmentModel>();
 		Set<Department> depSetTMP = new LinkedHashSet<Department>();
 		
@@ -42,8 +42,8 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("name", name);
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object[] ob = (Object[]) it.next();
-				Department tmp = (Department) ob[0];
+				Object ob = (Object) it.next();
+				Department tmp = (Department) ob;
 				depSetTMP.add(tmp);
 			}
 			for(Department d : depSetTMP) {
