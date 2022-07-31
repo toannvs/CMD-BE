@@ -24,7 +24,7 @@
 
 
     <!-- Turn off some annoying logger -->
-    <logger name="org.hibernate" level="ON" additivity="true">
+    <logger name="org.hibernate" level="ON" additivity="false">
     </logger>
 
     <!-- Logger for integral -->
@@ -32,10 +32,7 @@
         <appender-ref ref="console" /> 
        <appender-ref ref="rollingFile" /> 
     </logger>
-    <logger name="com.comaymanagement" level="DEBUG" additivity="false">a
-        <appender-ref ref="console" />
-       <appender-ref ref="rollingFile" />
-    </logger>
+
     
     <root level="WARN">
         <appender-ref ref="console" />
