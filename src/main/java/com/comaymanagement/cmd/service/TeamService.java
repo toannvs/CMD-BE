@@ -47,7 +47,7 @@ public class TeamService {
 		if (teamModelSet.size() > 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "SUCCESSFULLY", teamModelSet));
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
 		}
 
 	}
