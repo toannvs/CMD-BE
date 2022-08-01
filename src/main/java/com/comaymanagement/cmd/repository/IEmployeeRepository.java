@@ -34,7 +34,8 @@ public interface IEmployeeRepository {
 //										@Param("limit") Integer limit,
 //										@Param("offset") Integer offset
 //										);
-	public Set<EmployeeModel> findAll(String name, String dob, String email, String phone, String dep, String pos,
+	public Set<EmployeeModel> findAll(String name, String dob, String email, String phone, List<Integer> departmentIds,
+			 List<Integer> positionIds,
 			String sort, String order, Integer limit, Integer offset);
 
 	public Integer add(Employee emp);
@@ -44,8 +45,8 @@ public interface IEmployeeRepository {
 	public String delete(Employee emp);
 
 	public boolean checkEmployeeCodeExisted(Integer id, String code);
-	public Integer countAllPaging(String name, String dob, String email, String phone, String dep,
-			String pos, String sort, String order,Integer offset, Integer limit);
+	public Integer countAllPaging(String name, String dob, String email, String phone,List<Integer> departmentIds,
+			List<Integer> positionIds, String sort, String order,Integer offset, Integer limit);
 	public Employee findById(Integer id);
 	
 	public boolean add(Set<Employee> emps);
