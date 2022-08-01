@@ -270,13 +270,13 @@ public class TaskRepositoryImpl implements ITaskRepository {
 //		hql.append("WHERE dep.name LIKE CONCAT('%',:dep,'%') ");
 		hql.append("WHERE t.title LIKE CONCAT('%',:title,'%') ");
 		if(statusIds.size()>0) {
-			hql.append("AND s.id IN :statusIds ");
+			hql.append("AND s.id IN (:statusIds) ");
 		}
 		if(creatorIds.size()>0) {
-			hql.append("AND c.id IN :creatorIds ");
+			hql.append("AND c.id IN (:creatorIds) ");
 		}
 		if(receiverIds.size()>0) {
-			hql.append("AND r.id IN :receiverIds ");
+			hql.append("AND r.id IN (:receiverIds) ");
 		}
 
 		hql.append("AND t.createDate LIKE CONCAT('%',:startDate,'%') ");
@@ -289,7 +289,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			LOGGER.info(hql.toString());
 			query.setParameter("title", title);
 			if(statusIds.size()>0) {
-				query.setParameter("status", statusIds);
+				query.setParameter("statusIds", statusIds);
 			}
 			if(creatorIds.size()>0) {
 				query.setParameter("creatorIds", creatorIds);
@@ -301,10 +301,10 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			query.setParameter("finishDate", finishDate);
 			query.setParameter("priority", priority);
 			query.setParameter("rate", rate);
-			if (departmentIds.size()==0) {
-				query.setFirstResult(offset);
-				query.setMaxResults(limit);
-			}
+//			if (departmentIds.size()==0) {
+//				query.setFirstResult(offset);
+//				query.setMaxResults(limit);
+//			}
 
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] obj = (Object[]) it.next();
