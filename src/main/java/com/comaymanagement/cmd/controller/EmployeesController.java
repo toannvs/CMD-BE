@@ -30,18 +30,17 @@ public class EmployeesController {
 	DepartmentService departmentService;
 	
 	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
-	@GetMapping(value = "", produces = "application/json")
+	@PostMapping(value = "", produces = "application/json")
 	public ResponseEntity<Object> paggingAllEmployee(
 			@RequestParam(value = "page", required = false) String page,
 			@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "dob", required = false) String dob,
 			@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "phone", required = false) String phone,
-			@RequestParam(value = "dep", required = false) String dep,
-			@RequestParam(value = "pos", required = false) String pos,
 			@RequestParam(value = "sort", required = false) String sort,
-			@RequestParam(value = "order", required = false) String order) {
-		ResponseEntity<Object> result = employeeService.employeePaging(page,name, dob, email, phone, dep, pos, sort, order);
+			@RequestParam(value = "order", required = false) String order,
+			@RequestBody String json) {
+		ResponseEntity<Object> result = employeeService.employeePaging(page,name, dob, email, phone, sort, order, json);
 		return result;
 	}
 	

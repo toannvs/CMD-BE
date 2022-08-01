@@ -45,6 +45,8 @@ import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TeamRepositoryImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.opencsv.CSVReader;
@@ -74,16 +76,35 @@ public class EmployeeService {
 
 	// Find all employee and search
 	public ResponseEntity<Object> employeePaging(String page, String name, String dob, String email, String phone,
-			String dep, String pos, String sort, String order) {
+			String sort, String order, String json) {
 		Integer limit = CMDConstrant.LIMIT;
+	
 		Set<EmployeeModel> employeeModelSetTMP = new LinkedHashSet<>();
 		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
+		List<Integer> departmentIds = new ArrayList<Integer>();
+		List<Integer> positionIds = new ArrayList<Integer>();
 		name = name == null ? "" : name.trim();
 		dob = dob == null ? "" : dob.trim();
 		email = email == null ? "" : email.trim();
 		phone = phone == null ? "" : phone.trim();
-		dep = dep == null ? "" : dep.trim();
-		pos = pos == null ? "" : pos.trim();
+		
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObject;
+			jsonObject = jsonMapper.readTree(json);
+			JsonNode jsonDepObject = jsonObject.get("departmentIds");
+			JsonNode jsonPosObject = jsonObject.get("positionIds");
+			
+			for (JsonNode departmendId : jsonDepObject) {
+				departmentIds.add(Integer.valueOf(departmendId.toString()));
+			}
+			for (JsonNode positionsId : jsonPosObject) {
+				positionIds.add(Integer.valueOf(positionsId.toString()));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		
 		page = page == null ? "1" : page.trim();
 		// Order by defaut
 		if (sort == null || sort == "") {
@@ -95,14 +116,14 @@ public class EmployeeService {
 		int count = Integer.parseInt(page);
 		int offset = 0;
 		int limitCaculated = 0;
-		Integer totalItemEmployeeDup = employeeRepository.countAllPagingIncludeDuplicate(name, dob, email, phone, dep, pos, sort, order,-1,-1);
-		Integer totalItemEmployee = employeeRepository.countAllPaging(name, dob, email, phone, dep, pos, sort, order,-1,-1);
+		Integer totalItemEmployeeDup = employeeRepository.countAllPagingIncludeDuplicate(name, dob, email, phone, departmentIds, positionIds, sort, order,-1,-1);
+		Integer totalItemEmployee = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order,-1,-1);
 		Map<String, Integer> caculatorOffset = new LinkedHashMap<>();
 		while(count>0) {
 			if((offset + limit) > totalItemEmployeeDup) {
-				limit = employeeRepository.countAllPaging(name, dob, email, phone, dep, pos, sort, order,offset	,-1);;
+				limit = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order,offset	,-1);;
 			}
-			caculatorOffset = caculatorOffset(name, dob, email, phone, dep, pos, sort, order, limit,offset);
+			caculatorOffset = caculatorOffset(name, dob, email, phone, departmentIds, positionIds, sort, order, limit,offset);
 			if(count>1) {
 				offset = caculatorOffset.get("offset");
 			}
@@ -111,7 +132,7 @@ public class EmployeeService {
 		}
 		try {
 			
-			employeeModelSetTMP = employeeRepository.findAll(name, dob, email, phone, dep, pos, sort, order, limitCaculated,
+			employeeModelSetTMP = employeeRepository.findAll(name, dob, email, phone, departmentIds, positionIds, sort, order, limitCaculated,
 					offset);
 			for (EmployeeModel employeeModel : employeeModelSetTMP) {
 				employeeModelSet.add(employeeModel);
@@ -137,15 +158,16 @@ public class EmployeeService {
 
 	}
 	public Map<String, Integer> caculatorOffset(String name, String dob, String email, String phone,
-			String dep, String pos, String sort, String order,Integer limit, Integer offset) {
+			List<Integer> departmentIds,
+			List<Integer> positionIds, String sort, String order,Integer limit, Integer offset) {
 		int quantityDifference =0;
 		int newOffset = offset;
 		int newLimit = limit;
-		int total = employeeRepository.countAllPaging(name, dob, email, phone, dep, pos, sort, order, -1, -1); //10, 3
+		int total = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order, -1, -1); //10, 3
 		Map<String, Integer> result = new LinkedHashMap<>();
 			do {
 				
-				int countPaging = employeeRepository.countAllPaging(name, dob, email, phone, dep, pos, sort, order, newOffset, newLimit); //10, 3
+				int countPaging = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order, newOffset, newLimit); //10, 3
 				quantityDifference = newLimit - countPaging; // , , 0
 				//store old offset
 //				newOffset = offset;
