@@ -48,7 +48,9 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	PositionRepositoryImpl positionRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(ProposalRepositoryImpl.class);
-
+	public int countAllForAll = 0;
+	public int countAllForProposalApproveByMe = 0;
+	public int countAllForProposalCratedByMe = 0;
 	// proposals
 
 	public List<ProposalModel> findAllProposalForAll(List<Integer> proposalTypeIds, List<Integer> statusIds,
@@ -64,6 +66,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				proposals.add(pro);
 			}
 		}
+		//set value fo total
+		setCountAllForAll(proposals.size());
 		// paging
 		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
 			ProposalModel proposalModel = this.findById(proposals.get(i).getId());
@@ -71,7 +75,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposalModelResult;
 	}
-
+	
 	@Override
 	public List<ProposalModel> findAllProposalApproveByMe(Integer employeeId, List<Integer> proposalTypeIds,
 			List<Integer> statusIds, List<Integer> creatorIds, String createDateFrom, String createDateTo, String sort,
@@ -124,6 +128,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			}
 
 		}
+		//set value fo total
+		setCountAllForProposalApproveByMe(proposals.size());
 		// paging
 		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
 			ProposalModel proposalModel = this.findById(proposals.get(i).getId());
@@ -146,6 +152,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				proposals.add(pro);
 			}
 		}
+		//set value fo total
+		setCountAllForProposalCratedByMe(proposals.size());
 		// paging
 		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
 			ProposalModel proposalModel = this.findById(proposals.get(i).getId());
@@ -614,4 +622,28 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		return proposalModel;
 	}
 
+	public int getCountAllForAll() {
+		return countAllForAll;
+	}
+
+	public void setCountAllForAll(int countAllForAll) {
+		this.countAllForAll = countAllForAll;
+	}
+
+	public int getCountAllForProposalApproveByMe() {
+		return countAllForProposalApproveByMe;
+	}
+
+	public void setCountAllForProposalApproveByMe(int countAllForProposalApproveByMe) {
+		this.countAllForProposalApproveByMe = countAllForProposalApproveByMe;
+	}
+
+	public int getCountAllForProposalCratedByMe() {
+		return countAllForProposalCratedByMe;
+	}
+
+	public void setCountAllForProposalCratedByMe(int countAllForProposalCratedByMe) {
+		this.countAllForProposalCratedByMe = countAllForProposalCratedByMe;
+	}
+	
 }

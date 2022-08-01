@@ -115,7 +115,7 @@ public class ProposalService {
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
-			pagination.setTotalItem(proposalModels.size());
+			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForAll());
 
 			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
@@ -199,7 +199,7 @@ public class ProposalService {
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
-			pagination.setTotalItem(proposalModels.size());
+			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForProposalApproveByMe());
 
 			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
@@ -282,7 +282,7 @@ public class ProposalService {
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
-			pagination.setTotalItem(proposalModels.size());
+			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForProposalCratedByMe());
 
 			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
