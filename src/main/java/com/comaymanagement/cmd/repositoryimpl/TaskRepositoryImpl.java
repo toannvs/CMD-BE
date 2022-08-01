@@ -1196,10 +1196,10 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			if (rate != null) {
 				query.setParameter("rate", rate);
 			}
-			if (departmentIds.size()==0) {
-				query.setFirstResult(offset);
-				query.setMaxResults(limit);
-			}
+//			if (departmentIds.size()==0) {
+//				query.setFirstResult(offset);
+//				query.setMaxResults(limit);
+//			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] obj = (Object[]) it.next();
 				Task task = (Task) obj[0];
@@ -1392,10 +1392,10 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			if (rate != null) {
 				query.setParameter("rate", rate);
 			}
-			if (departmentIds.size()==0) {
-				query.setFirstResult(offset);
-				query.setMaxResults(limit);
-			}
+//			if (departmentIds.size()==0) {
+//				query.setFirstResult(offset);
+//				query.setMaxResults(limit);
+//			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] obj = (Object[]) it.next();
 				Task task = (Task) obj[0];
