@@ -35,7 +35,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 	@Transactional
 	public Set<TeamModel> findAll(String name) {
 		Session session = sessionFactory.getCurrentSession();
-		String hql = "from teams team inner join team.positions as pos where team.name like CONCAT('%',:name,'%')";
+		String hql = "from teams team where team.name like CONCAT('%',:name,'%')";
 		Set<TeamModel> teamModelSet = new LinkedHashSet<TeamModel>();
 		Set<Team> teamSetTMP = new LinkedHashSet<Team>();
 		
@@ -43,8 +43,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("name", name);
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object[] ob = (Object[]) it.next();
-				Team tmp = (Team) ob[0];
+				Team tmp= (Team) it.next();
 				teamSetTMP.add(tmp);
 			}
 			for(Team t : teamSetTMP) {
