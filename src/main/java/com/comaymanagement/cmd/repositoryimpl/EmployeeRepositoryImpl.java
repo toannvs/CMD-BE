@@ -40,7 +40,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	// find all employee with position in department
 	@Override
 	public Set<EmployeeModel> findAll(String name, String dob, String email, String phone, List<Integer> departmentIds,
@@ -79,7 +79,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		try {
 			Query query = session.createQuery(hql.toString());
 			if (!name.equals("")) {
-				query.setParameter("name", name);
+				query.setParameter("name","\\" +  name);
 			}
 			if (!dob.equals("")) {
 				query.setParameter("dob", dob);
@@ -98,7 +98,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 			}
 			query.setFirstResult(offset);
-			query.setMaxResults(limit);
+			if(limit>0) {
+				query.setMaxResults(limit);
+			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] ob = (Object[]) it.next();
 				Employee e = (Employee) ob[0];

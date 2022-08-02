@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,5 +65,12 @@ public class PositionController {
 	public ResponseEntity<Object> findAllByTeamId(@PathVariable(value = "teamId", required = true) Integer teamId) {
 		return positionService.findAllByDepartmentId(teamId);
 	}
+	
+	@PreAuthorize("@customRoleService.canView('position',principal)")
+	@PostMapping("/depIds")
+	public ResponseEntity<Object> findAllByDepartmentIds(@RequestBody String json) {
+		return positionService.findAllByDepartmentIds(json);
+	}
+	
 	
 }

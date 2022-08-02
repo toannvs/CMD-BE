@@ -33,14 +33,20 @@ public class EmployeesController {
 	@PostMapping(value = "", produces = "application/json")
 	public ResponseEntity<Object> paggingAllEmployee(
 			@RequestParam(value = "page", required = false) String page,
-			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "dob", required = false) String dob,
-			@RequestParam(value = "email", required = false) String email,
-			@RequestParam(value = "phone", required = false) String phone,
 			@RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "order", required = false) String order,
 			@RequestBody String json) {
-		ResponseEntity<Object> result = employeeService.employeePaging(page,name, dob, email, phone, sort, order, json);
+		ResponseEntity<Object> result = employeeService.employeePaging(page, sort, order, json);
+		return result;
+	}
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+	@PostMapping(value = "/download", produces = "application/json")
+	public ResponseEntity<Object> findAllWithParamAndNotLimit(
+			@RequestParam(value = "page", required = false) String page,
+			@RequestParam(value = "sort", required = false) String sort,
+			@RequestParam(value = "order", required = false) String order,
+			@RequestBody String json) {
+		ResponseEntity<Object> result = employeeService.findAllWithParamAndNotLimit(page, sort, order, json);
 		return result;
 	}
 	

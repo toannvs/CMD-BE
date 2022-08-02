@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,23 +73,25 @@ public class EmployeeService {
 
 	@Autowired
 	Message message;
+	
+	@Autowired
+	PasswordEncoder encoder;
 
 	static int countFile = 0;
-
-	// Find all employee and search
-	public ResponseEntity<Object> employeePaging(String page, String name, String dob, String email, String phone,
+	public ResponseEntity<Object> findAllWithParamAndNotLimit(String page, 
 			String sort, String order, String json) {
-		Integer limit = CMDConstrant.LIMIT;
+		Integer limit = -1;
 	
 		Set<EmployeeModel> employeeModelSetTMP = new LinkedHashSet<>();
 		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
 		List<Integer> departmentIds = new ArrayList<Integer>();
 		List<Integer> positionIds = new ArrayList<Integer>();
-		name = name == null ? "" : name.trim();
-		dob = dob == null ? "" : dob.trim();
-		email = email == null ? "" : email.trim();
-		phone = phone == null ? "" : phone.trim();
+		String name = "";
+		String dob = "";
+		String email = "";
+		String phone = "";
 		
+//		name = name == null ? "" : name.trim();
 		try {
 			JsonMapper jsonMapper = new JsonMapper();
 			JsonNode jsonObject;
@@ -95,6 +99,116 @@ public class EmployeeService {
 			JsonNode jsonDepObject = jsonObject.get("departmentIds");
 			JsonNode jsonPosObject = jsonObject.get("positionIds");
 			
+			name = jsonObject.get("name") == null ? ""
+					: jsonObject.get("name").asText() == "null" ? ""
+							: jsonObject.get("name").asText();
+			dob = jsonObject.get("dob") == null ? ""
+					: jsonObject.get("dob").asText() == "null" ? ""
+							: jsonObject.get("dob").asText();
+			email = jsonObject.get("email") == null ? ""
+					: jsonObject.get("email").asText() == "null" ? ""
+							: jsonObject.get("email").asText();
+			phone = jsonObject.get("phone") == null ? ""
+					: jsonObject.get("phone").asText() == "null" ? ""
+							: jsonObject.get("phone").asText();
+			for (JsonNode departmendId : jsonDepObject) {
+				departmentIds.add(Integer.valueOf(departmendId.toString()));
+			}
+			for (JsonNode positionsId : jsonPosObject) {
+				positionIds.add(Integer.valueOf(positionsId.toString()));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		
+		page = page == null ? "1" : page.trim();
+		// Order by defaut
+		if (sort == null || sort == "") {
+			sort = "emp.id";
+		}
+		if (order == null || order == "") {
+			order = "desc";
+		}
+		int count = Integer.parseInt(page);
+		int offset = 0;
+		int limitCaculated = 0;
+		Integer totalItemEmployeeDup = employeeRepository.countAllPagingIncludeDuplicate(name, dob, email, phone, departmentIds, positionIds, sort, order,-1,-1);
+		Integer totalItemEmployee = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order,-1,-1);
+		Map<String, Integer> caculatorOffset = new LinkedHashMap<>();
+		while(count>0) {
+			if((offset + limit) > totalItemEmployeeDup) {
+				limit = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order,offset	,-1);;
+			}
+			caculatorOffset = caculatorOffset(name, dob, email, phone, departmentIds, positionIds, sort, order, limit,offset);
+			if(count>1) {
+				offset = caculatorOffset.get("offset");
+			}
+			limitCaculated = caculatorOffset.get("limit");
+			count--;
+		}
+		try {
+			
+			// Get with limit = -1
+			employeeModelSetTMP = employeeRepository.findAll(name, dob, email, phone, departmentIds, positionIds, sort, order, limit,
+					offset);
+			for (EmployeeModel employeeModel : employeeModelSetTMP) {
+				employeeModelSet.add(employeeModel);
+			}
+			Pagination pagination = new Pagination();
+			Map<String, Object> result = new TreeMap<>();
+			pagination.setLimit(limit);
+			pagination.setPage(Integer.valueOf(page));
+			pagination.setTotalItem(totalItemEmployee);
+
+			result.put("pagination", pagination);
+			result.put("employees", employeeModelSet);
+			if (employeeModelSet.size() > 0) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
+			} else {
+				pagination.setPage(1);
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", result));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in employeePaging() ", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", e.getMessage(), ""));
+		}
+
+	}
+	
+	// Find all employee and search
+	public ResponseEntity<Object> employeePaging(String page, 
+			String sort, String order, String json) {
+		Integer limit = CMDConstrant.LIMIT;
+	
+		Set<EmployeeModel> employeeModelSetTMP = new LinkedHashSet<>();
+		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
+		List<Integer> departmentIds = new ArrayList<Integer>();
+		List<Integer> positionIds = new ArrayList<Integer>();
+		String name = "";
+		String dob = "";
+		String email = "";
+		String phone = "";
+		
+//		name = name == null ? "" : name.trim();
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObject;
+			jsonObject = jsonMapper.readTree(json);
+			JsonNode jsonDepObject = jsonObject.get("departmentIds");
+			JsonNode jsonPosObject = jsonObject.get("positionIds");
+			
+			name = jsonObject.get("name") == null ? ""
+					: jsonObject.get("name").asText() == "null" ? ""
+							: jsonObject.get("name").asText();
+			dob = jsonObject.get("dob") == null ? ""
+					: jsonObject.get("dob").asText() == "null" ? ""
+							: jsonObject.get("dob").asText();
+			email = jsonObject.get("email") == null ? ""
+					: jsonObject.get("email").asText() == "null" ? ""
+							: jsonObject.get("email").asText();
+			phone = jsonObject.get("phone") == null ? ""
+					: jsonObject.get("phone").asText() == "null" ? ""
+							: jsonObject.get("phone").asText();
 			for (JsonNode departmendId : jsonDepObject) {
 				departmentIds.add(Integer.valueOf(departmendId.toString()));
 			}
@@ -243,7 +357,7 @@ public class EmployeeService {
 			emp.setEnableLogin(isEnableLogin);
 			if (isEnableLogin) {
 				emp.setUsername(jsonLoginAccount.get("username").asText());
-				emp.setPassword(CMDConstrant.PASSWORD);
+				emp.setPassword(encoder.encode(CMDConstrant.PASSWORD));
 			} else {
 				emp.setUsername("");
 				emp.setPassword("");
