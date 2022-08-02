@@ -242,12 +242,18 @@ public class EmployeeService {
 				offset = caculatorOffset.get("offset");
 			}
 			limitCaculated = caculatorOffset.get("limit");
-			count--;
+			count--;	
 		}
 		try {
-			
-			employeeModelSetTMP = employeeRepository.findAll(name, dob, email, phone, departmentIds, positionIds, sort, order, limitCaculated,
-					offset);
+			// if duplicate => limit will alway be >= CMDConstrant.LIMIT
+			if(limitCaculated < 15) {
+				employeeModelSetTMP = employeeRepository.findAll(name, dob, email, phone, departmentIds, positionIds, sort, order, CMDConstrant.LIMIT,
+						offset);
+			}else {
+				employeeModelSetTMP = employeeRepository.findAll(name, dob, email, phone, departmentIds, positionIds, sort, order, limitCaculated,
+						offset);
+			}
+
 			for (EmployeeModel employeeModel : employeeModelSetTMP) {
 				employeeModelSet.add(employeeModel);
 			}

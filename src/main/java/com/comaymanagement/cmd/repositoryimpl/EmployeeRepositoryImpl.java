@@ -100,6 +100,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			query.setFirstResult(offset);
 			if(limit>0) {
 				query.setMaxResults(limit);
+				
 			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] ob = (Object[]) it.next();
