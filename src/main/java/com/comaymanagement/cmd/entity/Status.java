@@ -31,6 +31,7 @@ public class Status {
 	private String name;
 	private Integer index;
 	private String type;
+	
 	@OneToMany
 	@JoinColumn(name = "status_id")
 	@JsonBackReference
