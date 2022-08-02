@@ -14,8 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ResponseObject;
+import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -26,7 +29,7 @@ public class PositionService{
 	@Autowired
 	Message message;
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-
+	
 	public ResponseEntity<Object> findAllByRoleId(Integer roleId) {
 		List<PositionModel> positionModelList = new ArrayList<PositionModel>();;
 
@@ -99,6 +102,42 @@ public class PositionService{
 		}
 	}
 
+	public ResponseEntity<Object> findAllByDepartmentIds(String json) {
+		List<Integer> departmentIds = new ArrayList<>();
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObject;
+			jsonObject = jsonMapper.readTree(json);
+			JsonNode jsonDepObject = jsonObject.get("departmentIds");
+			for (JsonNode departmendId : jsonDepObject) {
+				departmentIds.add(Integer.valueOf(departmendId.toString()));
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		List<PositionModel> positionModelList = new ArrayList<PositionModel>();;
+		for(Integer depId : departmentIds) {
+			List<PositionModel> positionModelListTMP = new ArrayList<>();
+			positionModelListTMP = positionRepository.findAllByDepartmentId(depId);
+				if (positionModelListTMP.size() > 0) {
+					for(PositionModel depModel : positionModelListTMP) {
+						positionModelList.add(depModel);
+					}
+					
+				} else {
+					LOGGER.info("Have no task by status_id: " + depId);
+				}
+		}
+		if(positionModelList.size()>0) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("OK", "SUCCESSFULLY:", positionModelList));
+		}else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("ERROR", "Not found", ""));
+		}
+			
+	}
 //	public ResponseEntity<Object> add(String json) {
 //		JsonMapper jsonMapper = new JsonMapper();
 //		JsonNode jsonObjectPosition;
@@ -166,5 +205,6 @@ public class PositionService{
 					.body(new ResponseObject("Error",message.getMessageByItemCode("POSE1"), p));
 		}
 	}
+	
 
 }
