@@ -1,7 +1,9 @@
 package com.comaymanagement.cmd.repositoryimpl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -29,15 +31,15 @@ public class TaskHistoryRepositoryImpl implements ITaskHistory {
 	SessionFactory sessionFactory;
 	
 	@Override
-	public List<TaskHis> add(List<TaskHis> taskHis) {
+	public Integer add(TaskHis taskHis) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			String modifyDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
-			taskHis.get(0).setModifyDate(modifyDate);;
+			taskHis.setModifyDate(modifyDate);;
 			Integer id =(Integer) session.save(taskHis);
 			if(id != -1) {
-				taskHis.get(0).setId(id);
-				return taskHis;
+				taskHis.setId(id);
+				return id;
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -45,17 +47,23 @@ public class TaskHistoryRepositoryImpl implements ITaskHistory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<TaskHis> findById(Integer id) {
-		List<TaskHis> taskHis = null;
+		List<TaskHis> taskHistories = null;
 		try {
 			Session session = sessionFactory.getCurrentSession();
-			String hql = "FROM task_his AS th WHERE th.id = " + id;
+			String hql = "FROM task_his AS th WHERE th.taskId = " + id;
 			Query query = session.createQuery(hql);
-			taskHis = (List<TaskHis>) query.getResultList();
-			if(null != taskHis) {
-				return taskHis;
+			taskHistories = new ArrayList<TaskHis>();
+			for(Iterator it = query.getResultList().iterator();it.hasNext();) {
+				TaskHis taskHis = new TaskHis();
+				Object obj = (Object) it.next();
+				taskHis =(TaskHis) obj;
+				taskHistories.add(taskHis);
+				
+			}
+			if(null != taskHistories) {
+				return taskHistories;
 			}
 
 			

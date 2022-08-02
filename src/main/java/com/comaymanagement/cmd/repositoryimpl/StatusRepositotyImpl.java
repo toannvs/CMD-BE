@@ -37,15 +37,12 @@ public class StatusRepositotyImpl implements IStatusRepositoty {
 	public Status findById(Integer id) {
 		Status status = null;
 		StringBuilder hql = new StringBuilder("FROM statuses AS st ");
-		hql.append("WHERE st.id = :id");
+		hql.append("WHERE st.id = " + id);
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql.toString());
 			LOGGER.info(hql.toString());
-			query.setParameter("id",id);			
-			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				status = (Status) it.next();
-			}
+			status = (Status) query.getSingleResult();
 
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

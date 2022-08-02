@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -29,9 +30,12 @@ public class TaskHis {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "task_id")
-	private Task task;
+//	@OneToOne(cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	@JoinColumn(name = "task_id")\
+	
+	@Column(name = "task_id")
+	private Integer taskId;
 	
 	@OneToOne
 	@JoinColumn(name = "receiver_id")

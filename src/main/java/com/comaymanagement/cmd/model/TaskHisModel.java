@@ -14,7 +14,7 @@ import lombok.Setter;
 public class TaskHisModel {
 
 	private Integer id;
-	private TaskModel task;
+	private Integer taskId;
 	private EmployeeModel receiver;
 	private Status status;
 	private String modifyDate;

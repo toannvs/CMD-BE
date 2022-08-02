@@ -5,6 +5,6 @@ import java.util.List;
 import com.comaymanagement.cmd.entity.TaskHis;
 
 public interface ITaskHistory {
-	List<TaskHis> add(List<TaskHis> taskHis);
+	Integer add(TaskHis taskHis);
 	List<TaskHis> findById(Integer id);
 }

@@ -53,10 +53,10 @@ public class Task{
 	@JoinColumn(name = "status_id")
 	private Status status;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JsonIgnore
-	@JoinColumn(name = "task_id")
-	private List<TaskHis> taskHis;
+//	@OneToMany(cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	@JoinColumn(name = "task_id")
+//	private List<TaskHis> taskHis;
 
 	private Integer rate;
 	private Integer priority;
