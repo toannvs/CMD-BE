@@ -12,6 +12,6 @@ public interface IProposalRepository {
 			String createDate, String finishDate, String sort, String order, Integer offset, Integer limit);
 	public Integer countAllPaging(Integer employeeId,Integer proposal, String content, String status, String creator,
 			String createDateFrom, String createDateTo, String sort, String order, Integer offset, Integer limit);
-	public ProposalModel findById(Integer id);
+	public ProposalModel findModelById(Integer id);
 	public ProposalModel add(Proposal proposal, List<ProposalDetail> proposalDetails);
 }

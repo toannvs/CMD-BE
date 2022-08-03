@@ -91,13 +91,13 @@ public class ProposalController {
 		return proposalService.findById(Integer.valueOf(id));
 		
 	}
-	@PreAuthorize("@customRoleService.canCreate('proposal',principal)")
-	@PostMapping(value= "/add",produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<Object> add(@RequestBody String json){
-		LOGGER.info("Add proposal");
-		return proposalService.add(json);
-		
-	}
+//	@PreAuthorize("@customRoleService.canCreate('proposal',principal)")
+//	@PostMapping(value= "/add",produces = "application/json")
+//	@ResponseBody
+//	public ResponseEntity<Object> add(@RequestBody String json){
+//		LOGGER.info("Add proposal");
+//		return proposalService.add(json);
+//		
+//	}
 	
 }

@@ -39,10 +39,6 @@ public class Proposal {
 	@OneToOne()
 	@JoinColumn(name = "creator_id")
 	private Employee creator;
-	
-	@OneToOne()
-	@JoinColumn(name = "receiver_id")
-	private Employee receiver;
 
 	@OneToOne()
 	@JoinColumn(name = "status_id")
@@ -53,13 +49,13 @@ public class Proposal {
 	private ProposalType proposalType;
 	
 	@Column(name="modify_by")
-	private String modifyBy;
+	private Integer modifyBy;
 	@Column(name="create_date")
 	private String createDate;
 	@Column(name="modify_date")
 	private String modifyDate;
 	@Column(name="current_step")
-	private String currentStep;
+	private Integer currentStep;
 	@Column(name = "validflag")
 	private Boolean validFlag;
 	

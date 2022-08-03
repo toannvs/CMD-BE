@@ -66,16 +66,16 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				proposals.add(pro);
 			}
 		}
-		//set value fo total
+		// set value fo total
 		setCountAllForAll(proposals.size());
 		// paging
 		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
-			ProposalModel proposalModel = this.findById(proposals.get(i).getId());
+			ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
 			proposalModelResult.add(proposalModel);
 		}
 		return proposalModelResult;
 	}
-	
+
 	@Override
 	public List<ProposalModel> findAllProposalApproveByMe(Integer employeeId, List<Integer> proposalTypeIds,
 			List<Integer> statusIds, List<Integer> creatorIds, String createDateFrom, String createDateTo, String sort,
@@ -87,13 +87,13 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		List<Integer> departmentIds = new ArrayList<>();
 		List<Position> positionTMPs = positionRepository.findAllByEmployeeId(employeeId);
 		List<Department> departmentTMPs = departmentRepository.findAllByEmployeeId(employeeId);
-		for(Department d : departmentTMPs) {
+		for (Department d : departmentTMPs) {
 			departmentIds.add(d.getId());
 		}
-		for(Position p : positionTMPs) {
+		for (Position p : positionTMPs) {
 			positionIds.add(p.getId());
 		}
-		
+
 		appSteps = findApprovalStepDetail(employeeId, positionIds, departmentIds);
 
 		for (ApprovalStep appStep : appSteps) {
@@ -128,35 +128,35 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			}
 
 		}
-		//set value fo total
+		// set value fo total
 		setCountAllForProposalApproveByMe(proposals.size());
 		// paging
 		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
-			ProposalModel proposalModel = this.findById(proposals.get(i).getId());
+			ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
 			proposalModelResult.add(proposalModel);
 		}
 		return proposalModelResult;
 	}
 
 	public List<ProposalModel> findAllProposalCratedByMe(Integer employeeId, List<Integer> proposalTypeIds,
-			List<Integer> statusIds, String createDateFrom, String createDateTo, String sort,
-			String order, Integer offset, Integer limit) {
+			List<Integer> statusIds, String createDateFrom, String createDateTo, String sort, String order,
+			Integer offset, Integer limit) {
 		List<Proposal> proposals = new ArrayList<>();
 		List<ProposalModel> proposalModelResult = new ArrayList<>();
 		Set<Proposal> proposalsTMP = new LinkedHashSet();
-		proposalsTMP = findAllCreatedByMe(employeeId, proposalTypeIds, statusIds, createDateFrom, createDateTo,
-				sort, order);
+		proposalsTMP = findAllCreatedByMe(employeeId, proposalTypeIds, statusIds, createDateFrom, createDateTo, sort,
+				order);
 		// store proposal of each proposalType and step
 		if (proposalsTMP != null && proposalsTMP.size() > 0) {
 			for (Proposal pro : proposalsTMP) {
 				proposals.add(pro);
 			}
 		}
-		//set value fo total
+		// set value fo total
 		setCountAllForProposalCratedByMe(proposals.size());
 		// paging
 		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
-			ProposalModel proposalModel = this.findById(proposals.get(i).getId());
+			ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
 			proposalModelResult.add(proposalModel);
 		}
 		return proposalModelResult;
@@ -296,10 +296,10 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //		hql.append("AND pd.content LIKE CONCAT('%',:content,'%') ");
 //		hql.append("AND pro.createDate LIKE CONCAT('%',:createDate,'%') ");
 //		hql.append("AND pt.id LIKE CONCAT('%',:proposalTypeId,'%') ");
-		if (proposalTypeIds!=null && proposalTypeIds.size() > 0) {
+		if (proposalTypeIds != null && proposalTypeIds.size() > 0) {
 			hql.append("AND pt.id IN (:proposalTypeIds) ");
 		}
-		if (creatorIds!=null && creatorIds.size() > 0) {
+		if (creatorIds != null && creatorIds.size() > 0) {
 			hql.append("AND em.id IN (:creatorIds) ");
 		}
 		if (createDateFrom != null && createDateTo == null) {
@@ -444,7 +444,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	}
 
 	@Override
-	public ProposalModel findById(Integer id) {
+	public ProposalModel findModelById(Integer id) {
 		ProposalModel proposalModel = new ProposalModel();
 		try {
 			Session session = sessionFactory.getCurrentSession();
@@ -586,22 +586,6 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			creator.setModifyBy(proposal.getCreator().getModifyBy());
 			proposalModel.setCreator(creator);
 
-			EmployeeModel receiver = new EmployeeModel();
-			receiver.setId(proposal.getReceiver().getId());
-			receiver.setName(proposal.getReceiver().getName());
-			receiver.setCode(proposal.getReceiver().getCode());
-			receiver.setAvatar(proposal.getReceiver().getAvatar());
-			receiver.setGender(proposal.getReceiver().getGender());
-			receiver.setDateOfBirth(proposal.getReceiver().getDateOfBirth());
-			receiver.setEmail(proposal.getReceiver().getEmail());
-			receiver.setPhoneNumber(proposal.getReceiver().getPhoneNumber());
-			receiver.setActive(proposal.getReceiver().isActive());
-			receiver.setCreateDate(proposal.getReceiver().getCreateDate());
-			receiver.setCreateDate(proposal.getReceiver().getCreateDate());
-			receiver.setModifyDate(proposal.getReceiver().getModifyDate());
-			receiver.setCreateBy(proposal.getReceiver().getCreateBy());
-			receiver.setModifyBy(proposal.getReceiver().getModifyBy());
-			proposalModel.setReceiver(receiver);
 			proposalModel.setProposal(proposal.getProposalType());
 
 			List<ContentModel> contentModels = new ArrayList<ContentModel>();
@@ -622,6 +606,43 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		return proposalModel;
 	}
 
+	public Proposal findById(Integer id) {
+		StringBuilder hql = new StringBuilder();
+		hql.append("FROM proposals AS pro ");
+		hql.append("WHERE pro.id = :id");
+		Proposal proposal = null;
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			LOGGER.info(hql.toString());
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("id", id);
+				proposal = (Proposal) query.getSingleResult();
+			return proposal;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+	}
+	public Integer edit(Proposal proposal, List<ProposalDetail> proposalDetails) {
+		ProposalModel proposalModel = null;
+			Session session = sessionFactory.getCurrentSession();
+			Integer resultEditedProposal = (Integer) session.save(proposal);
+			if (resultEditedProposal < 0 ) {
+				return -1;
+			}
+			if(proposalDetails!=null) {
+				for (ProposalDetail proposalDetail : proposalDetails) {
+					proposal.setId(resultEditedProposal);
+					proposalDetail.setProposalId(proposal);
+					Integer resultAddProposalDetail = (Integer) session.save(proposalDetail);
+					if (resultAddProposalDetail < 0) {
+						return -1;
+					}
+				}
+			}
+			
+		return 1;
+	}
 	public int getCountAllForAll() {
 		return countAllForAll;
 	}
@@ -645,5 +666,5 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	public void setCountAllForProposalCratedByMe(int countAllForProposalCratedByMe) {
 		this.countAllForProposalCratedByMe = countAllForProposalCratedByMe;
 	}
-	
+
 }
