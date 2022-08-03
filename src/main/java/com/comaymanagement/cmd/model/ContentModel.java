@@ -17,6 +17,7 @@ import lombok.Setter;
 @Entity
 @JsonInclude(Include.NON_NULL)
 public class ContentModel {
+	private Integer id; // id in proposal_details
 	private String fieldId;
 	private String fieldName;
 	private String content;

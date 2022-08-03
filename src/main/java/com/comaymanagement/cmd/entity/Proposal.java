@@ -56,7 +56,5 @@ public class Proposal {
 	private String modifyDate;
 	@Column(name="current_step")
 	private Integer currentStep;
-	@Column(name = "validflag")
-	private Boolean validFlag;
 	
 }
