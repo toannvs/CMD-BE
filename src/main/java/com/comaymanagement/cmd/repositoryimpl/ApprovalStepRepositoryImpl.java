@@ -55,7 +55,7 @@ public class ApprovalStepRepositoryImpl implements IApprovalStepRepository{
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("proposalTypeId", proposalTypeId);
 			LOGGER.info(hql.toString());
-				result =(Integer) query.getSingleResult();
+				result =Integer.valueOf(query.getSingleResult().toString()) ;
 			return result;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

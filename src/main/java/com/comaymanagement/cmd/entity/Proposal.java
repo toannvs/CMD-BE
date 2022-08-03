@@ -57,4 +57,8 @@ public class Proposal {
 	@Column(name="current_step")
 	private Integer currentStep;
 	
+	private String reason;
+	
+	
+	
 }

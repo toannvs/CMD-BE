@@ -108,5 +108,29 @@ public class ProposalController {
 		return proposalService.edit(json);
 		
 	}
+	@PreAuthorize("@customRoleService.canUpdate('proposal',principal)")
+	@PutMapping(value= "/accept/{id}",produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> accept(@PathVariable Integer id){
+		LOGGER.info("Accept proposal");
+		return proposalService.accept(id);
+		
+	}
+	@PreAuthorize("@customRoleService.canUpdate('proposal',principal)")
+	@PutMapping(value= "/denied",produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> denied(@RequestBody String json){
+		LOGGER.info("Denied proposal");
+		return proposalService.denied(json);
+		
+	}
+	@PreAuthorize("@customRoleService.canUpdate('proposal',principal)")
+	@PutMapping(value= "/cancel",produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> cancel(@RequestBody String json){
+		LOGGER.info("Cancel proposal");
+		return proposalService.cancel(json);
+		
+	}
 	
 }
