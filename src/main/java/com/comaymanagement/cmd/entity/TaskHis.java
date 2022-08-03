@@ -48,4 +48,8 @@ public class TaskHis {
 	@Column(name= "modify_date")
 	private String modifyDate;
 	
+	@OneToOne
+	@JoinColumn(name= "modify_by")
+	private Employee modifyBy;
+	
 }

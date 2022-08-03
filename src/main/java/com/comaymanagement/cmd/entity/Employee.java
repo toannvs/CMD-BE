@@ -109,4 +109,9 @@ public class Employee{
 			@JoinColumn(name = "employee_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "post_id", referencedColumnName = "id") })
 	private List<Post> posts;
+	
+	@OneToMany()
+	@JsonIgnore
+	@JoinColumn(name = "modify_by")
+	private List<TaskHis> taskHistories;
 }

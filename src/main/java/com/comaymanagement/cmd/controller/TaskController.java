@@ -174,5 +174,19 @@ public class TaskController {
 			@RequestParam(value="order", required = false) String order){
 		return taskService.findAllTaskTaskCreatedByMe(json, sort, order, page);
 	}
+	
+	@PreAuthorize("@customRoleService.canUpdate('task',principal)")
+	@GetMapping(value = "/{id}/changeStatus")
+	@ResponseBody
+	public ResponseEntity<Object> changeStatus(@PathVariable String id) {
+		return taskService.changeStatus(id);
+	}
+	
+	@PreAuthorize("@customRoleService.canUpdate('task',principal)")
+	@GetMapping(value = "/{id}/reopen")
+	@ResponseBody
+	public ResponseEntity<Object> reopen(@PathVariable String id) {
+		return taskService.reopen(id);
+	}
 }
 

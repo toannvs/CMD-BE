@@ -18,4 +18,5 @@ public class TaskHisModel {
 	private EmployeeModel receiver;
 	private Status status;
 	private String modifyDate;
+	private EmployeeModel modifyBy;
 }
