@@ -22,7 +22,7 @@ import lombok.Setter;
 public class ProposalModel {
 	private int id;
 	private EmployeeModel creator;
-	private ProposalType proposal;
+	private ProposalType proposalType;
 	private List<ContentModel> contents;
 	private String createdDate;
 	private Status status;

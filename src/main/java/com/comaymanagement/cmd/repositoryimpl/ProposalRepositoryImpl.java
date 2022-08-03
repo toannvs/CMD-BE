@@ -477,8 +477,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				if (0 == proposalModel.getId()) {
 					proposalModel.setId(proposal.getId());
 				}
-				if (null == proposalModel.getProposal()) {
-					proposalModel.setProposal(proposalType);
+				if (null == proposalModel.getProposalType()) {
+					proposalModel.setProposalType(proposalType);
 				}
 				if (null == proposalModel.getStatus()) {
 					proposalModel.setStatus(status);
@@ -508,7 +508,6 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 						departmentModels.add(dModel);
 					}
 					employeeModel.setDepartments(departmentModels);
-					;
 
 					List<PositionModel> positionModels = new ArrayList<PositionModel>();
 					for (Position po : e.getPositions()) {
@@ -532,6 +531,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				}
 
 				ContentModel contentModel = new ContentModel();
+				contentModel.setId(proposalDetail.getId());
 				contentModel.setFieldId(proposalDetail.getFieldId());
 				contentModel.setContent(proposalDetail.getContent());
 				contentModel.setFieldName(proposalDetail.getFieldName());
@@ -584,7 +584,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			creator.setModifyBy(proposal.getCreator().getModifyBy());
 			proposalModel.setCreator(creator);
 
-			proposalModel.setProposal(proposal.getProposalType());
+			proposalModel.setProposalType(proposal.getProposalType());
 
 			List<ContentModel> contentModels = new ArrayList<ContentModel>();
 			for (ProposalDetail proposalDetail : proposalDetails) {
@@ -623,24 +623,32 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	}
 	public Integer edit(Proposal proposal, List<ProposalDetail> proposalDetails) {
 		ProposalModel proposalModel = null;
-			Session session = sessionFactory.getCurrentSession();
-			Integer resultEditedProposal = (Integer) session.save(proposal);
+		Integer resultEditedProposal = -1;
+		Integer resultAddProposalDetail = -1;
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			session.update(proposal);
+			resultEditedProposal = 1;
 			if (resultEditedProposal < 0 ) {
 				return -1;
 			}
 			if(proposalDetails!=null) {
 				for (ProposalDetail proposalDetail : proposalDetails) {
-					proposal.setId(resultEditedProposal);
 					proposalDetail.setProposalId(proposal);
-					Integer resultAddProposalDetail = (Integer) session.save(proposalDetail);
+					session.update(proposalDetail);
+					resultAddProposalDetail = 1;
 					if (resultAddProposalDetail < 0) {
 						return -1;
 					}
 				}
 			}
-			
-		return 1;
+			return 1;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in edit() ", e);
+			return -1;
+		}
 	}
+
 	public int getCountAllForAll() {
 		return countAllForAll;
 	}
@@ -664,5 +672,4 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	public void setCountAllForProposalCratedByMe(int countAllForProposalCratedByMe) {
 		this.countAllForProposalCratedByMe = countAllForProposalCratedByMe;
 	}
-
 }

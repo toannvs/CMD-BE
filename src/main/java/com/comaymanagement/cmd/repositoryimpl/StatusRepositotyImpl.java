@@ -106,8 +106,8 @@ public class StatusRepositotyImpl implements IStatusRepositoty {
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql.toString());
-			query.setParameter("index", "index");
-			query.setParameter("type", "type");
+			query.setParameter("index", index);
+			query.setParameter("type", type);
 			LOGGER.info(hql.toString());
 			status = (Status) query.getSingleResult();
 		} catch (Exception e) {

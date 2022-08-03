@@ -25,6 +25,7 @@ import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Status;
 import com.comaymanagement.cmd.model.ProposalModel;
+import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeRepositoryImpl;
@@ -51,6 +52,9 @@ public class ProposalService {
 
 	@Autowired
 	StatusRepositotyImpl statusRepositotyImpl;
+	
+	@Autowired
+	ApprovalStepRepositoryImpl approvalStepRepository; 
 
 	public ResponseEntity<Object> findAllForAll(String json, String sort, String order, String page) {
 		List<ProposalModel> proposalModels = new ArrayList<>();
@@ -320,70 +324,137 @@ public class ProposalService {
 		}
 	}
 
-//	public ResponseEntity<Object> add(String json) {
-//		ProposalModel proposalModel = null;
-//		List<ProposalDetail> proposalDetails = null;
-//		try {
-//			JsonMapper jsonMapper = new JsonMapper();
-//			JsonNode jsonObjectProposal;
-//			JsonNode jsonObjectProposalDetails;
-//			jsonObjectProposal = jsonMapper.readTree(json);
-//			jsonObjectProposalDetails = jsonObjectProposal.get("proposalDetails");
-//			String proposalTypeId = jsonObjectProposal.get("proposalTypeId") != null
-//					? jsonObjectProposal.get("proposalTypeId").asText()
-//					: "-1";
-//			String creatorId = jsonObjectProposal.get("creatorId") != null
-//					? jsonObjectProposal.get("creatorId").asText()
-//					: "-1";
-//			String receiverId = jsonObjectProposal.get("receiverId") != null
-//					? jsonObjectProposal.get("receiverId").asText()
-//					: "-1";
-//			String statusId = jsonObjectProposal.get("statusId") != null ? jsonObjectProposal.get("statusId").asText()
-//					: "-1";
-//
-//			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
-//			Proposal proposal = new Proposal();
-//			proposal.setCreateDate(createDate);
-//			proposal.setModifyDate(createDate);
-//			proposal.setValidFlag(true);
-//			proposal.setCurrentStep("1");
-//			proposal.setModifyBy("-1");
-//
-//			ProposalType proposalType = proposalTypeRepositoryImpl.findById(proposalTypeId);
-//			proposal.setProposalType(proposalType);
-//
-//			Employee creator = employeeRepositoryImpl.findById(Integer.valueOf(creatorId));
-//			proposal.setCreator(creator);
-//
-//			Employee receiver = employeeRepositoryImpl.findById(Integer.valueOf(receiverId));
-//			proposal.setReceiver(receiver);
-//
-//			Status status = statusRepositotyImpl.findById(Integer.valueOf(statusId));
-//			proposal.setStatus(status);
-//			proposalDetails = new ArrayList<ProposalDetail>();
-//			for (JsonNode jsonObject : jsonObjectProposalDetails) {
-//				ProposalDetail proposalDetail = new ProposalDetail();
-//				String fieldId = jsonObject.get("fieldId") != null ? jsonObject.get("fieldId").asText() : "-1";
-//				String fieldName = jsonObject.get("fieldName") != null ? jsonObject.get("fieldName").asText() : "-1";
-//				String content = jsonObject.get("content") != null ? jsonObject.get("content").asText() : "-1";
-//				proposalDetail.setFieldId(fieldId);
-//				proposalDetail.setFieldName(fieldName);
-//				proposalDetail.setContent(content);
-//				proposalDetails.add(proposalDetail);
-//			}
-//			proposalModel = proposalRepositoryImpl.add(proposal, proposalDetails);
-//
-//			if (null != proposalModel) {
-//				return ResponseEntity.status(HttpStatus.OK)
-//						.body(new ResponseObject("OK", "Query produce successfully: ", proposalModel));
-//			} else {
-//				return ResponseEntity.status(HttpStatus.OK)
-//						.body(new ResponseObject("ERROR", message.getMessageByItemCode("DEPE3"), proposalModel));
-//			}
-//		} catch (Exception e) {
-//			LOGGER.error(e.getMessage());
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body(new ResponseObject("ERROR", e.getMessage(), ""));
-//		}
-//	}
+	public ResponseEntity<Object> add(String json) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		ProposalModel proposalModel = null;
+		List<ProposalDetail> proposalDetails = null;
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObjectProposal;
+			JsonNode jsonObjectProposalDetails;
+			jsonObjectProposal = jsonMapper.readTree(json);
+			jsonObjectProposalDetails = jsonObjectProposal.get("proposalDetails");
+			String proposalTypeId = jsonObjectProposal.get("proposalTypeId") != null
+					? jsonObjectProposal.get("proposalTypeId").asText()
+					: "-1";
+			Integer creatorId = userDetail.getId();
+			Integer statusId = 1;
+			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
+			Proposal proposal = new Proposal();
+			proposal.setCreateDate(createDate);
+			proposal.setModifyDate(createDate);
+			proposal.setCurrentStep(1);
+			proposal.setModifyBy(userDetail.getId());
+
+			ProposalType proposalType = proposalTypeRepositoryImpl.findById(proposalTypeId);
+			proposal.setProposalType(proposalType);
+
+			Employee creator = employeeRepositoryImpl.findById(creatorId);
+			proposal.setCreator(creator);
+
+			Status status = statusRepositotyImpl.findByIndexAndType(statusId,"proposal");
+			proposal.setStatus(status);
+			proposalDetails = new ArrayList<ProposalDetail>();
+			for (JsonNode jsonObject : jsonObjectProposalDetails) {
+				ProposalDetail proposalDetail = new ProposalDetail();
+				String fieldId = jsonObject.get("fieldId") != null ? jsonObject.get("fieldId").asText() : "-1";
+				String fieldName = jsonObject.get("fieldName") != null ? jsonObject.get("fieldName").asText() : "-1";
+				String content = jsonObject.get("content") != null ? jsonObject.get("content").asText() : "-1";
+				proposalDetail.setFieldId(fieldId);
+				proposalDetail.setFieldName(fieldName);
+				proposalDetail.setContent(content);
+				proposalDetails.add(proposalDetail);
+			}
+			proposalModel = proposalRepositoryImpl.add(proposal, proposalDetails);
+
+			if (null != proposalModel) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "Thêm đề xuất thành công", proposalModel));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR", "Thêm đề xuất thất bại", proposalModel));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+		}
+	}
+	public ResponseEntity<Object> edit(String json) {
+		ProposalModel proposalModel = null;
+		List<ProposalDetail> proposalDetails = null;
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObjectProposal;
+			JsonNode jsonObjectProposalDetails;
+			jsonObjectProposal = jsonMapper.readTree(json);
+			jsonObjectProposalDetails = jsonObjectProposal.get("proposalDetails");
+			Integer proposalId = jsonObjectProposal.get("id") != null ? jsonObjectProposal.get("id").asInt():-1	;
+			
+			String modifydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
+			Proposal proposal = proposalRepositoryImpl.findById(proposalId);
+			proposal.setModifyDate(modifydate);
+			proposal.setModifyBy(userDetail.getId());
+			proposalDetails = new ArrayList<ProposalDetail>();
+			for (JsonNode jsonObject : jsonObjectProposalDetails) {
+				ProposalDetail proposalDetail = new ProposalDetail();
+				Integer id = jsonObject.get("id") != null ? jsonObject.get("id").asInt() : -1;
+				String fieldId = jsonObject.get("fieldId") != null ? jsonObject.get("fieldId").asText() : "-1";
+				String fieldName = jsonObject.get("fieldName") != null ? jsonObject.get("fieldName").asText() : "-1";
+				String content = jsonObject.get("content") != null ? jsonObject.get("content").asText() : "-1";
+				proposalDetail.setId(id);
+				proposalDetail.setFieldId(fieldId);
+				proposalDetail.setFieldName(fieldName);
+				proposalDetail.setContent(content);
+				proposalDetails.add(proposalDetail);
+			}
+			Integer editStatus = proposalRepositoryImpl.edit(proposal, proposalDetails);
+			
+			if (editStatus > 0 ) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR","Cập nhật đề xuất thất bại", ""));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+		}
+	}
+	public ResponseEntity<Object> accept(Integer proposalId) {
+		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
+		Integer totalStep = approvalStepRepository.countByProposalTypeId(proposalId);
+//		Status status = statusRepositotyImpl.findByIndexAndType(totalStep, null)
+		if(proposal!=null) {
+			Status curentStatus = proposal.getStatus();
+			// if next step still in total step, current step will be update to next step and keep status is pending
+			// else "currentStep" will always be total + 1 and change status to complete
+			if(curentStatus.getType().equals("proposal") && (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR","Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
+			}
+			Integer nextStep = proposal.getCurrentStep() + 1;
+			if(nextStep <= totalStep ) {
+				proposal.setCurrentStep(nextStep);
+			}else {
+				proposal.setCurrentStep(totalStep+1);
+				Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX, "proposal");
+				proposal.setStatus(newStatus);
+			}
+			if(proposalRepositoryImpl.edit(proposal, null)>0) {
+				// Response data for FE to show
+				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(proposalId);
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK","Cập nhật đề xuất thành công", ""));
+			}
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
+		
+	}
 }

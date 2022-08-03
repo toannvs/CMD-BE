@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,7 +69,7 @@ public class ProposalController {
 			@RequestParam(value = "order", required = false) String order,
 			@RequestParam(value = "page", required = false) String page){
 		LOGGER.info("Find all proposals");
-		
+		 
 		return proposalService.findAllApproveByMe(json,sort,order,page);
 		
 	}
@@ -91,13 +92,21 @@ public class ProposalController {
 		return proposalService.findById(Integer.valueOf(id));
 		
 	}
-//	@PreAuthorize("@customRoleService.canCreate('proposal',principal)")
-//	@PostMapping(value= "/add",produces = "application/json")
-//	@ResponseBody
-//	public ResponseEntity<Object> add(@RequestBody String json){
-//		LOGGER.info("Add proposal");
-//		return proposalService.add(json);
-//		
-//	}
+	@PreAuthorize("@customRoleService.canCreate('proposal',principal)")
+	@PostMapping(value= "/add",produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> add(@RequestBody String json){
+		LOGGER.info("Add proposal");
+		return proposalService.add(json);
+		
+	}
+	@PreAuthorize("@customRoleService.canUpdate('proposal',principal)")
+	@PutMapping(value= "/edit",produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> edit(@RequestBody String json){
+		LOGGER.info("Edit proposal");
+		return proposalService.edit(json);
+		
+	}
 	
 }
