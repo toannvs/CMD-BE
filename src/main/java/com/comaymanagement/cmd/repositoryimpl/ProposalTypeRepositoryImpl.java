@@ -112,6 +112,7 @@ public class ProposalTypeRepositoryImpl implements IProposalTypeRepository{
 		ProposalTypeModel model = new ProposalTypeModel();
 		model.setId(proposalType.getId());
 		model.setName(proposalType.getName());
+		model.setCreateDate(proposalType.getCreateDate());
 		model.setActiveFlag(proposalType.isActiveFlag());
 		return model;
 	}
