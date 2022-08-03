@@ -458,7 +458,6 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			hql.append("FROM proposals AS pro ");
 			hql.append("INNER JOIN statuses AS stu ON pro.status.id = stu.id ");
 			hql.append("INNER JOIN employees AS emp ON pro.creator.id = emp.id ");
-			hql.append("INNER JOIN employees AS emp ON pro.receiver.id = emp.id ");
 			hql.append("INNER JOIN proposal_types AS prt ON pro.proposalType.id = prt.id ");
 			hql.append("INNER JOIN proposal_details AS prd ON pro.id = prd.proposalId.id ");
 			hql.append("WHERE pro.id = :id");
@@ -472,9 +471,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				proposal = (Proposal) obj[0];
 				Status status = (Status) obj[1];
 				Employee e = (Employee) obj[2];
-				Employee r = (Employee) obj[3];
-				ProposalType proposalType = (ProposalType) obj[4];
-				ProposalDetail proposalDetail = (ProposalDetail) obj[5];
+				ProposalType proposalType = (ProposalType) obj[3];
+				ProposalDetail proposalDetail = (ProposalDetail) obj[4];
 
 				if (0 == proposalModel.getId()) {
 					proposalModel.setId(proposal.getId());
