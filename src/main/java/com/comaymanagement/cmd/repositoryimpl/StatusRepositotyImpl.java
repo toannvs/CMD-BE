@@ -98,5 +98,21 @@ public class StatusRepositotyImpl implements IStatusRepositoty {
 		}
 		return statuses;
 	}
-
+	public Status findByIndexAndType(Integer index, String type) {
+		Status status = null;
+		StringBuilder hql = new StringBuilder("FROM statuses AS st ");
+		hql.append("WHERE st.index = :index ");
+		hql.append("AND st.type = :type ");
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("index", "index");
+			query.setParameter("type", "type");
+			LOGGER.info(hql.toString());
+			status = (Status) query.getSingleResult();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return status;
+	}
 }
