@@ -393,7 +393,6 @@ public class ProposalService {
 			jsonObjectProposal = jsonMapper.readTree(json);
 			jsonObjectProposalDetails = jsonObjectProposal.get("proposalDetails");
 			Integer proposalId = jsonObjectProposal.get("id") != null ? jsonObjectProposal.get("id").asInt():-1	;
-			
 			String modifydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			Proposal proposal = proposalRepositoryImpl.findById(proposalId);
 			proposal.setModifyDate(modifydate);
@@ -411,6 +410,7 @@ public class ProposalService {
 				proposalDetail.setContent(content);
 				proposalDetails.add(proposalDetail);
 			}
+			
 			Integer editStatus = proposalRepositoryImpl.edit(proposal, proposalDetails);
 			
 			if (editStatus > 0 ) {
@@ -428,9 +428,9 @@ public class ProposalService {
 	}
 	public ResponseEntity<Object> accept(Integer proposalId) {
 		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
-		Integer totalStep = approvalStepRepository.countByProposalTypeId(proposalId);
 //		Status status = statusRepositotyImpl.findByIndexAndType(totalStep, null)
 		if(proposal!=null) {
+			Integer totalStep = approvalStepRepository.countByProposalTypeId(proposal.getProposalType().getId());
 			Status curentStatus = proposal.getStatus();
 			// if next step still in total step, current step will be update to next step and keep status is pending
 			// else "currentStep" will always be total + 1 and change status to complete
@@ -456,5 +456,75 @@ public class ProposalService {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
 		
+	}
+	public ResponseEntity<Object> denied(String json) {
+		Integer id = -1;
+		String reason = "";
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObjectProposal;
+			jsonObjectProposal = jsonMapper.readTree(json);
+			id = jsonObjectProposal.get("id") !=null ? jsonObjectProposal.get("id").asInt() : -1;
+			reason = jsonObjectProposal.get("reason") != null ?  jsonObjectProposal.get("reasonl").asText() : "";
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.error(e.getMessage());
+		}
+		Proposal proposal = proposalRepositoryImpl.findById(id);
+		if(proposal!=null) {
+			Status curentStatus = proposal.getStatus();
+			// if next step still in total step, current step will be update to next step and keep status is pending
+			// else "currentStep" will always be total + 1 and change status to complete
+			if(curentStatus.getType().equals("proposal") && (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR","Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
+			}
+			Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX, "proposal");
+			proposal.setStatus(newStatus);
+			proposal.setReason(reason);
+			if(proposalRepositoryImpl.edit(proposal, null)>0) {
+				// Response data for FE to show
+				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK","Cập nhật đề xuất thành công", ""));
+			}
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
+	}
+	public ResponseEntity<Object> cancel(String json) {
+		Integer id = -1;
+		String reason = "";
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObjectProposal;
+			jsonObjectProposal = jsonMapper.readTree(json);
+			id = jsonObjectProposal.get("id") !=null ? jsonObjectProposal.get("id").asInt() : -1;
+			reason = jsonObjectProposal.get("reason") != null ?  jsonObjectProposal.get("reason").asText() : "";
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.error(e.getMessage());
+		}
+		Proposal proposal = proposalRepositoryImpl.findById(id);
+		if(proposal!=null) {
+			Status curentStatus = proposal.getStatus();
+			// if next step still in total step, current step will be update to next step and keep status is pending
+			// else "currentStep" will always be total + 1 and change status to complete
+			if(curentStatus.getType().equals("proposal") && (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR","Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
+			}
+			Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX, "proposal");
+			proposal.setStatus(newStatus);
+			proposal.setReason(reason);
+			if(proposalRepositoryImpl.edit(proposal, null)>0) {
+				// Response data for FE to show
+				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK","Cập nhật đề xuất thành công", ""));
+			}
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
 	}
 }

@@ -27,4 +27,5 @@ public class ProposalModel {
 	private String createdDate;
 	private Status status;
 	private Integer currentStep;
+	private String reason;
 }

@@ -539,6 +539,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			}
 			proposalModel.setCurrentStep(proposal.getCurrentStep());
 			proposalModel.setContents(contents);
+			proposalModel.setReason(proposal.getReason());
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
@@ -622,7 +623,6 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 	}
 	public Integer edit(Proposal proposal, List<ProposalDetail> proposalDetails) {
-		ProposalModel proposalModel = null;
 		Integer resultEditedProposal = -1;
 		Integer resultAddProposalDetail = -1;
 		Session session = sessionFactory.getCurrentSession();

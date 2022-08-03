@@ -176,14 +176,14 @@ public class TaskController {
 	}
 	
 	@PreAuthorize("@customRoleService.canUpdate('task',principal)")
-	@GetMapping(value = "/{id}/changeStatus")
+	@GetMapping(value = "/changeStatus/{id}")
 	@ResponseBody
 	public ResponseEntity<Object> changeStatus(@PathVariable String id) {
 		return taskService.changeStatus(id);
 	}
 	
 	@PreAuthorize("@customRoleService.canUpdate('task',principal)")
-	@GetMapping(value = "/{id}/reopen")
+	@GetMapping(value = "/reopen/{id}")
 	@ResponseBody
 	public ResponseEntity<Object> reopen(@PathVariable String id) {
 		return taskService.reopen(id);
