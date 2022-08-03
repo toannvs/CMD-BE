@@ -17,4 +17,5 @@ public class ProposalTypeModel {
 	private Integer id;
 	private String name;
 	private boolean activeFlag;
+	private String createDate;
 }

@@ -48,5 +48,7 @@ public class ProposalType {
 	@JoinColumn(name = "proposal_type_id")
 	@JsonBackReference
 	private List<ApprovalStep> approvalSteps;
-
+	
+	@Column(name="create_date")
+	private String createDate;
 }
