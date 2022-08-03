@@ -16,11 +16,13 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.entity.Department;
+import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.DepartmentModel;
@@ -28,6 +30,7 @@ import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.TaskHisModel;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repository.ITaskRepository;
+import com.comaymanagement.cmd.service.UserDetailsImpl;
 
 @Repository
 @Transactional(rollbackFor = Exception.class)
@@ -40,6 +43,9 @@ public class TaskRepositoryImpl implements ITaskRepository {
 
 	@Autowired
 	TaskHistoryRepositoryImpl taskHistoryRepositoryImpl;
+	
+	@Autowired
+	EmployeeRepositoryImpl employeeRepositoryImpl;
 	
 	@Override
 	public List<TaskModel> findByStatusId(String statusId, String sort, String order, Integer offset, Integer limit) {
@@ -544,7 +550,17 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				taskHis.setReceiver(task.getReceiver());
 				taskHis.setStatus(task.getStatus());
 				taskHis.setModifyDate(task.getCreateDate());
+				
+				
+				UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+						.getPrincipal();
+				Employee modifyBy = employeeRepositoryImpl.findById(userDetail.getId());
+				taskHis.setModifyBy(modifyBy);
 				Integer addTaskHisResult  = taskHistoryRepositoryImpl.add(taskHis);
+				
+
+				
+				
 				List<TaskHisModel> taskHisModels = null;
 				if(addTaskHisResult != CMDConstrant.FAILED) {
 					taskHisModels = new ArrayList<TaskHisModel>();
@@ -554,6 +570,21 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHistoryModel.setStatus(task.getStatus());
 					taskHistoryModel.setReceiver(receiverTemp);
 					taskHistoryModel.setModifyDate(task.getCreateDate());
+					
+					EmployeeModel editor = new EmployeeModel();
+					editor.setId(modifyBy.getId());
+					editor.setCode(modifyBy.getCode());
+					editor.setName(modifyBy.getName());
+					editor.setAvatar(modifyBy.getAvatar());
+					editor.setGender(modifyBy.getGender());
+					editor.setDateOfBirth(modifyBy.getDateOfBirth());
+					editor.setEmail(modifyBy.getEmail());
+					editor.setPhoneNumber(modifyBy.getPhoneNumber());
+					editor.setActive(modifyBy.isActive());
+					editor.setCreateDate(modifyBy.getCreateDate());
+					taskHistoryModel.setModifyBy(editor);
+					
+					
 					taskHisModels.add(taskHistoryModel);
 				}
 				
@@ -637,6 +668,8 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setActive(task.getReceiver().isActive());
 				receiverTemp.setCreateDate(task.getReceiver().getCreateDate());
 				customTask.setReceiver(receiverTemp);
+				
+
 
 				List<DepartmentModel> departmentModels = new ArrayList<DepartmentModel>();
 				for (Department department : departmentList) {
@@ -698,7 +731,19 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
 					taskHisModel.setReceiver(receiverHis);
 
-	
+					EmployeeModel editor = new EmployeeModel();
+					editor.setId(itemTaskHis.getModifyBy().getId());
+					editor.setCode(itemTaskHis.getModifyBy().getCode());
+					editor.setName(itemTaskHis.getModifyBy().getName());
+					editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+					editor.setGender(itemTaskHis.getModifyBy().getGender());
+					editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
+					editor.setEmail(itemTaskHis.getModifyBy().getEmail());
+					editor.setPhoneNumber(itemTaskHis.getModifyBy().getPhoneNumber());
+					editor.setActive(itemTaskHis.getModifyBy().isActive());
+					editor.setCreateDate(itemTaskHis.getModifyBy().getCreateDate());
+					taskHisModel.setModifyBy(editor);
+					
 					taskHisModel.setTaskId(itemTaskHis.getTaskId());
 
 					taskHisModels.add(taskHisModel);
@@ -795,6 +840,10 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			taskHis.setReceiver(task.getReceiver());
 			taskHis.setStatus(task.getStatus());
 			taskHis.setModifyDate(task.getModifyDate());
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			Employee modifyBy = employeeRepositoryImpl.findById(userDetail.getId());
+			taskHis.setModifyBy(modifyBy);
 			Integer addTaskHisResult  = taskHistoryRepositoryImpl.add(taskHis);
 			
 			
@@ -826,6 +875,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				taskHisModel.setModifyDate(itemTaskHis.getModifyDate());
 				taskHisModel.setStatus(itemTaskHis.getStatus());
 
+
 				EmployeeModel receiverHis = new EmployeeModel();
 				receiverHis.setId(itemTaskHis.getReceiver().getId());
 				receiverHis.setCode(itemTaskHis.getReceiver().getCode());
@@ -838,6 +888,19 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverHis.setActive(itemTaskHis.getReceiver().isActive());
 				receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
 				taskHisModel.setReceiver(receiverHis);
+
+				EmployeeModel editor = new EmployeeModel();
+				editor.setId(itemTaskHis.getModifyBy().getId());
+				editor.setCode(itemTaskHis.getModifyBy().getCode());
+				editor.setName(itemTaskHis.getModifyBy().getName());
+				editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+				editor.setGender(itemTaskHis.getModifyBy().getGender());
+				editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
+				editor.setEmail(itemTaskHis.getModifyBy().getEmail());
+				editor.setPhoneNumber(itemTaskHis.getModifyBy().getPhoneNumber());
+				editor.setActive(itemTaskHis.getModifyBy().isActive());
+				editor.setCreateDate(itemTaskHis.getModifyBy().getCreateDate());
+				taskHisModel.setModifyBy(editor);
 
 
 				taskHisModel.setTaskId(itemTaskHis.getTaskId());

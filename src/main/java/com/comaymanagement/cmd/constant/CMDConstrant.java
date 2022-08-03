@@ -9,4 +9,7 @@ public class CMDConstrant {
 	public static final Path path = Paths.get("D:\\CMD-proect\\Source\\CMD");
 	public static final Integer ROLELIMIT = 10;
 	public static final Integer FAILED = -1;
+	public static final Integer DONE_STATUS = 4;
+	public static final Integer CANCEL_STATUS = 5;
+	public static final Integer NEW_STATUS = 1;
 }
