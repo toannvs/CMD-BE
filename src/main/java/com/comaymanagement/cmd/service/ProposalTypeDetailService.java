@@ -1,6 +1,7 @@
 package com.comaymanagement.cmd.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -16,6 +17,7 @@ import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.ApprovalOption_View;
 import com.comaymanagement.cmd.entity.ApprovalStep;
 import com.comaymanagement.cmd.entity.ApprovalStepDetail;
+import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ProposalTypeDetail;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.model.ApprovalStepModel;
@@ -24,12 +26,16 @@ import com.comaymanagement.cmd.repositoryimpl.ApprovalOption_ViewRepository;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepDetailRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeDetailRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.ProposalTypeRepositoryImpl;
 
 @Service
 public class ProposalTypeDetailService {
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	Message message;
+	
+	@Autowired
+	ProposalTypeRepositoryImpl proposalTypeRepository;
 	
 	@Autowired
 	ProposalTypeDetailRepositoryImpl proposalTypeDetailReposiotory;
@@ -76,8 +82,13 @@ public class ProposalTypeDetailService {
 				tmp.clear();
 				approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
 			}
+			ProposalType proposalType = proposalTypeRepository.findById(id.toString());
 			
-			Map<String, Object> result = new TreeMap<>();
+			Map<String, Object> result = new LinkedHashMap<>();
+			result.put("id", proposalType.getId());
+			result.put("name", proposalType.getName());
+			result.put("activeFlag", proposalType.isActiveFlag());
+			result.put("createDate", proposalType.getCreateDate());
 			result.put("fields", proposalTypeDetailModels);
 			result.put("steps", approvalStepModels);
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "",result ));
