@@ -241,7 +241,7 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("EMPE8"), ""));
 			}
-			Status status = statusRepositotyImpl.findById(statusId);
+			Status status = statusRepositotyImpl.findByIndexAndType(CMDConstrant.NEW_STATUS,"task");
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
@@ -404,7 +404,7 @@ public class TaskService {
 			task.setRate(rate);
 			task.setPriority(priority);
 			task.setStartDate(startDate);
-			taskModel = taskRepository.edit(task);
+			taskModel = taskRepository.edit(task,CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
 			if (null != taskModel) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode(messageCode), taskModel));
@@ -668,13 +668,13 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
 			}
-			Status status = statusRepositotyImpl.findById(task.getStatus().getId()+1);
+			Status status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex()+1,"task");
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
 			}
 			task.setStatus(status);
-			taskModel = taskRepository.edit(task);
+			taskModel = taskRepository.edit(task,!CMDConstrant.UPDATE_TASK,CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
 			
 			if (null != taskModel) {
 				return ResponseEntity.status(HttpStatus.OK)
@@ -691,10 +691,23 @@ public class TaskService {
 		}
 	}
 	
-	public ResponseEntity<Object> reopen(String id) {
+	public ResponseEntity<Object> reopen(String json) {
+		JsonMapper jsonMapper = new JsonMapper();
+		JsonNode jsonObject;
+		TaskModel taskModel = null;
 		try {
-			TaskModel taskModel = null;
+			jsonObject = jsonMapper.readTree(json);
+			Integer id = jsonObject.get("id") != null ? jsonObject.get("id").asInt() : -1;
+			if(id == CMDConstrant.FAILED) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE6"), ""));
+			}
+			
+			String reason = jsonObject.get("reason") != null ? jsonObject.get("reason").asText() : "";
+
+			
 			Task task = taskRepository.findByIdToEdit(Integer.valueOf(id));
+			
 			if(task.getStatus().getId() == CMDConstrant.DONE_STATUS || task.getStatus().getId() == CMDConstrant.CANCEL_STATUS) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
@@ -705,7 +718,7 @@ public class TaskService {
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
 			}
 			task.setStatus(status);
-			taskModel = taskRepository.edit(task);
+			taskModel = taskRepository.edit(task,!CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,CMDConstrant.REOPEN_TASK,reason);
 			
 			if (null != taskModel) {
 				return ResponseEntity.status(HttpStatus.OK)

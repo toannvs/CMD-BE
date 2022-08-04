@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.constant.CMDConstrant;
+import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Task;
@@ -28,6 +29,7 @@ import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.TaskHisModel;
+import com.comaymanagement.cmd.model.TaskHisModelTemp;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repository.ITaskRepository;
 import com.comaymanagement.cmd.service.UserDetailsImpl;
@@ -46,6 +48,9 @@ public class TaskRepositoryImpl implements ITaskRepository {
 	
 	@Autowired
 	EmployeeRepositoryImpl employeeRepositoryImpl;
+	
+	@Autowired
+	Message message;
 	
 	@Override
 	public List<TaskModel> findByStatusId(String statusId, String sort, String order, Integer offset, Integer limit) {
@@ -534,23 +539,13 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				customTask.setFinishDate(task.getFinishDate());
 				customTask.setStartDate(task.getStartDate());
 				customTask.setModifyDate(task.getModifyDate());
-
-//				List<TaskHis> taskHis = new ArrayList<TaskHis>();
-//				TaskHis taskHistory = new TaskHis();
-//				taskHistory.setTask(task);
-//				taskHistory.setStatus(task.getStatus());
-//				taskHistory.setReceiver(task.getReceiver());
-//				taskHistory.setModifyDate(task.getCreateDate());
-//				taskHis.add(taskHistory);
-//				task.setTaskHis(taskHis);
-//				session.update(task);
 				
 				TaskHis taskHis = new TaskHis();
 				taskHis.setTaskId(customTask.getId());
 				taskHis.setReceiver(task.getReceiver());
 				taskHis.setStatus(task.getStatus());
 				taskHis.setModifyDate(task.getCreateDate());
-				
+				taskHis.setMessage(message.getMessageByItemCode("TASKM1"));
 				
 				UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 						.getPrincipal();
@@ -558,38 +553,16 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				taskHis.setModifyBy(modifyBy);
 				Integer addTaskHisResult  = taskHistoryRepositoryImpl.add(taskHis);
 				
-
-				
-				
 				List<TaskHisModel> taskHisModels = null;
 				if(addTaskHisResult != CMDConstrant.FAILED) {
 					taskHisModels = new ArrayList<TaskHisModel>();
 					TaskHisModel taskHistoryModel = new TaskHisModel();
-					taskHistoryModel.setId(addTaskHisResult);
-					taskHistoryModel.setTaskId(customTask.getId());
-					taskHistoryModel.setStatus(task.getStatus());
-					taskHistoryModel.setReceiver(receiverTemp);
+					taskHistoryModel.setMessage(taskHis.getMessage());
+					taskHistoryModel.setModifyBy(modifyBy.getName());
 					taskHistoryModel.setModifyDate(task.getCreateDate());
-					
-					EmployeeModel editor = new EmployeeModel();
-					editor.setId(modifyBy.getId());
-					editor.setCode(modifyBy.getCode());
-					editor.setName(modifyBy.getName());
-					editor.setAvatar(modifyBy.getAvatar());
-					editor.setGender(modifyBy.getGender());
-					editor.setDateOfBirth(modifyBy.getDateOfBirth());
-					editor.setEmail(modifyBy.getEmail());
-					editor.setPhoneNumber(modifyBy.getPhoneNumber());
-					editor.setActive(modifyBy.isActive());
-					editor.setCreateDate(modifyBy.getCreateDate());
-					taskHistoryModel.setModifyBy(editor);
-					
-					
 					taskHisModels.add(taskHistoryModel);
 				}
 				
-
-
 				customTask.setTaskHis(taskHisModels);
 				return customTask;
 			}
@@ -694,42 +667,30 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				Collections.sort(taskHis, new Comparator<TaskHis>() {
 					@Override
 					public int compare(TaskHis o1, TaskHis o2) {
-						return o1.getId().compareTo(o2.getId());
+						return o2.getId().compareTo(o1.getId());
 					}
 				});
-//				for (TaskHis itemHis : taskHis) {
-//					for (Department itemDepartment : itemHis.getTask().getCreator().getDepartments()) {
-//						itemDepartment.getPositions().size();
-//						for (Position itemPosition : itemDepartment.getPositions()) {
-//							itemPosition.getEmployees().size();
-//							for (Employee em : itemPosition.getEmployees()) {
-//								em.getDepartments().size();
-//							}
-//						}
-//					}
-//					itemHis.getTask().getCreator().getProposalPermissions().size();
-//					itemHis.getTask().getCreator().getTaskListCreated().size();
-//				}
 
-				List<TaskHisModel> taskHisModels = new ArrayList<TaskHisModel>();
+				List<TaskHisModelTemp> taskHisModelTemps = new ArrayList<TaskHisModelTemp>();
 				for (TaskHis itemTaskHis : taskHis) {
-					TaskHisModel taskHisModel = new TaskHisModel();
+					TaskHisModelTemp taskHisModel = new TaskHisModelTemp();
 					taskHisModel.setId(itemTaskHis.getId());
 					taskHisModel.setModifyDate(itemTaskHis.getModifyDate());
 					taskHisModel.setStatus(itemTaskHis.getStatus());
-
-					EmployeeModel receiverHis = new EmployeeModel();
-					receiverHis.setId(itemTaskHis.getReceiver().getId());
-					receiverHis.setCode(itemTaskHis.getReceiver().getCode());
-					receiverHis.setName(itemTaskHis.getReceiver().getName());
-					receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
-					receiverHis.setGender(itemTaskHis.getReceiver().getGender());
-					receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
-					receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
-					receiverHis.setPhoneNumber(itemTaskHis.getReceiver().getPhoneNumber());
-					receiverHis.setActive(itemTaskHis.getReceiver().isActive());
-					receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
-					taskHisModel.setReceiver(receiverHis);
+					taskHisModel.setMessage(itemTaskHis.getMessage());
+					
+//					EmployeeModel receiverHis = new EmployeeModel();
+//					receiverHis.setId(itemTaskHis.getReceiver().getId());
+//					receiverHis.setCode(itemTaskHis.getReceiver().getCode());
+//					receiverHis.setName(itemTaskHis.getReceiver().getName());
+//					receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
+//					receiverHis.setGender(itemTaskHis.getReceiver().getGender());
+//					receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
+//					receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
+//					receiverHis.setPhoneNumber(itemTaskHis.getReceiver().getPhoneNumber());
+//					receiverHis.setActive(itemTaskHis.getReceiver().isActive());
+//					receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
+//					taskHisModel.setReceiver(receiverHis);
 
 					EmployeeModel editor = new EmployeeModel();
 					editor.setId(itemTaskHis.getModifyBy().getId());
@@ -746,7 +707,18 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					
 					taskHisModel.setTaskId(itemTaskHis.getTaskId());
 
-					taskHisModels.add(taskHisModel);
+					taskHisModelTemps.add(taskHisModel);
+				}
+
+				List<TaskHisModel> taskHisModels = null;
+				taskHisModels = new ArrayList<TaskHisModel>();
+				for (TaskHisModelTemp itemHisModelTemp : taskHisModelTemps) {
+					TaskHisModel taskHistoryModel = new TaskHisModel();
+					taskHistoryModel.setMessage(itemHisModelTemp.getMessage());
+					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
+					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
+
+					taskHisModels.add(taskHistoryModel);
 				}
 
 				customTask.setTaskHis(taskHisModels);
@@ -781,7 +753,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 
 	// edit
 	@Override
-	public TaskModel edit(Task task) throws Exception {
+	public TaskModel edit(Task task,boolean updateTask, boolean changeStatus, boolean reopen,String reason) throws Exception {
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			session.update(task);
@@ -844,50 +816,48 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					.getPrincipal();
 			Employee modifyBy = employeeRepositoryImpl.findById(userDetail.getId());
 			taskHis.setModifyBy(modifyBy);
+			if(updateTask) {
+				taskHis.setMessage(message.getMessageByItemCode("TASKM5"));
+			}else if (changeStatus) {
+				if(customTask.getStatus().getIndex() == CMDConstrant.INPROGESS_STATUS) {
+					taskHis.setMessage(message.getMessageByItemCode("TASKM2"));
+				}else if (customTask.getStatus().getIndex() == CMDConstrant.REVIEW_STATUS) {
+					taskHis.setMessage(message.getMessageByItemCode("TASKM6"));
+				}else {
+					taskHis.setMessage(message.getMessageByItemCode("TASKM4"));
+				}
+			}else {
+				taskHis.setMessage(message.getMessageByItemCode("TASKM3") + CMDConstrant.SPACE + reason);
+			}
 			Integer addTaskHisResult  = taskHistoryRepositoryImpl.add(taskHis);
-			
-			
 			List<TaskHis> taskHistories = taskHistoryRepositoryImpl.findById(customTask.getId());
 			Collections.sort(taskHistories, new Comparator<TaskHis>() {
 				@Override
 				public int compare(TaskHis o1, TaskHis o2) {
-					return o1.getId().compareTo(o2.getId());
+					return o2.getId().compareTo(o1.getId());
 				}
 			});
-//			for (TaskHis itemHis : taskHis) {
-//				for (Department itemDepartment : itemHis.getTask().getCreator().getDepartments()) {
-//					itemDepartment.getPositions().size();
-//					for (Position itemPosition : itemDepartment.getPositions()) {
-//						itemPosition.getEmployees().size();
-//						for (Employee em : itemPosition.getEmployees()) {
-//							em.getDepartments().size();
-//						}
-//					}
-//				}
-//				itemHis.getTask().getCreator().getProposalPermissions().size();
-//				itemHis.getTask().getCreator().getTaskListCreated().size();
-//			}
 
-			List<TaskHisModel> taskHisModels = new ArrayList<TaskHisModel>();
+			List<TaskHisModelTemp> taskHisModelTemps = new ArrayList<TaskHisModelTemp>();
 			for (TaskHis itemTaskHis : taskHistories) {
-				TaskHisModel taskHisModel = new TaskHisModel();
+				TaskHisModelTemp taskHisModel = new TaskHisModelTemp();
 				taskHisModel.setId(itemTaskHis.getId());
 				taskHisModel.setModifyDate(itemTaskHis.getModifyDate());
 				taskHisModel.setStatus(itemTaskHis.getStatus());
+				taskHisModel.setMessage(itemTaskHis.getMessage());
 
-
-				EmployeeModel receiverHis = new EmployeeModel();
-				receiverHis.setId(itemTaskHis.getReceiver().getId());
-				receiverHis.setCode(itemTaskHis.getReceiver().getCode());
-				receiverHis.setName(itemTaskHis.getReceiver().getName());
-				receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
-				receiverHis.setGender(itemTaskHis.getReceiver().getGender());
-				receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
-				receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
-				receiverHis.setPhoneNumber(itemTaskHis.getReceiver().getPhoneNumber());
-				receiverHis.setActive(itemTaskHis.getReceiver().isActive());
-				receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
-				taskHisModel.setReceiver(receiverHis);
+//				EmployeeModel receiverHis = new EmployeeModel();
+//				receiverHis.setId(itemTaskHis.getReceiver().getId());
+//				receiverHis.setCode(itemTaskHis.getReceiver().getCode());
+//				receiverHis.setName(itemTaskHis.getReceiver().getName());
+//				receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
+//				receiverHis.setGender(itemTaskHis.getReceiver().getGender());
+//				receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
+//				receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
+//				receiverHis.setPhoneNumber(itemTaskHis.getReceiver().getPhoneNumber());
+//				receiverHis.setActive(itemTaskHis.getReceiver().isActive());
+//				receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
+//				taskHisModel.setReceiver(receiverHis);
 
 				EmployeeModel editor = new EmployeeModel();
 				editor.setId(itemTaskHis.getModifyBy().getId());
@@ -905,10 +875,23 @@ public class TaskRepositoryImpl implements ITaskRepository {
 
 				taskHisModel.setTaskId(itemTaskHis.getTaskId());
 
-				taskHisModels.add(taskHisModel);
+				taskHisModelTemps.add(taskHisModel);
 			}
 			
 			
+			List<TaskHisModel> taskHisModels = null;
+			if(addTaskHisResult != CMDConstrant.FAILED) {
+				taskHisModels = new ArrayList<TaskHisModel>();
+				for(TaskHisModelTemp itemHisModelTemp : taskHisModelTemps) {
+					TaskHisModel taskHistoryModel = new TaskHisModel();
+					taskHistoryModel.setMessage(itemHisModelTemp.getMessage());
+					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
+					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
+					
+					taskHisModels.add(taskHistoryModel);
+				}
+
+			}
 			
 			customTask.setTaskHis(taskHisModels);
 			return customTask;

@@ -34,7 +34,7 @@ public interface ITaskRepository {
 	TaskModel findById(Integer id);
 	Task findByIdToEdit(Integer id);
 	String deleteTaskById(Integer id);
-	TaskModel edit(Task task) throws Exception;
+	TaskModel edit(Task task,boolean updateTask, boolean changeStatus, boolean reopen,String reason) throws Exception;
 	List<TaskModel> filter(
 			@Param("createFrom") String createFrom,
 			@Param("createTo") String createTo,
