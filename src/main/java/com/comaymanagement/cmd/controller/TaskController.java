@@ -183,10 +183,10 @@ public class TaskController {
 	}
 	
 	@PreAuthorize("@customRoleService.canUpdate('task',principal)")
-	@GetMapping(value = "/reopen/{id}")
+	@PostMapping(value = "/reopen")
 	@ResponseBody
-	public ResponseEntity<Object> reopen(@PathVariable String id) {
-		return taskService.reopen(id);
+	public ResponseEntity<Object> reopen(@RequestBody String json) {
+		return taskService.reopen(json);
 	}
 }
 
