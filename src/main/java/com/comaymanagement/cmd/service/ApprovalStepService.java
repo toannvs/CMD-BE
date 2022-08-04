@@ -248,10 +248,11 @@ public class ApprovalStepService {
 			if (approvalStepRepository.edit(approvalStepEdit) > 0) {
 				// delete all approval step detail old
 				List<ApprovalStepDetail> approvalStepDetailOlds = approvalStepDetailRepository.findAllByApprovalStepId(stepId);
-				for(ApprovalStepDetail appStepDetail : approvalStepDetailOlds) {
-					approvalStepDetailRepository.delete(appStepDetail.getId());
+				if(approvalStepDetailOlds!=null && approvalStepDetailOlds.size()>0) {
+					for(ApprovalStepDetail appStepDetail : approvalStepDetailOlds) {
+						approvalStepDetailRepository.delete(appStepDetail.getId());
+					}
 				}
-					
 				empIds = new ArrayList<>();
 				depIds = new ArrayList<>();
 				posIds = new ArrayList<>();
@@ -303,6 +304,7 @@ public class ApprovalStepService {
 						.body(new ResponseObject("ERROR", "Thêm bước duyệt thất bại", ""));
 			}
 
+			// Response data
 			approvalOptionViews = new ArrayList<>();
 			for (ApprovalStepDetail appStepDetail : approvalStepDetails) {
 				// have list of all emp or dep or position in all step of proposal

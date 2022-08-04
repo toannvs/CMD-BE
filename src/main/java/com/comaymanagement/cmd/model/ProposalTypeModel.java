@@ -1,5 +1,8 @@
 package com.comaymanagement.cmd.model;
 
+import java.util.List;
+
+import com.comaymanagement.cmd.entity.ApprovalOption_View;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -18,4 +21,5 @@ public class ProposalTypeModel {
 	private String name;
 	private boolean activeFlag;
 	private String createDate;
+	List<ApprovalOption_View>  proposalConfigTargets;
 }
