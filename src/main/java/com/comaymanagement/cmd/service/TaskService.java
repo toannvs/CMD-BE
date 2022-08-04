@@ -668,7 +668,7 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
 			}
-			Status status = statusRepositotyImpl.findById(task.getStatus().getId()+1);
+			Status status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex()+1,"task");
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
