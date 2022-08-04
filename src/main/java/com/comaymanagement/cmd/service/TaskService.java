@@ -241,7 +241,7 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("EMPE8"), ""));
 			}
-			Status status = statusRepositotyImpl.findById(statusId);
+			Status status = statusRepositotyImpl.findByIndexAndType(CMDConstrant.NEW_STATUS,"task");
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
