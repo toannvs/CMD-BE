@@ -67,10 +67,12 @@ public class ProposalTypeService {
 			positionIds.add(p.getId());
 		}
 		List<ProposalType> proposalTypes = proposalTypeRepository.findProposalPermission(employeeId, positionIds, departmentIds);
+		List<ProposalType> proposalTypeEnableAll = proposalTypeRepository.findProposalEnableAll();
 		if(proposalTypes==null) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","Có lỗi xảy ra trong quá trình tìm kiếm","" ));
 		}
 		if(proposalTypes!=null && proposalTypes.size()>0) {
+			proposalTypes.addAll(proposalTypeEnableAll);
 			List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 			for(ProposalType proType : proposalTypes) {
 				proposalTypeModels.add(proposalTypeRepository.toModel(proType));

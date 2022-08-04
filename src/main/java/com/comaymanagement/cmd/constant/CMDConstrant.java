@@ -16,4 +16,4 @@ public class CMDConstrant {
 	public static final Integer PROPOSAL_COMPLETE_STATUS_INDEX = 2;
 	public static final Integer PROPOSAL_DENIED_STATUS_INDEX = 3;
 	public static final Integer PROPOSAL_CANCELLED_STATUS_INDEX = 4;
-}
+}	
