@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,4 +31,10 @@ public class ProposalTypeController {
 	public ResponseEntity<Object> findAllWithPermission() {
 		return proposalTypeService.findAllWithPermission();
 	}
+	@PreAuthorize("@customRoleService.canView('proposal', principal) or @customRoleService.canViewAll('proposals', principal)")
+	@PutMapping("/edit")
+	public ResponseEntity<Object> updateAndGantPermission(@RequestBody String json) {
+		return proposalTypeService.updateAndGantPermission(json);
+	}
+	
 }

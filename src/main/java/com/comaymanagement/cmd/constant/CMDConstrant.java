@@ -23,3 +23,4 @@ public class CMDConstrant {
 	public static final boolean REOPEN_TASK = true;
 	public static final String SPACE = " ";
 }
+

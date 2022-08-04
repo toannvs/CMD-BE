@@ -81,6 +81,7 @@ public class ProposalTypeRepositoryImpl implements IProposalTypeRepository{
 		if (departments != null && departments.size() > 0) {
 			hql.append("or proPer.departmentId IN (:departments) ");
 		}
+		hql.append("order by proType.id asc ");
 		LOGGER.info(hql.toString());
 		try {
 			Session session = sessionFactory.getCurrentSession();
@@ -107,7 +108,29 @@ public class ProposalTypeRepositoryImpl implements IProposalTypeRepository{
 		return proposalTypes;
 	}
 	
-	
+	// if not select anyone for permission create
+	public List<ProposalType> findProposalEnableAll(){
+		List<ProposalType> proposalTypes = new ArrayList<>();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from proposal_types proType ");
+		hql.append("where proType.id not in ");
+		hql.append("(select proPer.proposalType.id from proposals_permissions as proPer) ");
+		hql.append("order by proType.id asc");
+		LOGGER.info(hql.toString());
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				ProposalType proposalType = (ProposalType) it.next();
+				proposalTypes.add(proposalType);
+			}
+			return proposalTypes;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+		
+	}
 	public ProposalTypeModel toModel (ProposalType proposalType) {
 		ProposalTypeModel model = new ProposalTypeModel();
 		model.setId(proposalType.getId());
