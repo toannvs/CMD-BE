@@ -30,10 +30,6 @@ public class TaskHis {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-//	@OneToOne(cascade = CascadeType.ALL)
-//	@JsonIgnore
-//	@JoinColumn(name = "task_id")\
-	
 	@Column(name = "task_id")
 	private Integer taskId;
 	
@@ -51,5 +47,8 @@ public class TaskHis {
 	@OneToOne
 	@JoinColumn(name= "modify_by")
 	private Employee modifyBy;
+	
+	@Column(name= "message")
+	private String message;
 	
 }
