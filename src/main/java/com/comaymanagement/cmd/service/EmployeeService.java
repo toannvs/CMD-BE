@@ -39,11 +39,13 @@ import com.comaymanagement.cmd.entity.Role;
 import com.comaymanagement.cmd.entity.Team;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.EmployeeModel;
+import com.comaymanagement.cmd.model.NotifyModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.model.TeamModel;
 import com.comaymanagement.cmd.model.UserModel;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TeamRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -73,6 +75,9 @@ public class EmployeeService {
 	
 	@Autowired
 	PasswordEncoder encoder;
+	
+	@Autowired
+	NotifyRepositoryImpl notifyRepositoryImpl;
 
 	static int countFile = 0;
 	public ResponseEntity<Object> findAllWithParamAndNotLimit(String page, 
@@ -789,6 +794,106 @@ public class EmployeeService {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", result));
+		}
+	}
+	public ResponseEntity<Object> findAllNotifies(String page, 
+			String sort, String order, String keySearch) {
+		List<NotifyModel> notifyModels = null;
+		try {
+			page = page == null ? "1" : page.trim();
+			// Order by defaut
+			if (sort == null || sort == "") {
+				sort = "id";
+			}
+			if (order == null || order == "") {
+				order = "desc";
+			}
+			Integer limit = CMDConstrant.LIMIT;
+			int offset = (Integer.valueOf(page) - 1) * limit;
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			
+			notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), keySearch, offset, limit, sort, order);
+			if (notifyModels.size() > 0) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", notifyModels));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", notifyModels));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in edit()", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
+		}
+
+	}
+	public ResponseEntity<Object> allReadNotifies() {
+		try {
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			Boolean result = notifyRepositoryImpl.allRead(userDetail.getId(),null);
+			if (result) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), ""));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in edit()", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
+		}
+	}
+	
+	public ResponseEntity<Object> deleteNotifies(String json) {
+		JsonMapper jsonMapper = new JsonMapper();
+		JsonNode jsonNode = null;
+		try {
+			List<Integer> notifyIds = new ArrayList<Integer>();
+			jsonNode = jsonMapper.readTree(json);
+			if(null == jsonNode.get("notifyIds") ) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+			}
+			JsonNode jsonStatusObject = jsonNode.get("notifyIds");
+
+			for (JsonNode statusId : jsonStatusObject) {
+				notifyIds.add(Integer.valueOf(statusId.toString()));
+			}
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			Boolean result = notifyRepositoryImpl.delete(notifyIds);
+			if (result) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), ""));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in edit()", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
+		}
+	}
+	
+	public ResponseEntity<Object> markIsReadNotifies(String json) {
+		JsonMapper jsonMapper = new JsonMapper();
+		JsonNode jsonNode = null;
+		try {
+			List<Integer> notifyIds = new ArrayList<Integer>();
+			jsonNode = jsonMapper.readTree(json);
+			if(null == jsonNode.get("notifyIds") ) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+			}
+			JsonNode jsonStatusObject = jsonNode.get("notifyIds");
+
+			for (JsonNode statusId : jsonStatusObject) {
+				notifyIds.add(Integer.valueOf(statusId.toString()));
+			}
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			Boolean result = notifyRepositoryImpl.allRead(userDetail.getId(),notifyIds);
+			if (result) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), ""));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in edit()", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
 		}
 	}
 }

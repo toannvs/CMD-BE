@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Employee;
+import com.comaymanagement.cmd.entity.Notify;
 import com.comaymanagement.cmd.entity.Pagination;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Status;
@@ -26,6 +27,7 @@ import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.StatusRepositotyImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskHistoryRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskRepositoryImpl;
@@ -49,6 +51,9 @@ public class TaskService {
 	
 	@Autowired
 	TaskHistoryRepositoryImpl taskHistoryRepositoryImpl;
+	
+	@Autowired
+	NotifyRepositoryImpl notifyRepositoryImpl;
 
 	@Autowired
 	Message message;
@@ -260,6 +265,12 @@ public class TaskService {
 
 			TaskModel taskModel = taskRepository.add(task);
 			if (null != taskModel) {
+				Notify notify = new Notify();
+				notify.setIsRead(false);
+				notify.setReceiver(receiver);
+				notify.setTitle(message.getMessageByItemCode("TASKN2"));
+				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
+				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode("TASKS1"), taskModel));
 			} else {
@@ -344,6 +355,7 @@ public class TaskService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectTask;
 		String messageCode = "";
+		Notify notify =  null;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
 			Integer id = jsonObjectTask.get("id").asInt();
@@ -392,6 +404,13 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("Error", message.getMessageByItemCode("TASKE3"), taskModel));
 			}
+			if(task.getReceiver().getId() != receiverId) {
+				notify = new Notify();
+				notify.setReceiver(receiver);
+				notify.setIsRead(false);
+				notify.setTitle(message.getMessageByItemCode("TASKN2"));
+				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
+			}
 			task.setId(id);
 			task.setCreator(creator);
 			task.setReceiver(receiver);
@@ -406,6 +425,7 @@ public class TaskService {
 			task.setStartDate(startDate);
 			taskModel = taskRepository.edit(task,CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
 			if (null != taskModel) {
+				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode(messageCode), taskModel));
 			} else {
@@ -668,15 +688,40 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
 			}
-			Status status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex()+1,"task");
+			Status status = null;
+			if(task.getCreator().getId() != task.getReceiver().getId()) {
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1,"task");
+			}else if(task.getCreator().getId() == task.getReceiver().getId() && task.getStatus().getIndex() == CMDConstrant.INPROGESS_STATUS) {
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 2,"task");
+			} else {
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1,"task");
+			}
+	
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
+			}
+			Notify notify = null;
+			if(status.getIndex()==CMDConstrant.REVIEW_STATUS) {
+				notify = new Notify();
+				notify.setIsRead(false);
+				notify.setReceiver(task.getCreator());
+				notify.setTitle(message.getMessageByItemCode("TASKN5"));
+				notify.setDescription(message.getMessageByItemCode("TASKN6")+ CMDConstrant.SPACE + task.getReceiver().getName());
+			}else if(status.getIndex()==CMDConstrant.DONE_STATUS) {
+				notify = new Notify();
+				notify.setIsRead(false);
+				notify.setReceiver(task.getCreator());
+				notify.setTitle(message.getMessageByItemCode("TASKN7"));
+				notify.setDescription(task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN8"));
 			}
 			task.setStatus(status);
 			taskModel = taskRepository.edit(task,!CMDConstrant.UPDATE_TASK,CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
 			
 			if (null != taskModel) {
+				if(notify != null) {
+					notifyRepositoryImpl.add(notify);
+				}
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode("TASKS5"), taskModel));
 			} else {
@@ -696,6 +741,8 @@ public class TaskService {
 		JsonNode jsonObject;
 		TaskModel taskModel = null;
 		try {
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
 			jsonObject = jsonMapper.readTree(json);
 			Integer id = jsonObject.get("id") != null ? jsonObject.get("id").asInt() : -1;
 			if(id == CMDConstrant.FAILED) {
@@ -704,7 +751,7 @@ public class TaskService {
 			}
 			
 			String reason = jsonObject.get("reason") != null ? jsonObject.get("reason").asText() : "";
-
+			
 			
 			Task task = taskRepository.findByIdToEdit(Integer.valueOf(id));
 			
@@ -721,6 +768,21 @@ public class TaskService {
 			taskModel = taskRepository.edit(task,!CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,CMDConstrant.REOPEN_TASK,reason);
 			
 			if (null != taskModel) {
+				Notify notify = new Notify();
+				if(userDetail.getId() == task.getCreator().getId()) {
+					notify.setIsRead(false);
+					notify.setReceiver(task.getReceiver());
+					notify.setTitle(message.getMessageByItemCode("TASKN4"));
+					notify.setDescription(task.getCreator().getName()+ CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
+				}else {
+					notify.setIsRead(false);
+					notify.setReceiver(task.getCreator());
+					notify.setTitle(message.getMessageByItemCode("TASKN4"));
+					notify.setDescription(task.getReceiver().getName()+ CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
+				}
+
+
+				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode("TASKS5"), taskModel));
 			} else {
