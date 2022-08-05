@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.comaymanagement.cmd.entity.ApprovalStep;
-import com.comaymanagement.cmd.entity.Proposal;
-import com.comaymanagement.cmd.entity.ProposalPermission;
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.model.ProposalTypeModel;
 import com.comaymanagement.cmd.repository.IProposalTypeRepository;

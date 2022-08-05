@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -31,8 +30,6 @@ import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.model.ProposalModel;
 import com.comaymanagement.cmd.repository.IProposalRepository;
-
-import net.bytebuddy.asm.Advice.This;
 
 @Repository
 @Transactional(rollbackFor = Exception.class)
