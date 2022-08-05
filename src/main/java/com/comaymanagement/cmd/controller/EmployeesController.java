@@ -128,4 +128,30 @@ public class EmployeesController {
 	public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
 		return employeeService.importEmployees(multipartFile);
 	}
+	
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+	@GetMapping(value = "/notifies", produces = "application/json")
+	public ResponseEntity<Object> findAllNotifies(
+			@RequestParam(value = "page", required = false) String page,
+			@RequestParam(value = "sort", required = false) String sort,
+			@RequestParam(value = "order", required = false) String order,
+			@RequestParam(value = "search", required = false) String keySearch) {
+		ResponseEntity<Object> result = employeeService.findAllNotifies(page, sort, order, keySearch);
+		return result;
+	}
+	
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+	@PostMapping(value = "/notifies/allRead", produces = "application/json")
+	public ResponseEntity<Object> allReadNotifies(@RequestBody String json) {
+		ResponseEntity<Object> result = employeeService.markIsReadNotifies(json);
+		return result;
+	}
+	
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+	@DeleteMapping(value = "/notifies", produces = "application/json")
+	public ResponseEntity<Object> deleteNotifies(@RequestBody String json) {
+		ResponseEntity<Object> result = employeeService.deleteNotifies(json);
+		return result;
+	}
+	
 }

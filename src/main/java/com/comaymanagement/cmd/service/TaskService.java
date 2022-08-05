@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Employee;
+import com.comaymanagement.cmd.entity.Notify;
 import com.comaymanagement.cmd.entity.Pagination;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Status;
@@ -26,6 +27,7 @@ import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.StatusRepositotyImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskHistoryRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskRepositoryImpl;
@@ -49,6 +51,9 @@ public class TaskService {
 	
 	@Autowired
 	TaskHistoryRepositoryImpl taskHistoryRepositoryImpl;
+	
+	@Autowired
+	NotifyRepositoryImpl notifyRepositoryImpl;
 
 	@Autowired
 	Message message;
@@ -260,6 +265,12 @@ public class TaskService {
 
 			TaskModel taskModel = taskRepository.add(task);
 			if (null != taskModel) {
+				Notify notify = new Notify();
+				notify.setIsRead(false);
+				notify.setReceiver(receiver);
+				notify.setTitle(message.getMessageByItemCode("TASKN2"));
+				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
+				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode("TASKS1"), taskModel));
 			} else {
@@ -344,6 +355,7 @@ public class TaskService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectTask;
 		String messageCode = "";
+		Notify notify =  null;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
 			Integer id = jsonObjectTask.get("id").asInt();
@@ -392,6 +404,13 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("Error", message.getMessageByItemCode("TASKE3"), taskModel));
 			}
+			if(task.getReceiver().getId() != receiverId) {
+				notify = new Notify();
+				notify.setReceiver(receiver);
+				notify.setIsRead(false);
+				notify.setTitle(message.getMessageByItemCode("TASKN2"));
+				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
+			}
 			task.setId(id);
 			task.setCreator(creator);
 			task.setReceiver(receiver);
@@ -406,6 +425,7 @@ public class TaskService {
 			task.setStartDate(startDate);
 			taskModel = taskRepository.edit(task,CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
 			if (null != taskModel) {
+				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode(messageCode), taskModel));
 			} else {
