@@ -153,7 +153,7 @@ public class RoleService {
 		JsonNode jsonObjectOption;
 		JsonNode jsonObjectPermission;
 		List<RoleDetail> roleDetails = new ArrayList<>();
-		Role role = new Role();
+		Role role = null;
 		try {
 			jsonObjectRole = jsonMapper.readTree(json);
 			jsonObjectOption = jsonObjectRole.get("options");
@@ -163,8 +163,7 @@ public class RoleService {
 			Integer modifyBy = userDetail.getId();
 			Integer createBy = modifyBy;
 			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
-			
-			role.setId(roleId);
+			role = roleRepository.findById(roleId);
 			role.setName(roleName);
 			Integer editSatatus = roleRepository.edit(role);
 			roleDetails = roleDetailRepository.findAllByRoleId(roleId);
