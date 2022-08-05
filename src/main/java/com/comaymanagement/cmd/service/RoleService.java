@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -145,6 +146,8 @@ public class RoleService {
 	
 	// edit
 	public ResponseEntity<Object> edit(String json){
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectRole;
 		JsonNode jsonObjectOption;
@@ -157,8 +160,7 @@ public class RoleService {
 			
 			Integer roleId = jsonObjectRole.get("id").asInt();
 			String roleName = jsonObjectRole.get("name").asText();
-			Integer createBy = jsonObjectRole.get("createBy").asInt();
-			Integer modifyBy = jsonObjectRole.get("modifyBy").asInt();
+			Integer modifyBy = userDetail.getId();
 			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			
 			role.setId(roleId);
@@ -174,8 +176,7 @@ public class RoleService {
 						RoleDetail roleDetail = new RoleDetail();
 						roleDetail.setOptionId(optionNode.get("id").asInt());
 						roleDetail.setPermissionId(permissionNode.get("id").asInt());
-						roleDetail.setCreateBy(createBy);
-						roleDetail.setModifyBy(createBy);
+						roleDetail.setModifyBy(modifyBy);
 						roleDetail.setCreateDate(createDate);
 						roleDetail.setModifyDate(createDate);
 						roleDetail.setRoleId(roleId);
