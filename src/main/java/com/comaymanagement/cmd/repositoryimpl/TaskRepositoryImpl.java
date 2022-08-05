@@ -717,7 +717,8 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHistoryModel.setMessage(itemHisModelTemp.getMessage());
 					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
 					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
-
+					taskHistoryModel.setModifyById(itemHisModelTemp.getModifyBy().getId());
+					taskHistoryModel.setAvatar(itemHisModelTemp.getModifyBy().getAvatar());
 					taskHisModels.add(taskHistoryModel);
 				}
 

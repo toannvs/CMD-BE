@@ -13,4 +13,6 @@ public class TaskHisModel {
 	private String message;
 	private String modifyDate;
 	private String modifyBy;
+	private Integer modifyById;
+	private String avatar;
 }
