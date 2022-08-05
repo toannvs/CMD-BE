@@ -161,6 +161,7 @@ public class RoleService {
 			Integer roleId = jsonObjectRole.get("id").asInt();
 			String roleName = jsonObjectRole.get("name").asText();
 			Integer modifyBy = userDetail.getId();
+			Integer createBy = modifyBy;
 			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			
 			role.setId(roleId);
@@ -176,6 +177,7 @@ public class RoleService {
 						RoleDetail roleDetail = new RoleDetail();
 						roleDetail.setOptionId(optionNode.get("id").asInt());
 						roleDetail.setPermissionId(permissionNode.get("id").asInt());
+						roleDetail.setCreateBy(createBy);
 						roleDetail.setModifyBy(modifyBy);
 						roleDetail.setCreateDate(createDate);
 						roleDetail.setModifyDate(createDate);
