@@ -13,13 +13,11 @@ import org.springframework.stereotype.Service;
 
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.ApprovalOption_View;
-import com.comaymanagement.cmd.entity.ApprovalStepDetail;
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ProposalPermission;
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ResponseObject;
-import com.comaymanagement.cmd.model.ApprovalStepModel;
 import com.comaymanagement.cmd.model.ProposalTypeModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalOption_ViewRepository;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;

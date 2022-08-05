@@ -19,12 +19,17 @@ import com.comaymanagement.cmd.entity.Option;
 import com.comaymanagement.cmd.entity.Permission;
 import com.comaymanagement.cmd.entity.RoleDetail;
 import com.comaymanagement.cmd.model.OptionModel;
+import com.comaymanagement.cmd.model.PermissionModel;
 import com.comaymanagement.cmd.repository.IOptionRepository;
 @Repository
 public class OptionRepositoryImpl implements IOptionRepository{
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeRepositoryImpl.class);
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	PermissionRepositoryImpl permissionRepository;
+	
 	@Override
 	public List<OptionModel> findAll() {
 		Session session = sessionFactory.getCurrentSession();
@@ -74,6 +79,15 @@ public class OptionRepositoryImpl implements IOptionRepository{
 			return null;
 		}
 			
+	}
+	public List<OptionModel> findAllWithPermissionDefault(){
+		List<PermissionModel> permissionModelList = permissionRepository.findAll();
+		List<OptionModel> optionsModelList = this.findAll();
+		for(OptionModel optionModel : optionsModelList) {
+			optionModel.setPermissions(permissionModelList);
+		}
+
+		return optionsModelList;
 	}
 
 }

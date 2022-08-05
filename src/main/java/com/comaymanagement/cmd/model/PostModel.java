@@ -1,9 +1,6 @@
 package com.comaymanagement.cmd.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 
 import com.comaymanagement.cmd.entity.Employee;
 import com.fasterxml.jackson.annotation.JsonInclude;

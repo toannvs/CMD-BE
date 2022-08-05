@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ResponseObject;
-import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;

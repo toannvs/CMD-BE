@@ -13,12 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.comaymanagement.cmd.entity.ApprovalStepDetail;
 import com.comaymanagement.cmd.entity.ProposalPermission;
-import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.repository.IProposalPermissionRepository;
-
-import net.bytebuddy.asm.Advice.This;
 @Repository
 @Transactional(rollbackFor = Exception.class)
 public class ProposalPermissionImpl implements IProposalPermissionRepository {
