@@ -34,4 +34,5 @@ public class EmployeeModel {
 	private Integer createBy;
 	private Integer modifyBy;
 	private List<RoleDetailModel> roles;
+	private RoleDetailModel role;
 }

@@ -1,6 +1,7 @@
 package com.comaymanagement.cmd.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,6 +27,8 @@ import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.LoginRequest;
+import com.comaymanagement.cmd.model.OptionModel;
+import com.comaymanagement.cmd.model.PermissionModel;
 import com.comaymanagement.cmd.model.RoleDetailModel;
 import com.comaymanagement.cmd.model.UserModel;
 import com.comaymanagement.cmd.repository.UserRepository;
@@ -82,9 +85,30 @@ public class AuthService {
 				roleDetailModel = roleRepository.findRoleDetailByRoleId(roleId);
 				roleDetailModels.add(roleDetailModel);
 			}
+			// Summary of role list
+			RoleDetailModel roleDetailResult = new RoleDetailModel();
+			
+			roleDetailResult = roleDetailModels.get(0);
+		  if(roleDetailModels.size()>1) {
+				// check each role's permission
+				for(int i =1; i<roleDetailModels.size();i++) {
+					List<OptionModel> optionsModels  = roleDetailModels.get(i).getOptions();
+					for(int j = 0;j < optionsModels.size(); j++) {
+						List<PermissionModel> permissionModels = optionsModels.get(j).getPermissions();
+						for(int k = 0; k < permissionModels.size(); k++) {
+							PermissionModel permissionNeeded = roleDetailResult.getOptions().get(j).getPermissions().get(k);
+							if(permissionModels.get(k).isSelected() && !permissionNeeded.isSelected()) {
+								permissionNeeded.setSelected(true);
+							}
+						}
+					}
+				}
+			}
+			
+			
 			Employee employee = employeeRepository.findById(userDetails.getId());
 			EmployeeModel employeeModel = EmployeeService.toEmployeeModel(employee);
-			employeeModel.setRoles(roleDetailModels);
+			employeeModel.setRole(roleDetailResult);
 //			userModel.setPassword(null);
 //			userModel.setRoles(roleDetailModels);
 			jwt = jwtUtils.generateJwtToken(userDetails);
