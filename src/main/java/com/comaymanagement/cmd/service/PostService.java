@@ -20,7 +20,6 @@ import com.comaymanagement.cmd.entity.Post;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.model.LikeModel;
 import com.comaymanagement.cmd.model.PostModel;
-import com.comaymanagement.cmd.repository.IPostRepository;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PostRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -83,6 +83,8 @@ public class RoleService {
 		}
 
 	}
+	
+	
 	// find all
 	public ResponseEntity<Object> findRoleDetailByRoleId(Integer roleId){
 		RoleDetailModel roleDetailModel =  roleRepository.findRoleDetailByRoleId(roleId);

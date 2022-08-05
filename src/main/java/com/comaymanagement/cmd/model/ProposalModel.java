@@ -2,8 +2,6 @@ package com.comaymanagement.cmd.model;
 
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
