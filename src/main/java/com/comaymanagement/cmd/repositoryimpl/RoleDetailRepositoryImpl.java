@@ -55,7 +55,7 @@ public class RoleDetailRepositoryImpl implements IRoleDetailRepository {
 		List<RoleDetail> roleDetails = null;
 
 		StringBuilder hql = new StringBuilder();
-		hql.append("FROM role_details as rd where rd.role_id = " + roleId);
+		hql.append("FROM role_details as rd where rd.roleId = " + roleId);
 		try {
 			Query query = session.createQuery(hql.toString());
 //			query.setParameter("id", roleId);
