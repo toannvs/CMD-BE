@@ -25,6 +25,8 @@ import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Status;
 import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
+import com.comaymanagement.cmd.model.ProposalModel;
+import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
@@ -573,6 +575,23 @@ public class TaskService {
 			results.put("tasks", taskModelResult);
 
 			if (results.size() > 0) {
+				// Count by status
+				List<StatusModel> statusModels = new ArrayList<>();
+				List<Status> statuses = statusRepositotyImpl.findAllForTask();
+				for(Status status : statuses) {
+					int count =0;
+					for(TaskModel tModel : taskModelResult) {
+						if(tModel.getStatus().getId() == status.getId()) {
+							count++;
+						}
+					}
+					StatusModel statusModel = new StatusModel();
+					statusModel.setId(status.getId());
+					statusModel.setName(status.getName());
+					statusModel.setCountByStatus(count);
+					statusModels.add(statusModel);
+				}
+				results.put("countByStatuses", statusModels);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Query produce successfully: ", results));
 			} else {
@@ -666,6 +685,23 @@ public class TaskService {
 			results.put("tasks", taskModelResult);
 
 			if (results.size() > 0) {
+				// Count by status
+				List<StatusModel> statusModels = new ArrayList<>();
+				List<Status> statuses = statusRepositotyImpl.findAllForTask();
+				for(Status status : statuses) {
+					int count =0;
+					for(TaskModel tModel : taskModelResult) {
+						if(tModel.getStatus().getId() == status.getId()) {
+							count++;
+						}
+					}
+					StatusModel statusModel = new StatusModel();
+					statusModel.setId(status.getId());
+					statusModel.setName(status.getName());
+					statusModel.setCountByStatus(count);
+					statusModels.add(statusModel);
+				}
+				results.put("countByStatuses", statusModels);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Query produce successfully: ", results));
 			} else {
