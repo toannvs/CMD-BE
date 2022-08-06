@@ -1,6 +1,7 @@
 package com.comaymanagement.cmd.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -34,5 +35,5 @@ public class EmployeeModel {
 	private Integer createBy;
 	private Integer modifyBy;
 	private List<RoleDetailModel> roles;
-	private RoleDetailModel role;
+	private Map<String, Object> role;
 }
