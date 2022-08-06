@@ -2,6 +2,7 @@ package com.comaymanagement.cmd.service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -108,7 +109,8 @@ public class AuthService {
 			
 			Employee employee = employeeRepository.findById(userDetails.getId());
 			EmployeeModel employeeModel = EmployeeService.toEmployeeModel(employee);
-			employeeModel.setRole(roleDetailResult);
+			Map<String, Object> optionMap = convertRoleForFEGantPermission(roleDetailModel);
+			employeeModel.setRole(optionMap);
 //			userModel.setPassword(null);
 //			userModel.setRoles(roleDetailModels);
 			jwt = jwtUtils.generateJwtToken(userDetails);
@@ -162,5 +164,15 @@ public class AuthService {
 	public void resetPassword(String json) {
 
 	}
-
+	public Map<String, Object> convertRoleForFEGantPermission(RoleDetailModel roleDetailModel){
+		Map<String, Object> permissionMaps = new LinkedHashMap<>();
+		Map<String, Object> optionMaps = new LinkedHashMap<>();
+		for(OptionModel opModel : roleDetailModel.getOptions()) {
+			for(PermissionModel perModel : opModel.getPermissions()) {
+				permissionMaps.put(perModel.getName(), perModel.isSelected());
+			}
+			optionMaps.put(opModel.getName(), permissionMaps);
+		}
+		return optionMaps;
+	}
 }
