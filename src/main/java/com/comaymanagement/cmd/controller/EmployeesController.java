@@ -57,7 +57,7 @@ public class EmployeesController {
 		return employeeService.addEmployee(json);
 	}
 
-	@PreAuthorize("@customRoleService.canUpdate('employee',principal)")
+//	@PreAuthorize("@customRoleService.canUpdate('employee',principal) ")
 	@PutMapping(value = "/edit")
 	@ResponseBody
 	public ResponseEntity<Object> editEmployee(@RequestBody String json) {
