@@ -24,14 +24,10 @@ def emailSendingnoattachment (String recipients) {
                              ''' 
                              }
                             emailext attachLog: true,
+									attachmentsPattern: '**/changelog*',
                                      subject: '$DEFAULT_SUBJECT',
                                      mimeType: 'text/html',
                                      body: '${FILE,path="templates.html"}',
-                                     recipientProviders: [
-                                     [$class: 'CulpritsRecipientProvider'],
-                                     [$class: 'DevelopersRecipientProvider'],
-                                     [$class: 'RequesterRecipientProvider']
-                                     ], 
                                     //replyTo: '$DEFAULT_REPLYTO',
                                      to: "$recipients"
 }

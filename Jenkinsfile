@@ -22,6 +22,8 @@ pipeline {
 				sh 'sudo systemctl stop cmd'
 				sh 'sudo systemctl start cmd'
 				sh 'sudo systemctl status cmd'
+				sh 'rm -rf changelog*'
+				sh "cp /var/lib/jenkins/jobs/CMD-BE/builds/${env.BUILD_NUMBER}/changelog* /var/lib/jenkins/workspace/CMD-BE"
             }
         }
 	}
