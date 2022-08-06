@@ -20,17 +20,19 @@ import com.comaymanagement.cmd.model.NotifyModel;
 import com.comaymanagement.cmd.repository.INotifyRepository;
 
 import net.bytebuddy.asm.Advice.This;
+
 @Repository
 @Transactional
-public class NotifyRepositoryImpl implements INotifyRepository{
+public class NotifyRepositoryImpl implements INotifyRepository {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(This.class); 
-	
+	static final Logger LOGGER = LoggerFactory.getLogger(This.class);
+
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Override
-	public List<NotifyModel> findByEmployeeId(Integer employeeId, String keySearch,Integer offset, Integer limit, String sort, String order) {
+	public List<NotifyModel> findByEmployeeId(Integer employeeId, String keySearch, Integer offset, Integer limit,
+			String sort, String order) {
 		Session session = null;
 		List<NotifyModel> notifyModels = null;
 		List<Notify> notifies = null;
@@ -38,27 +40,27 @@ public class NotifyRepositoryImpl implements INotifyRepository{
 
 			StringBuilder hql = new StringBuilder();
 			hql.append("FROM notify as no WHERE no.receiver.id = " + employeeId);
-			if(null != keySearch && !keySearch.equals("")) {
+			if (null != keySearch && !keySearch.equals("")) {
 				hql.append(" and no.description LIKE CONCAT('%',:keySearch,'%')");
 			}
 			hql.append(" order by no." + sort + " " + order);
 			LOGGER.debug(hql.toString());
 			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql.toString());
-			if(null != keySearch && !keySearch.equals("")) {
+			if (null != keySearch && !keySearch.equals("")) {
 				query.setParameter("keySearch", keySearch);
 			}
 			query.setFirstResult(offset);
 			query.setMaxResults(limit);
 			notifies = new ArrayList<Notify>();
-			for(Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object obj =(Object) it.next();
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object obj = (Object) it.next();
 				Notify notify = (Notify) obj;
 				notifies.add(notify);
 			}
 			notifyModels = new ArrayList<NotifyModel>();
-			if(null != notifies && notifies.size()>0) {
-				for(Notify itemNotify : notifies) {
+			if (null != notifies && notifies.size() > 0) {
+				for (Notify itemNotify : notifies) {
 					NotifyModel notifyModel = new NotifyModel();
 					notifyModel.setId(itemNotify.getId());
 					notifyModel.setDescription(itemNotify.getDescription());
@@ -81,7 +83,7 @@ public class NotifyRepositoryImpl implements INotifyRepository{
 		try {
 			session = sessionFactory.getCurrentSession();
 			result = (Integer) session.save(notify);
-			if(result != CMDConstrant.FAILED) {
+			if (result != CMDConstrant.FAILED) {
 				return result;
 			}
 		} catch (Exception e) {
@@ -96,18 +98,18 @@ public class NotifyRepositoryImpl implements INotifyRepository{
 		List<Notify> notifies = null;
 		try {
 			session = sessionFactory.getCurrentSession();
-			
+
 			notifies = findByEmployeeIdToEdit(employeeId);
-			if(null != notifyIds && notifyIds.size() == 0) {
-				for(Notify item : notifies) {
+			if (null != notifyIds && notifyIds.size() == 0) {
+				for (Notify item : notifies) {
 					item.setIsRead(true);
 					session.update(item);
 				}
 				return true;
-			}else {
-				for(Notify item : notifies) {
-					for(Integer id: notifyIds) {
-						if(item.getId() == id) {
+			} else {
+				for (Notify item : notifies) {
+					for (Integer id : notifyIds) {
+						if (item.getId() == id) {
 							item.setIsRead(true);
 							session.update(item);
 						}
@@ -127,7 +129,7 @@ public class NotifyRepositoryImpl implements INotifyRepository{
 		Session session = null;
 		try {
 			session = sessionFactory.getCurrentSession();
-			for(Integer id : notifyIds) {
+			for (Integer id : notifyIds) {
 				Notify notify = findById(id);
 				session.delete(notify);
 			}
@@ -164,8 +166,8 @@ public class NotifyRepositoryImpl implements INotifyRepository{
 			hql.append("FROM notify as no WHERE no.receiver.id = " + employeeId);
 			Query query = session.createQuery(hql.toString());
 			notifies = new ArrayList<Notify>();
-			for(Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object obj =(Object) it.next();
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object obj = (Object) it.next();
 				Notify notify = (Notify) obj;
 				notifies.add(notify);
 			}

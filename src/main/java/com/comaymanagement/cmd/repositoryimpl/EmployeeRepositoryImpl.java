@@ -200,6 +200,24 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return false;
 	}
+	public boolean checkEmployeeUserNameExisted(Integer id, String username) {
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "select count(*) from employees emp where emp.username = :username and emp.id != :id";
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("username", username);
+			query.setParameter("id", id);
+			List list = query.getResultList();
+			Integer count = Integer.valueOf(list.get(0).toString());
+			if (count > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in checkEmployeeUserNameExisted() ", e);
+		}
+		
+		return false;
+	}
 
 	@Override
 	public Integer add(Employee emp) {

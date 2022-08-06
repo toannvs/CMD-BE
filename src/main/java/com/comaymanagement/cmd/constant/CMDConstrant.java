@@ -22,5 +22,7 @@ public class CMDConstrant {
 	public static final boolean CHANGE_STATUS_TASK = true;
 	public static final boolean REOPEN_TASK = true;
 	public static final String SPACE = " ";
+	public static final String AVATAR = "http://222.255.238.159:9090/api/get-image/default-avatar.jpg";
+	
 }
 
