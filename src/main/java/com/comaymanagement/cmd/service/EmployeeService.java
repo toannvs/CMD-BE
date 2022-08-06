@@ -79,6 +79,8 @@ public class EmployeeService {
 	@Autowired
 	NotifyRepositoryImpl notifyRepositoryImpl;
 
+	@Autowired
+	CustomRoleService customRoleService;
 	static int countFile = 0;
 	public ResponseEntity<Object> findAllWithParamAndNotLimit(String page, 
 			String sort, String order, String json) {
@@ -447,6 +449,8 @@ public class EmployeeService {
 
 	// API edit and clock account (isActive true || false)
 	public ResponseEntity<Object> edit(String json) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		Employee emp = new Employee();
 		UserModel user = new UserModel();
 		List<Position> positionList = new ArrayList<>();
@@ -467,6 +471,13 @@ public class EmployeeService {
 			jsonObjectTeam = jsonObjectEmployee.get("teams");
 			jsonObjectDepartment = jsonObjectEmployee.get("departments");
 			Integer id = jsonObjectEmployee.get("id") != null ? jsonObjectEmployee.get("id").asInt() : -1;
+			// Check with id if can edit or Update personal information
+			if(!customRoleService.canUpdate("employee", userDetail) && !customRoleService.isTheSameUser(id, userDetail)) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR","Không có quyền chỉnh sửa", ""));
+			}
+			
+			
 			emp = employeeRepository.findById(id);
 //			Check employee id existed
 			String code = jsonObjectEmployee.get("code").asText();
@@ -514,7 +525,7 @@ public class EmployeeService {
 			// Cannot edit password
 			if (isEnableLogin) {
 				emp.setUsername(jsonLoginAccount.get("username").asText());
-				emp.setPassword(CMDConstrant.PASSWORD);
+				emp.setPassword(encoder.encode(CMDConstrant.PASSWORD));
 			} else {
 				emp.setUsername("");
 				emp.setPassword("");
@@ -571,8 +582,8 @@ public class EmployeeService {
 			emp.setDepartments(departmentList);
 			emp.setActiveFlag(true);
 			emp.setActive(jsonObjectEmployee.get("active").asBoolean());
-			emp.setCreateDate(jsonObjectEmployee.get("createDate").asText());
-			emp.setModifyDate(modifyDate);
+				emp.setCreateDate(jsonObjectEmployee.get("createDate").asText());
+				emp.setModifyDate(modifyDate);
 			emp.setCreateBy(jsonObjectEmployee.get("createBy").asInt());
 			emp.setModifyBy(jsonObjectEmployee.get("modifyBy").asInt());
 			Integer status =  employeeRepository.edit(emp);
