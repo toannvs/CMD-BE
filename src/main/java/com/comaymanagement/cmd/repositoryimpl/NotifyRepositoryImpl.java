@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,6 +22,7 @@ import com.comaymanagement.cmd.repository.INotifyRepository;
 import net.bytebuddy.asm.Advice.This;
 
 @Repository
+@Transactional
 public class NotifyRepositoryImpl implements INotifyRepository {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(This.class);

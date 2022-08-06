@@ -25,7 +25,7 @@ import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Status;
 import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
-import com.comaymanagement.cmd.model.ProposalModel;
+import com.comaymanagement.cmd.model.NotifyModel;
 import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
@@ -151,7 +151,9 @@ public class TaskService {
 			} else {
 				taskModelResult = taskModelListTMP;
 			}
-
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
@@ -159,6 +161,7 @@ public class TaskService {
 			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
 			results.put("tasks", taskModelResult);
+			results.put("notifies", notifyModels);
 			if (results.size() > 0) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Query produce successfully: ", results));

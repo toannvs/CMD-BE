@@ -263,6 +263,9 @@ public class EmployeeService {
 			for (EmployeeModel employeeModel : employeeModelSetTMP) {
 				employeeModelSet.add(employeeModel);
 			}
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
 			Pagination pagination = new Pagination();
 			Map<String, Object> result = new TreeMap<>();
 			pagination.setLimit(CMDConstrant.LIMIT);
@@ -271,6 +274,7 @@ public class EmployeeService {
 
 			result.put("pagination", pagination);
 			result.put("employees", employeeModelSet);
+			result.put("notifies", notifyModels);
 			if (employeeModelSet.size() > 0) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 			} else {
