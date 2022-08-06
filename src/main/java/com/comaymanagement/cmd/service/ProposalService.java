@@ -377,6 +377,13 @@ public class ProposalService {
 	}
 
 	public ResponseEntity<Object> add(String json) {
+		/* Affter add proposal:
+		- Get proposal type id
+		- Current step 
+		Select all record from approval_steps with step index >= current step
+		=> next select all record with approval_steps_id => fillter all employeeId from these record and save notify
+		*/
+		
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		ProposalModel proposalModel = null;
