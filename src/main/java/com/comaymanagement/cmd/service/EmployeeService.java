@@ -382,7 +382,7 @@ public class EmployeeService {
 						order, offset, -1);
 				;
 			}
-			caculatorOffset = caculatorOffset(name, dob, email, phone, teamIds, positionIds, sort, order, limit,
+			caculatorOffset = caculatorOffsetTeams(name, dob, email, phone, teamIds, positionIds, sort, order, limit,
 					offset);
 			if (count > 1) {
 				offset = caculatorOffset.get("offset");
