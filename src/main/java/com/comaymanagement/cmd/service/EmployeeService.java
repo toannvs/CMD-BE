@@ -83,6 +83,7 @@ public class EmployeeService {
 	CustomRoleService customRoleService;
 	static int countFile = 0;
 
+//	API for download
 	public ResponseEntity<Object> findAllWithParamAndNotLimit(String page, String sort, String order, String json) {
 		Integer limit = -1;
 
@@ -316,6 +317,140 @@ public class EmployeeService {
 		return result;
 	}
 
+// Paging team - start
+	public ResponseEntity<Object> employeePagingTeams(String page, String sort, String order, String json) {
+		Integer limit = CMDConstrant.LIMIT;
+
+		Set<EmployeeModel> employeeModelSetTMP = new LinkedHashSet<>();
+		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
+		List<Integer> departmentIds = new ArrayList<Integer>();
+		List<Integer> positionIds = new ArrayList<Integer>();
+		String name = "";
+		String dob = "";
+		String email = "";
+		String phone = "";
+
+//		name = name == null ? "" : name.trim();
+		try {
+			JsonMapper jsonMapper = new JsonMapper();
+			JsonNode jsonObject;
+			jsonObject = jsonMapper.readTree(json);
+			JsonNode jsonDepObject = jsonObject.get("departmentIds");
+			JsonNode jsonPosObject = jsonObject.get("positionIds");
+
+			name = jsonObject.get("name") == null ? ""
+					: jsonObject.get("name").asText() == "null" ? "" : jsonObject.get("name").asText();
+			dob = jsonObject.get("dob") == null ? ""
+					: jsonObject.get("dob").asText() == "null" ? "" : jsonObject.get("dob").asText();
+			email = jsonObject.get("email") == null ? ""
+					: jsonObject.get("email").asText() == "null" ? "" : jsonObject.get("email").asText();
+			phone = jsonObject.get("phone") == null ? ""
+					: jsonObject.get("phone").asText() == "null" ? "" : jsonObject.get("phone").asText();
+			for (JsonNode departmendId : jsonDepObject) {
+				departmentIds.add(Integer.valueOf(departmendId.toString()));
+			}
+			for (JsonNode positionsId : jsonPosObject) {
+				positionIds.add(Integer.valueOf(positionsId.toString()));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+
+		page = page == null ? "1" : page.trim();
+		// Order by defaut
+		if (sort == null || sort == "") {
+			sort = "emp.id";
+		}
+		if (order == null || order == "") {
+			order = "desc";
+		}
+		int count = Integer.parseInt(page);
+		int offset = 0;
+		int limitCaculated = 0;
+		Integer totalItemEmployeeDup = employeeRepository.countAllPagingIncludeDuplicateTeams(name, dob, email, phone,
+				departmentIds, positionIds, sort, order, -1, -1);
+		Integer totalItemEmployee = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds,
+				positionIds, sort, order, -1, -1);
+		Map<String, Integer> caculatorOffset = new LinkedHashMap<>();
+		while (count > 0) {
+			if ((offset + limit) > totalItemEmployeeDup) {
+				limit = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds, positionIds, sort,
+						order, offset, -1);
+				;
+			}
+			caculatorOffset = caculatorOffset(name, dob, email, phone, departmentIds, positionIds, sort, order, limit,
+					offset);
+			if (count > 1) {
+				offset = caculatorOffset.get("offset");
+			}
+			limitCaculated = caculatorOffset.get("limit");
+			count--;
+		}
+		try {
+			// if duplicate => limit will alway be >= CMDConstrant.LIMIT
+			if (limitCaculated < 15) {
+				employeeModelSetTMP = employeeRepository.findAllTeams(name, dob, email, phone, departmentIds, positionIds,
+						sort, order, CMDConstrant.LIMIT, offset);
+			} else {
+				employeeModelSetTMP = employeeRepository.findAllTeams(name, dob, email, phone, departmentIds, positionIds,
+						sort, order, limitCaculated, offset);
+			}
+
+			for (EmployeeModel employeeModel : employeeModelSetTMP) {
+				employeeModelSet.add(employeeModel);
+			}
+			Pagination pagination = new Pagination();
+			Map<String, Object> result = new TreeMap<>();
+			pagination.setLimit(CMDConstrant.LIMIT);
+			pagination.setPage(Integer.valueOf(page));
+			pagination.setTotalItem(totalItemEmployee);
+
+			result.put("pagination", pagination);
+			result.put("employees", employeeModelSet);
+			if (employeeModelSet.size() > 0) {
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
+			} else {
+				pagination.setPage(1);
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", result));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in employeePaging() ", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+		}
+
+	}
+	public Map<String, Integer> caculatorOffsetTeams(String name, String dob, String email, String phone,
+			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer limit,
+			Integer offset) {
+		int quantityDifference = 0;
+		int newOffset = offset;
+		int newLimit = limit;
+		int total = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds, positionIds, sort, order,
+				-1, -1); // 10, 3
+		Map<String, Integer> result = new LinkedHashMap<>();
+		do {
+
+			int countPaging = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds, positionIds,
+					sort, order, newOffset, newLimit); // 10, 3
+			quantityDifference = newLimit - countPaging; // , , 0
+			// store old offset
+//				newOffset = offset;
+			newLimit = quantityDifference; // 5 //2 //0
+			// expect offset
+			newOffset = newOffset + countPaging + quantityDifference; // 15 // 15+3+2 // 20+2+0
+			limit = limit + newLimit; // 15 +5 , 20 + 2 //22+0
+//				offset = newOffset ;
+		} while (quantityDifference > 0);
+		result.put("offset", newOffset); // 22+0
+		result.put("limit", limit); // 22+0
+
+//		if(count>0) {
+//			caculatorOffset((count-1) +"" ,name,  dob,  email,  phone, dep,  pos,  sort,  order, limit);
+//		}
+		return result;
+	}
+// Paging team - end
 	// Add and edit employee
 	public ResponseEntity<Object> addEmployee(String json) {
 		Employee emp = new Employee();
