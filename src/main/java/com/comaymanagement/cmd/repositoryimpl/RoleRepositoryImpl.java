@@ -60,6 +60,7 @@ public class RoleRepositoryImpl implements IRoleRepository {
 				Role role = (Role) obj;
 				roles.add(role);
 			}
+			
 			for(Role role : roles) {
 				RoleModel roleModel = new RoleModel();
 				roleModel.setId(role.getId());
