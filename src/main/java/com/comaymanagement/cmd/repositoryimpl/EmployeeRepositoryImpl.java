@@ -331,6 +331,296 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		return 0;
 	}
 
+	public Integer countAllPagingIncludeDuplicateTeams(String name, String dob, String email, String phone,
+			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
+			Integer limit) {
+		Set<Employee> employeeSet = new LinkedHashSet<>();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from ");
+		hql.append("employees emp ");
+		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
+		hql.append("where pos.team.id is not null ");
+		hql.append("and pos.department.id is null ");
+		hql.append("and emp.activeFlag = true ");
+		if(!name.equals("")) {
+			hql.append("and emp.name like CONCAT('%',:name,'%') ");
+		}
+		if(!dob.equals("")) {
+			hql.append("and emp.dateOfBirth like CONCAT('%',:dob,'%') ");
+		}
+		if(!email.equals("")) {
+			hql.append("and emp.email like CONCAT('%',:email,'%') ");
+		}
+		if(!phone.equals("")) {
+			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
+		}
+		if(departmentIds.size()>0) {
+			hql.append("and dep.id IN (:departmentIds) ");
+		}
+		if(positionIds.size()>0) {
+			hql.append("and pos.id IN (:positionIds) ");
+
+		}
+		
+		hql.append("order by " + sort + " " + order);
+		Session session = this.sessionFactory.getCurrentSession();
+		List<EmployeeModel> employeeModelList = new ArrayList();
+		try {
+			Query query = session.createQuery(hql.toString());
+			if(!name.equals("")) {
+				query.setParameter("name", name);
+			}
+			if(!dob.equals("")) {
+				query.setParameter("dob", dob);
+			}
+			if(!email.equals("")) {
+				query.setParameter("email", email);
+			}
+			if(!phone.equals("")) {
+				query.setParameter("phone", phone);
+			}
+			if(departmentIds.size()>0) {
+				query.setParameter("departmentIds", departmentIds);
+			}
+			if(positionIds.size()>0) {
+				query.setParameter("positionIds", positionIds);
+
+			}
+			if (offset > 0) {
+				query.setFirstResult(offset);
+
+			}
+			if (limit > 0) {
+				query.setMaxResults(limit);
+			}
+//			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+//				Object[] ob = (Object[]) it.next();
+//				employeeSet.add((Employee) ob[0]);
+//			}
+			Integer countResult = query.getResultList().size();
+			return countResult;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in employeePaging() ", e);
+
+		}
+
+		return 0;
+	}
+// Paging with team - start
+	public Set<EmployeeModel> findAllTeams(String name, String dob, String email, String phone, List<Integer> departmentIds,
+			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
+		Set<Employee> employeeSet = new LinkedHashSet<>();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from employees emp ");
+		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
+		hql.append("where pos.team.id is not null ");
+		hql.append("and pos.department.id is null ");
+		hql.append("and emp.activeFlag = true ");
+		if (!name.equals("")) {
+			hql.append("and emp.name like CONCAT('%',:name,'%') ");
+		}
+		if (!dob.equals("")) {
+			hql.append("and emp.dateOfBirth like CONCAT('%',:dob,'%') ");
+		}
+		if (!email.equals("")) {
+			hql.append("and emp.email like CONCAT('%',:email,'%') ");
+		}
+		if (!phone.equals("")) {
+			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
+		}
+		if (departmentIds.size() > 0) {
+			hql.append("and dep.id IN (:departmentIds) ");
+		}
+		if (positionIds.size() > 0) {
+			hql.append("and pos.id IN (:positionIds) ");
+
+		}
+
+		hql.append("order by " + sort + " " + order);
+		Session session = this.sessionFactory.getCurrentSession();
+		Set<Employee> empSet = new LinkedHashSet<>();
+		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
+		try {
+			Query query = session.createQuery(hql.toString());
+			if (!name.equals("")) {
+				query.setParameter("name","\\" +  name);
+			}
+			if (!dob.equals("")) {
+				query.setParameter("dob", dob);
+			}
+			if (!email.equals("")) {
+				query.setParameter("email", email);
+			}
+			if (!phone.equals("")) {
+				query.setParameter("phone", phone);
+			}
+			if (departmentIds.size() > 0) {
+				query.setParameter("departmentIds", departmentIds);
+			}
+			if (positionIds.size() > 0) {
+				query.setParameter("positionIds", positionIds);
+
+			}
+			query.setFirstResult(offset);
+			if(limit>0) {
+				query.setMaxResults(limit);
+				
+			}
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object[] ob = (Object[]) it.next();
+				Employee e = (Employee) ob[0];
+				empSet.add(e);
+			}
+
+			for (Employee e : empSet) {
+				EmployeeModel employeeModel = new EmployeeModel();
+				List<PositionModel> positionModelList = new ArrayList<>();
+				List<DepartmentModel> departmentModelList = new ArrayList<>();
+				List<TeamModel> teamModelList = new ArrayList<>();
+				// Add team list
+				// Add position list
+				// Add department list
+				for (Position p : e.getPositions()) {
+					PositionModel positionModel = new PositionModel();
+
+					Role role = new Role();
+					role.setId(p.getRole().getId());
+					role.setName(p.getRole().getName());
+					positionModel.setId(p.getId());
+					positionModel.setName(p.getName());
+					positionModel.setIsManager(p.getIsManager());
+					positionModel.setRole(role);
+					if (p.getDepartment() != null && p.getTeam() == null) {
+						Department department = p.getDepartment();
+						DepartmentModel departmentModel = new DepartmentModel();
+						departmentModel.setId(department.getId());
+						departmentModel.setCode(department.getCode());
+						departmentModel.setName(department.getName());
+						departmentModel.setFatherDepartmentId(department.getFatherDepartmentId());
+						departmentModel.setHeadPosition(department.getHeadPosition());
+						departmentModel.setDescription(department.getDescription());
+						departmentModel.setLevel(department.getLevel());
+						departmentModel.setPosition(positionModel);
+						departmentModelList.add(departmentModel);
+					} else if (p.getDepartment() == null && p.getTeam() != null) {
+						Team team = p.getTeam();
+						TeamModel teamModel = new TeamModel();
+						teamModel.setId(team.getId());
+						teamModel.setCode(team.getCode());
+						teamModel.setName(team.getName());
+						teamModel.setDescription(team.getDescription());
+						teamModel.setHeadPosition(team.getHeadPosition());
+						teamModel.setPosition(positionModel);
+						teamModelList.add(teamModel);
+					}
+				}
+				UserModel user = new UserModel();
+				user.setUsername(e.getUsername());
+				user.setEnableLogin(e.isEnableLogin());
+				employeeModel.setId(e.getId());
+				employeeModel.setCode(e.getCode());
+				employeeModel.setName(e.getName());
+				employeeModel.setAvatar(e.getAvatar());
+				employeeModel.setGender(e.getGender());
+				employeeModel.setDateOfBirth(e.getDateOfBirth());
+				employeeModel.setEmail(e.getEmail());
+				employeeModel.setPhoneNumber(e.getPhoneNumber());
+				employeeModel.setActive(e.isActive());
+				employeeModel.setCreateDate(e.getCreateDate());
+				employeeModel.setDepartments(departmentModelList);
+				;
+				employeeModel.setPositions(positionModelList);
+				employeeModel.setUser(user);
+				employeeModel.setCreateDate(e.getCreateDate());
+				employeeModel.setModifyDate(e.getModifyDate());
+				employeeModel.setCreateBy(e.getCreateBy());
+				employeeModel.setModifyBy(e.getModifyBy());
+				employeeModel.setTeams(teamModelList);
+				employeeModelSet.add(employeeModel);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in employeePaging() ", e);
+
+		}
+
+		return employeeModelSet;
+	}
+	public Integer countAllPagingTeams(String name, String dob, String email, String phone, List<Integer> departmentIds,
+			List<Integer> positionIds, String sort, String order, Integer offset, Integer limit) {
+		Set<Employee> employeeSet = new LinkedHashSet<>();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from ");
+		hql.append("employees emp ");
+		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
+		hql.append("where pos.team.id is not null ");
+		hql.append("and pos.department.id is null ");
+		hql.append("and emp.activeFlag = true ");
+		if (!name.equals("")) {
+			hql.append("and emp.name like CONCAT('%',:name,'%') ");
+		}
+		if (!dob.equals("")) {
+			hql.append("and emp.dateOfBirth like CONCAT('%',:dob,'%') ");
+		}
+		if (!email.equals("")) {
+			hql.append("and emp.email like CONCAT('%',:email,'%') ");
+		}
+		if (!phone.equals("")) {
+			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
+		}
+		if (departmentIds.size() > 0) {
+			hql.append("and dep.id IN (:departmentIds) ");
+		}
+		if (positionIds.size() > 0) {
+			hql.append("and pos.id IN (:positionIds) ");
+
+		}
+		
+		hql.append("order by " + sort + " " + order);
+		Session session = this.sessionFactory.getCurrentSession();
+		List<EmployeeModel> employeeModelList = new ArrayList();
+		try {
+			Query query = session.createQuery(hql.toString());
+
+			if (!name.equals("")) {
+				query.setParameter("name", name);
+			}
+			if (!dob.equals("")) {
+				query.setParameter("dob", dob);
+			}
+			if (!email.equals("")) {
+				query.setParameter("email", email);
+			}
+			if (!phone.equals("")) {
+				query.setParameter("phone", phone);
+			}
+			if (departmentIds.size() > 0) {
+				query.setParameter("departmentIds", departmentIds);
+			}
+			if (positionIds.size() > 0) {
+				query.setParameter("positionIds", positionIds);
+
+			}
+			if (offset > 0) {
+				query.setFirstResult(offset);
+
+			}
+			if (limit > 0) {
+				query.setMaxResults(limit);
+			}
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object[] ob = (Object[]) it.next();
+				employeeSet.add((Employee) ob[0]);
+			}
+			Integer countResult = employeeSet.size();
+			return countResult;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in employeePaging() ", e);
+
+		}
+
+		return 0;
+	}
+
 	public Integer countAllPagingIncludeDuplicate(String name, String dob, String email, String phone,
 			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
@@ -406,7 +696,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return 0;
 	}
-
+// Paging with team - end
+	
 	@Override
 	public Employee findById(Integer id) {
 		Session session = sessionFactory.getCurrentSession();

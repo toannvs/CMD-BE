@@ -40,6 +40,16 @@ public class EmployeesController {
 		return result;
 	}
 	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+	@PostMapping(value = "teams", produces = "application/json")
+	public ResponseEntity<Object> paggingAllEmployeeTeam(
+			@RequestParam(value = "page", required = false) String page,
+			@RequestParam(value = "sort", required = false) String sort,
+			@RequestParam(value = "order", required = false) String order,
+			@RequestBody String json) {
+		ResponseEntity<Object> result = employeeService.employeePagingTeams(page, sort, order, json);
+		return result;
+	}
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@PostMapping(value = "/download", produces = "application/json")
 	public ResponseEntity<Object> findAllWithParamAndNotLimit(
 			@RequestParam(value = "page", required = false) String page,
