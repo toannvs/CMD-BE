@@ -24,10 +24,12 @@ import com.comaymanagement.cmd.entity.ProposalDetail;
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Status;
+import com.comaymanagement.cmd.model.NotifyModel;
 import com.comaymanagement.cmd.model.ProposalModel;
 import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.StatusRepositotyImpl;
@@ -57,6 +59,8 @@ public class ProposalService {
 	@Autowired
 	ApprovalStepRepositoryImpl approvalStepRepository; 
 
+	@Autowired
+	NotifyRepositoryImpl notifyRepositoryImpl;
 	public ResponseEntity<Object> findAllForAll(String json, String sort, String order, String page) {
 		List<ProposalModel> proposalModels = new ArrayList<>();
 		JsonMapper jsonMapper = new JsonMapper();
@@ -117,6 +121,8 @@ public class ProposalService {
 //			Integer totalProposal  = 0;
 //			totalProposal = proposalRepositoryImpl.countAllPaging(userDetail.getId(), proposal, content, status, creator, createDate, finishDate, sort, order, offset, limit);
 //			
+
+			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
@@ -125,6 +131,7 @@ public class ProposalService {
 			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
+			results.put("notifies", notifyModels);
 			
 			if (results.size() > 0) {
 				// Count by status

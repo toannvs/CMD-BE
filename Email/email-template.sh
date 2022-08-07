@@ -54,6 +54,7 @@ th, td {
 		<li>Which server to access: <b>CMD environment servers</b></li> 
 		<li>How long the deployment takes (if there are code changes): 5 mins (after receiving this email)</li>
 		<li>Who will take charge on the deployment: <b>DUNG NGUYEN</b></li>
+		<li>Please follow change log by attach file</li>
 	</ul>
 </p>
 
