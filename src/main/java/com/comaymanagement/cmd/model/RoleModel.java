@@ -20,4 +20,5 @@ public class RoleModel {
 	private String code;
 	private String name;
 	private List<PositionModel> positions;
+	private List<OptionModel> options;
 }

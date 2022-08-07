@@ -71,10 +71,15 @@ public class RoleService {
 			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("roles", roleModelList);
 			results.put("pagination", pagination);
+			
 			if(roleModelList == null) {
 				LOGGER.info("NOT FOUND");
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject("Have error:","NOT FOUND",""));
 			}else {
+				for(RoleModel roleModel : roleModelList) {
+					RoleDetailModel roleDetailModel = roleRepository.findRoleDetailByRoleId(roleModel.getId());
+					roleModel.setOptions(roleDetailModel.getOptions());
+				}
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","Query produce successfully:",results));
 			}
 		} catch (Exception e) {
