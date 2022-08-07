@@ -331,7 +331,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		return 0;
 	}
 
-	public Integer countAllPagingIncludeDuplicateTeams(String name, String dob, String email, String phone,
+
+	public Integer countAllPagingIncludeDuplicate(String name, String dob, String email, String phone,
 			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
@@ -339,8 +340,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("from ");
 		hql.append("employees emp ");
 		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
-		hql.append("where pos.team.id is not null ");
-		hql.append("and pos.department.id is null ");
+		hql.append("where pos.team.id is null ");
+		hql.append("and pos.department.id is not null ");
 		hql.append("and emp.activeFlag = true ");
 		if(!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
@@ -620,8 +621,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return 0;
 	}
-
-	public Integer countAllPagingIncludeDuplicate(String name, String dob, String email, String phone,
+	public Integer countAllPagingIncludeDuplicateTeams(String name, String dob, String email, String phone,
 			List<Integer> teamIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
@@ -629,8 +629,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("from ");
 		hql.append("employees emp ");
 		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
-		hql.append("where pos.team.id is null ");
-		hql.append("and pos.department.id is not null ");
+		hql.append("where pos.team.id is not null ");
+		hql.append("and pos.department.id is null ");
 		hql.append("and emp.activeFlag = true ");
 		if(!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
@@ -696,6 +696,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return 0;
 	}
+
 // Paging with team - end
 	
 	@Override
