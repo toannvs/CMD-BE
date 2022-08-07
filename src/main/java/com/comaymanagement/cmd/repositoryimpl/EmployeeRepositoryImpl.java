@@ -407,7 +407,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		return 0;
 	}
 // Paging with team - start
-	public Set<EmployeeModel> findAllTeams(String name, String dob, String email, String phone, List<Integer> departmentIds,
+	public Set<EmployeeModel> findAllTeams(String name, String dob, String email, String phone, List<Integer> teamIds,
 			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
@@ -428,8 +428,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		if (!phone.equals("")) {
 			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
 		}
-		if (departmentIds.size() > 0) {
-			hql.append("and dep.id IN (:departmentIds) ");
+		if (teamIds.size() > 0) {
+			hql.append("and pos.team.id IN (:teamIds) ");
 		}
 		if (positionIds.size() > 0) {
 			hql.append("and pos.id IN (:positionIds) ");
@@ -454,8 +454,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			if (!phone.equals("")) {
 				query.setParameter("phone", phone);
 			}
-			if (departmentIds.size() > 0) {
-				query.setParameter("departmentIds", departmentIds);
+			if (teamIds.size() > 0) {
+				query.setParameter("teamIds", teamIds);
 			}
 			if (positionIds.size() > 0) {
 				query.setParameter("positionIds", positionIds);
@@ -545,7 +545,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return employeeModelSet;
 	}
-	public Integer countAllPagingTeams(String name, String dob, String email, String phone, List<Integer> departmentIds,
+	public Integer countAllPagingTeams(String name, String dob, String email, String phone, List<Integer> teamIds,
 			List<Integer> positionIds, String sort, String order, Integer offset, Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
@@ -567,8 +567,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		if (!phone.equals("")) {
 			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
 		}
-		if (departmentIds.size() > 0) {
-			hql.append("and dep.id IN (:departmentIds) ");
+		if (teamIds.size() > 0) {
+			hql.append("and pos.team.id IN (:teamIds) ");
 		}
 		if (positionIds.size() > 0) {
 			hql.append("and pos.id IN (:positionIds) ");
@@ -593,8 +593,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			if (!phone.equals("")) {
 				query.setParameter("phone", phone);
 			}
-			if (departmentIds.size() > 0) {
-				query.setParameter("departmentIds", departmentIds);
+			if (teamIds.size() > 0) {
+				query.setParameter("teamIds", teamIds);
 			}
 			if (positionIds.size() > 0) {
 				query.setParameter("positionIds", positionIds);
@@ -622,7 +622,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	}
 
 	public Integer countAllPagingIncludeDuplicate(String name, String dob, String email, String phone,
-			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
+			List<Integer> teamIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
@@ -644,8 +644,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		if(!phone.equals("")) {
 			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
 		}
-		if(departmentIds.size()>0) {
-			hql.append("and dep.id IN (:departmentIds) ");
+		if(teamIds.size()>0) {
+			hql.append("and pos.team.id IN (:teamIds) ");
 		}
 		if(positionIds.size()>0) {
 			hql.append("and pos.id IN (:positionIds) ");
@@ -669,8 +669,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			if(!phone.equals("")) {
 				query.setParameter("phone", phone);
 			}
-			if(departmentIds.size()>0) {
-				query.setParameter("departmentIds", departmentIds);
+			if(teamIds.size()>0) {
+				query.setParameter("teamIds", teamIds);
 			}
 			if(positionIds.size()>0) {
 				query.setParameter("positionIds", positionIds);
