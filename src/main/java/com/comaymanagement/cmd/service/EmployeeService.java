@@ -327,7 +327,7 @@ public class EmployeeService {
 
 		Set<EmployeeModel> employeeModelSetTMP = new LinkedHashSet<>();
 		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
-		List<Integer> departmentIds = new ArrayList<Integer>();
+		List<Integer> teamIds = new ArrayList<Integer>();
 		List<Integer> positionIds = new ArrayList<Integer>();
 		String name = "";
 		String dob = "";
@@ -339,7 +339,7 @@ public class EmployeeService {
 			JsonMapper jsonMapper = new JsonMapper();
 			JsonNode jsonObject;
 			jsonObject = jsonMapper.readTree(json);
-			JsonNode jsonDepObject = jsonObject.get("departmentIds");
+			JsonNode jsonTeamObject = jsonObject.get("teamIds");
 			JsonNode jsonPosObject = jsonObject.get("positionIds");
 
 			name = jsonObject.get("name") == null ? ""
@@ -350,8 +350,8 @@ public class EmployeeService {
 					: jsonObject.get("email").asText() == "null" ? "" : jsonObject.get("email").asText();
 			phone = jsonObject.get("phone") == null ? ""
 					: jsonObject.get("phone").asText() == "null" ? "" : jsonObject.get("phone").asText();
-			for (JsonNode departmendId : jsonDepObject) {
-				departmentIds.add(Integer.valueOf(departmendId.toString()));
+			for (JsonNode teamId : jsonTeamObject) {
+				teamIds.add(Integer.valueOf(teamId.toString()));
 			}
 			for (JsonNode positionsId : jsonPosObject) {
 				positionIds.add(Integer.valueOf(positionsId.toString()));
@@ -372,17 +372,17 @@ public class EmployeeService {
 		int offset = 0;
 		int limitCaculated = 0;
 		Integer totalItemEmployeeDup = employeeRepository.countAllPagingIncludeDuplicateTeams(name, dob, email, phone,
-				departmentIds, positionIds, sort, order, -1, -1);
-		Integer totalItemEmployee = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds,
+				teamIds, positionIds, sort, order, -1, -1);
+		Integer totalItemEmployee = employeeRepository.countAllPagingTeams(name, dob, email, phone, teamIds,
 				positionIds, sort, order, -1, -1);
 		Map<String, Integer> caculatorOffset = new LinkedHashMap<>();
 		while (count > 0) {
 			if ((offset + limit) > totalItemEmployeeDup) {
-				limit = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds, positionIds, sort,
+				limit = employeeRepository.countAllPagingTeams(name, dob, email, phone, teamIds, positionIds, sort,
 						order, offset, -1);
 				;
 			}
-			caculatorOffset = caculatorOffset(name, dob, email, phone, departmentIds, positionIds, sort, order, limit,
+			caculatorOffset = caculatorOffset(name, dob, email, phone, teamIds, positionIds, sort, order, limit,
 					offset);
 			if (count > 1) {
 				offset = caculatorOffset.get("offset");
@@ -393,10 +393,10 @@ public class EmployeeService {
 		try {
 			// if duplicate => limit will alway be >= CMDConstrant.LIMIT
 			if (limitCaculated < 15) {
-				employeeModelSetTMP = employeeRepository.findAllTeams(name, dob, email, phone, departmentIds, positionIds,
+				employeeModelSetTMP = employeeRepository.findAllTeams(name, dob, email, phone, teamIds, positionIds,
 						sort, order, CMDConstrant.LIMIT, offset);
 			} else {
-				employeeModelSetTMP = employeeRepository.findAllTeams(name, dob, email, phone, departmentIds, positionIds,
+				employeeModelSetTMP = employeeRepository.findAllTeams(name, dob, email, phone, teamIds, positionIds,
 						sort, order, limitCaculated, offset);
 			}
 
