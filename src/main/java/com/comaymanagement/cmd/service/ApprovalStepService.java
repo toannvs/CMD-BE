@@ -78,7 +78,7 @@ public class ApprovalStepService {
 			String name = jsonObjectStep.get("name").asText();
 			// save approvalStep
 			ApprovalStep approvalStep = new ApprovalStep();
-			approvalStep.setApprovalStepIndex(index);
+			approvalStep.setApprovalStepIndex(Integer.valueOf(index));
 			approvalStep.setApprovalStepName(name);
 			approvalStep.setProposalType(proposalType);
 			if (approvalStepRepository.add(approvalStep) > 0) {
@@ -185,7 +185,7 @@ public class ApprovalStepService {
 			List<ApprovalStep> approvalSteps = approvalStepRepository.findByProposalTypeId(approvalStep.getProposalType().getId());
 			for(int i=0;i<approvalSteps.size();i++) {
 				ApprovalStep approStep = approvalSteps.get(i);
-				approStep.setApprovalStepIndex(String.valueOf(i+1));
+				approStep.setApprovalStepIndex(i+1);
 				approvalStepRepository.edit(approStep);
 			}
 			// Prepare response data

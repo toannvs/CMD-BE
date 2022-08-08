@@ -50,12 +50,12 @@ public class ApprovalStepRepositoryImpl implements IApprovalStepRepository{
 		List<ApprovalStep> approvalSteps = new ArrayList<>();
 		hql.append("from approval_steps app_step ");
 		hql.append("where app_step.proposalType.id = :proposalTypeId ");
-		hql.append("and app_step.approvalStepIndex =  :step ");
+		hql.append("and app_step.approvalStepIndex >=  :step ");
 		hql.append("order by app_step.approvalStepIndex asc");
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("proposalTypeId", proposalTypeId);
-			query.setParameter("step", step);
+			query.setParameter("step", Integer.valueOf(step));
 			LOGGER.info(hql.toString());
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				ApprovalStep approvalStep = (ApprovalStep) it.next();

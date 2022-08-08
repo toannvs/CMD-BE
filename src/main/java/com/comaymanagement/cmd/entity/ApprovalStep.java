@@ -32,7 +32,7 @@ public class ApprovalStep {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@Column(name="approval_step_index")
-	private String approvalStepIndex;
+	private Integer approvalStepIndex;
 	@Column(name="approval_step_name")
 	private String approvalStepName;
 

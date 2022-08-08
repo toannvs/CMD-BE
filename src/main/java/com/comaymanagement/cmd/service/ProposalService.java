@@ -461,36 +461,39 @@ public class ProposalService {
 			proposalModel = proposalRepositoryImpl.add(proposal, proposalDetails);
 
 			if (null != proposalModel) {
-//				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposalTypeId), proposal.getCurrentStep().toString());
-//				List<Integer> employeeIds = new ArrayList<>();
-//				List<Integer> positionIds = new ArrayList<>();
-//				List<Integer> departmentIds = new ArrayList<>();
-//				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-//				for(ApprovalStep appStep : approvalStep) {
-//					// One app step have many appStepDetail
-//					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(statusId);
-//					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-//						// One appStepDetail have many record;
-//						employeeIds.add(appStepDetail.getEmployeeId());
-//						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-//							employeeIds.add(emp.getId());
-//						}
-//						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-//							employeeIds.add(emp.getId());
-//						}
-//						
-//					}
-//				}
-//				for(Integer empId : employeeIds) {
-//						Employee employee = employeeRepositoryImpl.findById(empId);
-//						Notify notify = null;
-//						notify = new Notify();
-//						notify.setIsRead(false);
-//						notify.setReceiver(employee);
-//						notify.setTitle("Đề xuất mới");
-//						notify.setDescription("Bạn vừa nhận được đề xuất từ "+ proposalModel.getCreator().getName());
-//				}
-//				
+				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposalTypeId), proposal.getCurrentStep().toString());
+				List<Integer> employeeIds = new ArrayList<>();
+				List<Integer> positionIds = new ArrayList<>();
+				List<Integer> departmentIds = new ArrayList<>();
+				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
+				for(ApprovalStep appStep : approvalStep) {
+					// One app step have many appStepDetail
+					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
+					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
+						// One appStepDetail have many record;
+						employeeIds.add(appStepDetail.getEmployeeId());
+						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+							employeeIds.add(emp.getId());
+						}
+						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
+							employeeIds.add(emp.getId());
+						}
+						
+					}
+				}
+				for(Integer empId : employeeIds) {
+						if(empId!=-1) {
+							Employee employee = employeeRepositoryImpl.findById(empId);
+							Notify notify = null;
+							notify = new Notify();
+							notify.setIsRead(false);
+							notify.setReceiver(employee);
+							notify.setTitle("Đề xuất mới");
+							notify.setDescription("Bạn vừa nhận được đề xuất từ "+ proposalModel.getCreator().getName());
+							notifyRepositoryImpl.add(notify);
+						}
+					System.out.println("Save notify sucessfully");
+				}
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Thêm đề xuất thành công", proposalModel));
 			} else {
@@ -552,6 +555,9 @@ public class ProposalService {
 
 	public ResponseEntity<Object> accept(Integer proposalId) {
 		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		Employee userEmp = employeeRepositoryImpl.findById(userDetail.getId());
 //		Status status = statusRepositotyImpl.findByIndexAndType(totalStep, null)
 		if (proposal != null) {
 			Integer totalStep = approvalStepRepository.countByProposalTypeId(proposal.getProposalType().getId());
@@ -576,17 +582,52 @@ public class ProposalService {
 				proposal.setStatus(newStatus);
 			}
 			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
+				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
+				List<Integer> employeeIds = new ArrayList<>();
+				List<Integer> positionIds = new ArrayList<>();
+				List<Integer> departmentIds = new ArrayList<>();
+				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
+				for(ApprovalStep appStep : approvalStep) {
+					// One app step have many appStepDetail
+					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
+					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
+						// One appStepDetail have many record;
+						employeeIds.add(appStepDetail.getEmployeeId());
+						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+							employeeIds.add(emp.getId());
+						}
+						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
+							employeeIds.add(emp.getId());
+						}
+						
+					}
+				}
+				for(Integer empId : employeeIds) {
+					if(empId!=-1) {
+						Employee employee = employeeRepositoryImpl.findById(empId);
+						Notify notify = null;
+						notify = new Notify();
+						notify.setIsRead(false);
+						notify.setReceiver(employee);
+						notify.setTitle("Duyệt đề xuất");
+						notify.setDescription("Đề xuất vừa được duyệt bởi "+ userEmp.getName());
+						notifyRepositoryImpl.add(notify);
+					}
+				}
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(proposalId);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
 			}
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra khi lưu thông báo", ""));
 
 	}
 
 	public ResponseEntity<Object> denied(String json) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		Employee userEmp = employeeRepositoryImpl.findById(userDetail.getId());
 		Integer id = -1;
 		String reason = "";
 		try {
@@ -617,6 +658,38 @@ public class ProposalService {
 			proposal.setStatus(newStatus);
 			proposal.setReason(reason);
 			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
+				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
+				List<Integer> employeeIds = new ArrayList<>();
+				List<Integer> positionIds = new ArrayList<>();
+				List<Integer> departmentIds = new ArrayList<>();
+				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
+				for(ApprovalStep appStep : approvalStep) {
+					// One app step have many appStepDetail
+					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
+					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
+						// One appStepDetail have many record;
+						employeeIds.add(appStepDetail.getEmployeeId());
+						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+							employeeIds.add(emp.getId());
+						}
+						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
+							employeeIds.add(emp.getId());
+						}
+						
+					}
+				}
+				for(Integer empId : employeeIds) {
+					if(empId!=-1) {
+						Employee employee = employeeRepositoryImpl.findById(empId);
+						Notify notify = null;
+						notify = new Notify();
+						notify.setIsRead(false);
+						notify.setReceiver(employee);
+						notify.setTitle("Từ chối đề xuất");
+						notify.setDescription("Đề xuất bị từ chối bởi "+ userEmp.getName());
+						notifyRepositoryImpl.add(notify);
+					}
+				}
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
@@ -627,6 +700,9 @@ public class ProposalService {
 	}
 
 	public ResponseEntity<Object> cancel(String json) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		Employee userEmp = employeeRepositoryImpl.findById(userDetail.getId());
 		Integer id = -1;
 		String reason = "";
 		try {
@@ -657,6 +733,38 @@ public class ProposalService {
 			proposal.setStatus(newStatus);
 			proposal.setReason(reason);
 			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
+				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
+				List<Integer> employeeIds = new ArrayList<>();
+				List<Integer> positionIds = new ArrayList<>();
+				List<Integer> departmentIds = new ArrayList<>();
+				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
+				for(ApprovalStep appStep : approvalStep) {
+					// One app step have many appStepDetail
+					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
+					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
+						// One appStepDetail have many record;
+						employeeIds.add(appStepDetail.getEmployeeId());
+						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+							employeeIds.add(emp.getId());
+						}
+						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
+							employeeIds.add(emp.getId());
+						}
+						
+					}
+				}
+				for(Integer empId : employeeIds) {
+					if(empId!=-1) {
+						Employee employee = employeeRepositoryImpl.findById(empId);
+						Notify notify = null;
+						notify = new Notify();
+						notify.setIsRead(false);
+						notify.setReceiver(employee);
+						notify.setTitle("Hủy đề xuất");
+						notify.setDescription("Đề xuất đã bị hủy bởi "+ userEmp.getName());
+						notifyRepositoryImpl.add(notify);
+					}
+				}
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)

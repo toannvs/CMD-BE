@@ -710,9 +710,10 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("id", id);
-			Iterator it = query.getResultList().iterator();
-			Object ob = (Object) it.next();
-			employee = (Employee) ob;
+//			Iterator it = query.getResultList().iterator();
+//			Object ob = (Object) it.next();
+			employee = (Employee) query.getSingleResult();
+			
 			// Please don't delete this line, this fix lazy load error when load position
 			employee.getPositions().size();
 			employee.getDepartments().size();
@@ -771,7 +772,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("positionId", positionId);
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Employee employee = (Employee) it.next();
+				Object[] ob =  (Object[]) it.next();
+				Employee employee = (Employee) ob[0];
 				employees.add(employee);
 			}
 			return employees;
@@ -792,7 +794,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("departmentId", departmentId);
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Employee employee = (Employee) it.next();
+				Object[] ob =  (Object[]) it.next();
+				Employee employee = (Employee) ob[0];
 				employees.add(employee);
 			}
 			return employees;

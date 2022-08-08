@@ -106,7 +106,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			if (proposalTypeIds.size() > 0) {
 				for (Integer proposalTypeId : proposalTypeIds) {
 					if (proposalTypeId == appStep.getProposalType().getId()) {
-						String step = appStep.getApprovalStepIndex();
+						Integer step = appStep.getApprovalStepIndex();
 						Set<Proposal> proposalsTMP = new LinkedHashSet();
 						proposalsTMP = findAllApproveByMe(proposalTypeId, statusIds, creatorIds, createDateFrom,
 								createDateTo, step, sort, order);
@@ -120,7 +120,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				}
 			} else {
 				Integer currentEmpProposalTypeId = appStep.getProposalType().getId();
-				String step = appStep.getApprovalStepIndex();
+				Integer step = appStep.getApprovalStepIndex();
 				Set<Proposal> proposalsTMP = new LinkedHashSet();
 				proposalsTMP = findAllApproveByMe(currentEmpProposalTypeId, statusIds, creatorIds, createDateFrom,
 						createDateTo, step, sort, order);
@@ -233,7 +233,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	}
 
 	public Set<Proposal> findAllApproveByMe(Integer proposalTypeId, List<Integer> statusIds, List<Integer> creatorIds,
-			String createDateFrom, String createDateTo, String step, String sort, String order) {
+			String createDateFrom, String createDateTo, Integer step, String sort, String order) {
 		Set<Proposal> proposals = new LinkedHashSet();
 		StringBuilder hql = new StringBuilder("FROM proposals AS pro ");
 		hql.append("INNER JOIN pro.creator AS em ");
@@ -269,7 +269,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //			query.setParameter("content", content);
 //			query.setParameter("createDate", createDate);
 //			query.setParameter("proposalTypeId", proposalTypeId);
-			query.setParameter("step", Integer.valueOf(step));
+			query.setParameter("step", step);
 			if (creatorIds.size() > 0) {
 				query.setParameter("creatorIds", creatorIds);
 			}
