@@ -108,7 +108,6 @@ public class ProposalService {
 			int offset = (Integer.parseInt(page) - 1) * limit;
 			List<Integer> statusIds = new ArrayList<Integer>();
 			for (JsonNode statusId : jsonStatusObject) {
-				System.out.println(statusId.toString());
 				statusIds.add(Integer.valueOf(statusId.toString()));
 			}
 			if (statusIds.size() == 0) {
@@ -145,13 +144,16 @@ public class ProposalService {
 
 			if (results.size() > 0) {
 				// Count by status
-				proposalModels = proposalRepositoryImpl.findAllProposalForAll(new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(),
-						"", "", sort, order, -1, -1);
-				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {
+					statusIds.add(status.getId());
+				}
+				List<ProposalModel> proposalModelForCount = proposalRepositoryImpl.findAllProposalForAll(new ArrayList<Integer>(),statusIds, new ArrayList<Integer>(),
+						null, null, sort, order, -1, -1);
+				List<StatusModel> statusModels = new ArrayList<>();
+				for (Status status : statuses) {
 					int count = 0;
-					for (ProposalModel pModel : proposalModels) {
+					for (ProposalModel pModel : proposalModelForCount) {
 						if (pModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
@@ -248,11 +250,17 @@ public class ProposalService {
 
 			if (results.size() > 0) {
 				// Count by status
-				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {
+					statusIds.add(status.getId());
+				}				
+				List<ProposalModel> proposalModelForCount = proposalRepositoryImpl.findAllProposalApproveByMe(userDetail.getId(), new ArrayList<Integer>(),
+						statusIds, new ArrayList<Integer>(), null, null, sort, order, -1, -1);
+
+				List<StatusModel> statusModels = new ArrayList<>();
+				for (Status status : statuses) {
 					int count = 0;
-					for (ProposalModel pModel : proposalModels) {
+					for (ProposalModel pModel : proposalModelForCount) {
 						if (pModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
@@ -351,8 +359,14 @@ public class ProposalService {
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {
+					statusIds.add(status.getId());
+				}	
+				
+				List<ProposalModel> proposalModelForCount = proposalRepositoryImpl.findAllProposalCratedByMe(userDetail.getId(), new ArrayList<Integer>(),
+						statusIds, null, null, sort, order, -1, -1);
+				for (Status status : statuses) {
 					int count = 0;
-					for (ProposalModel pModel : proposalModels) {
+					for (ProposalModel pModel : proposalModelForCount) {
 						if (pModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
