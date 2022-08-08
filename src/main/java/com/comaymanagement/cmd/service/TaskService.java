@@ -163,6 +163,23 @@ public class TaskService {
 			results.put("tasks", taskModelResult);
 			results.put("notifies", notifyModels);
 			if (results.size() > 0) {
+				// Count by status
+				List<StatusModel> statusModels = new ArrayList<>();
+				List<Status> statuses = statusRepositotyImpl.findAllForTask();
+				for(Status status : statuses) {
+					int count =0;
+					for(TaskModel tModel : taskModelResult) {
+						if(tModel.getStatus().getId() == status.getId()) {
+							count++;
+						}
+					}
+					StatusModel statusModel = new StatusModel();
+					statusModel.setId(status.getId());
+					statusModel.setName(status.getName());
+					statusModel.setCountByStatus(count);
+					statusModels.add(statusModel);
+				}
+				results.put("countByStatuses", statusModels);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Query produce successfully: ", results));
 			} else {
@@ -473,6 +490,23 @@ public class TaskService {
 			results.put("pagination", pagination);
 			results.put("tasks", tasks);
 			if (results.size() > 0) {
+				// Count by status
+				List<StatusModel> statusModels = new ArrayList<>();
+				List<Status> statuses = statusRepositotyImpl.findAllForTask();
+				for(Status status : statuses) {
+					int count =0;
+					for(TaskModel tModel : tasks) {
+						if(tModel.getStatus().getId() == status.getId()) {
+							count++;
+						}
+					}
+					StatusModel statusModel = new StatusModel();
+					statusModel.setId(status.getId());
+					statusModel.setName(status.getName());
+					statusModel.setCountByStatus(count);
+					statusModels.add(statusModel);
+				}
+				results.put("countByStatuses", statusModels);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Query produce successfully ", results));
 			} else {

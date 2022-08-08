@@ -44,6 +44,29 @@ public class ApprovalStepRepositoryImpl implements IApprovalStepRepository{
 			return null;
 		}
 	}
+	public List<ApprovalStep> findByProposalTypeIdAndIndex(Integer proposalTypeId, String step) {
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		List<ApprovalStep> approvalSteps = new ArrayList<>();
+		hql.append("from approval_steps app_step ");
+		hql.append("where app_step.proposalType.id = :proposalTypeId ");
+		hql.append("and app_step.approvalStepIndex =  :step ");
+		hql.append("order by app_step.approvalStepIndex asc");
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("proposalTypeId", proposalTypeId);
+			query.setParameter("step", step);
+			LOGGER.info(hql.toString());
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				ApprovalStep approvalStep = (ApprovalStep) it.next();
+				approvalSteps.add(approvalStep);
+			}
+			return approvalSteps;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+	}
 	public Integer countByProposalTypeId(Integer proposalTypeId) {
 		Session session = sessionFactory.getCurrentSession();
 		Integer result = 0;
