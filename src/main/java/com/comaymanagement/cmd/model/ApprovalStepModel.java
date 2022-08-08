@@ -20,7 +20,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class ApprovalStepModel {
 	private Integer id;
-	private String index;
+	private Integer index;
 	private String name;
 	private List<ApprovalOption_View>  approvalConfigTargets;
 }
