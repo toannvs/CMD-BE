@@ -65,11 +65,19 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		// set value fo total
 		setCountAllForAll(proposals.size());
-		// paging
-		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
-			ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
-			proposalModelResult.add(proposalModel);
+		if(offset !=-1 && limit !=-1) {
+			// paging
+			for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
+				ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
+				proposalModelResult.add(proposalModel);
+			}
+		}else {
+			for (Proposal pro : proposals) {
+				ProposalModel proposalModel = this.findModelById(pro.getId());
+				proposalModelResult.add(proposalModel);
+			}
 		}
+		
 		return proposalModelResult;
 	}
 
@@ -127,10 +135,17 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		// set value fo total
 		setCountAllForProposalApproveByMe(proposals.size());
+		if(offset !=-1 && limit !=-1) {
 		// paging
-		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
-			ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
-			proposalModelResult.add(proposalModel);
+			for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
+				ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
+				proposalModelResult.add(proposalModel);
+			}
+		}else {
+			for (Proposal pro : proposals) {
+				ProposalModel proposalModel = this.findModelById(pro.getId());
+				proposalModelResult.add(proposalModel);
+			}
 		}
 		return proposalModelResult;
 	}
@@ -151,10 +166,17 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		// set value fo total
 		setCountAllForProposalCratedByMe(proposals.size());
-		// paging
-		for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
-			ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
-			proposalModelResult.add(proposalModel);
+		if(offset !=-1 && limit !=-1) {
+			// paging
+			for (int i = offset; i < proposals.size() && proposalModelResult.size() < limit; i++) {
+				ProposalModel proposalModel = this.findModelById(proposals.get(i).getId());
+				proposalModelResult.add(proposalModel);
+			}
+		}else {
+			for (Proposal pro : proposals) {
+				ProposalModel proposalModel = this.findModelById(pro.getId());
+				proposalModelResult.add(proposalModel);
+			}
 		}
 		return proposalModelResult;
 	}
@@ -247,7 +269,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 //			query.setParameter("content", content);
 //			query.setParameter("createDate", createDate);
 //			query.setParameter("proposalTypeId", proposalTypeId);
-			query.setParameter("step", step);
+			query.setParameter("step", Integer.valueOf(step));
 			if (creatorIds.size() > 0) {
 				query.setParameter("creatorIds", creatorIds);
 			}
