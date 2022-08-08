@@ -180,7 +180,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			query.setParameter("finishDate", finishDate);
 			query.setParameter("priority", priority);
 			query.setParameter("rate", rate);
-			if (departmentIds.size()==0) {
+			if (departmentIds.size()==0 && offset != -1 && limit !=-1) {
 				query.setFirstResult(offset);
 				query.setMaxResults(limit);
 			}
@@ -951,8 +951,10 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			}
 			LOGGER.info(hql.toString());
 			int offset = (Integer.valueOf(page) - 1) * limit;
-			query.setFirstResult(offset);
-			query.setMaxResults(limit);
+			if(offset!=-1 && limit!=-1) {
+				query.setFirstResult(offset);
+				query.setMaxResults(limit);
+			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] obj = (Object[]) it.next();
 				Task task = (Task) obj[0];
@@ -1142,7 +1144,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				hql.append("AND tas.startDate = :startDate ");
 			}
 			if (finishDate != null) {
-				hql.append("AND tas.finishDate = :finishDate");
+				hql.append("AND tas.finishDate = :finishDate ");
 			}
 			hql.append("ORDER BY tas." + sort + " " + order);
 			LOGGER.info(hql.toString());
@@ -1160,7 +1162,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			if (rate != null) {
 				query.setParameter("rate", rate);
 			}
-			if (departmentIds.size()==0) {
+			if (departmentIds.size()==0 && offset!=-1 && limit!=-1) {
 				query.setFirstResult(offset);
 				query.setMaxResults(limit);
 			}
@@ -1259,7 +1261,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			hql.append("WHERE tas.receiver.id = " + employeeId);
 			hql.append(" AND st.id IN (:statusIds) ");
 			if(creatorIds.size()>0) {
-				hql.append("AND cre.id IN (:creatorIds)");
+				hql.append("AND cre.id IN (:creatorIds) ");
 			}
 			if (rate != null) {
 				hql.append("AND tas.rate = :rate ");
@@ -1268,7 +1270,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				hql.append("AND tas.startDate = :startDate ");
 			}
 			if (finishDate != null) {
-				hql.append("AND tas.finishDate = :finishDate");
+				hql.append("AND tas.finishDate = :finishDate ");
 			}
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("statusIds", statusIds);
@@ -1338,7 +1340,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				hql.append("AND tas.startDate = :startDate ");
 			}
 			if (finishDate != null) {
-				hql.append("AND tas.finishDate = :finishDate");
+				hql.append("AND tas.finishDate = :finishDate ");
 			}
 			hql.append("ORDER BY tas." + sort + " " + order);
 			LOGGER.info(hql.toString());
@@ -1356,7 +1358,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			if (rate != null) {
 				query.setParameter("rate", rate);
 			}
-			if (departmentIds.size()==0) {
+			if (departmentIds.size()==0 && offset!=-1 && limit !=-1) {
 				query.setFirstResult(offset);
 				query.setMaxResults(limit);
 			}

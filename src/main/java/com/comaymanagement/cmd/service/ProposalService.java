@@ -145,6 +145,8 @@ public class ProposalService {
 
 			if (results.size() > 0) {
 				// Count by status
+				proposalModels = proposalRepositoryImpl.findAllProposalForAll(new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(),
+						"", "", sort, order, -1, -1);
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
 				for (Status status : statuses) {

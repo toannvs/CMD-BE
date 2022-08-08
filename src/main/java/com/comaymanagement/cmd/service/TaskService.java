@@ -164,11 +164,13 @@ public class TaskService {
 			results.put("notifies", notifyModels);
 			if (results.size() > 0) {
 				// Count by status
+				List<TaskModel>  taskForCount =  taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(), "",
+						"", "", "", sort, order, -1, -1);
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForTask();
 				for(Status status : statuses) {
 					int count =0;
-					for(TaskModel tModel : taskModelResult) {
+					for(TaskModel tModel : taskForCount) {
 						if(tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
@@ -491,11 +493,13 @@ public class TaskService {
 			results.put("tasks", tasks);
 			if (results.size() > 0) {
 				// Count by status
+				List<TaskModel>  taskForCount =  taskRepository.filter("", "", "", "", "", "", "", "",
+						-1, order, ""	, sort);
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForTask();
 				for(Status status : statuses) {
 					int count =0;
-					for(TaskModel tModel : tasks) {
+					for(TaskModel tModel : taskForCount) {
 						if(tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
@@ -613,11 +617,16 @@ public class TaskService {
 
 			if (results.size() > 0) {
 				// Count by status
-				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForTask();
+				for (Status status : statuses) {
+					statusIds.add(status.getId());
+				}
+				List<TaskModel>  taskForCount =  taskRepository.findAllTaskAssigeToMe(userDetail.getId(), new ArrayList<Integer>(),  new ArrayList<Integer>(),
+						statusIds, null, null, null, sort, order, -1, -1);
+				List<StatusModel> statusModels = new ArrayList<>();
 				for(Status status : statuses) {
 					int count =0;
-					for(TaskModel tModel : taskModelResult) {
+					for(TaskModel tModel : taskForCount) {
 						if(tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
@@ -672,7 +681,7 @@ public class TaskService {
 
 			startDate = (jsonObject.get("startDate") != null && !jsonObject.get("startDate").asText().equals("null")
 					&& !jsonObject.get("startDate").asText().equals("")) ? jsonObject.get("startDate").asText() : null;
-			finishDate = (jsonObject.get("finishDate") != null && !jsonObject.get("finishDate").asText().equals("null")
+			finishDate = (jsonObject.get("finishDate") != null && !jsonObject.get("finishDate").asText().equals("null")	
 					&& !jsonObject.get("finishDate").asText().equals("")) ? jsonObject.get("finishDate").asText()
 							: null;
 			for (JsonNode receiverId : jsonCreatorIds) {
@@ -723,11 +732,16 @@ public class TaskService {
 
 			if (results.size() > 0) {
 				// Count by status
-				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForTask();
+				for (Status status : statuses) {
+					statusIds.add(status.getId());
+				}
+				List<TaskModel>  taskForCount = taskRepository.findAllTaskCreatedByMe(userDetail.getId(), new ArrayList<Integer>(),  new ArrayList<Integer>(),
+						statusIds, null, null, null, sort, order, -1, -1);
+				List<StatusModel> statusModels = new ArrayList<>();
 				for(Status status : statuses) {
 					int count =0;
-					for(TaskModel tModel : taskModelResult) {
+					for(TaskModel tModel : taskForCount) {
 						if(tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
