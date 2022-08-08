@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.persistence.criteria.CriteriaBuilder.In;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,10 @@ import org.springframework.stereotype.Service;
 
 import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
+import com.comaymanagement.cmd.entity.ApprovalStep;
+import com.comaymanagement.cmd.entity.ApprovalStepDetail;
 import com.comaymanagement.cmd.entity.Employee;
+import com.comaymanagement.cmd.entity.Notify;
 import com.comaymanagement.cmd.entity.Pagination;
 import com.comaymanagement.cmd.entity.Proposal;
 import com.comaymanagement.cmd.entity.ProposalDetail;
@@ -27,6 +32,7 @@ import com.comaymanagement.cmd.entity.Status;
 import com.comaymanagement.cmd.model.NotifyModel;
 import com.comaymanagement.cmd.model.ProposalModel;
 import com.comaymanagement.cmd.model.StatusModel;
+import com.comaymanagement.cmd.repositoryimpl.ApprovalStepDetailRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
@@ -46,7 +52,6 @@ public class ProposalService {
 	@Autowired
 	ProposalRepositoryImpl proposalRepositoryImpl;
 
-
 	@Autowired
 	ProposalTypeRepositoryImpl proposalTypeRepositoryImpl;
 
@@ -55,12 +60,16 @@ public class ProposalService {
 
 	@Autowired
 	StatusRepositotyImpl statusRepositotyImpl;
-	
+
 	@Autowired
-	ApprovalStepRepositoryImpl approvalStepRepository; 
+	ApprovalStepRepositoryImpl approvalStepRepository;
 
 	@Autowired
 	NotifyRepositoryImpl notifyRepositoryImpl;
+
+	@Autowired
+	ApprovalStepDetailRepositoryImpl approvalStepDetailRepository;
+
 	public ResponseEntity<Object> findAllForAll(String json, String sort, String order, String page) {
 		List<ProposalModel> proposalModels = new ArrayList<>();
 		JsonMapper jsonMapper = new JsonMapper();
@@ -78,11 +87,11 @@ public class ProposalService {
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
 			JsonNode jsonCreatorIds = jsonObject.get("creatorIds");
 			JsonNode jsonProposalTypeIds = jsonObject.get("proposalTypeIds");
-			
+
 			for (JsonNode creatorId : jsonCreatorIds) {
 				creatorIds.add(Integer.valueOf(creatorId.toString()));
 			}
-			for(JsonNode proposalTypeId : jsonProposalTypeIds) {
+			for (JsonNode proposalTypeId : jsonProposalTypeIds) {
 				proposalTypeIds.add(Integer.valueOf(proposalTypeId.toString()));
 			}
 			createDateFrom = (jsonObject.get("createDateFrom") != null
@@ -115,14 +124,15 @@ public class ProposalService {
 			if (order == null || order == "") {
 				order = "desc";
 			}
-			proposalModels = proposalRepositoryImpl.findAllProposalForAll(proposalTypeIds,
-					statusIds, creatorIds, createDateFrom, createDateTo, sort, order, offset, limit);
+			proposalModels = proposalRepositoryImpl.findAllProposalForAll(proposalTypeIds, statusIds, creatorIds,
+					createDateFrom, createDateTo, sort, order, offset, limit);
 
 //			Integer totalProposal  = 0;
 //			totalProposal = proposalRepositoryImpl.countAllPaging(userDetail.getId(), proposal, content, status, creator, createDate, finishDate, sort, order, offset, limit);
 //			
 
-			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
+			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit,
+					"id", order);
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
@@ -132,15 +142,15 @@ public class ProposalService {
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 			results.put("notifies", notifyModels);
-			
+
 			if (results.size() > 0) {
 				// Count by status
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
-				for(Status status : statuses) {
-					int count =0;
-					for(ProposalModel pModel : proposalModels) {
-						if(pModel.getStatus().getId() == status.getId()) {
+				for (Status status : statuses) {
+					int count = 0;
+					for (ProposalModel pModel : proposalModels) {
+						if (pModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
 					}
@@ -182,11 +192,11 @@ public class ProposalService {
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
 			JsonNode jsonCreatorIds = jsonObject.get("creatorIds");
 			JsonNode jsonProposalTypeIds = jsonObject.get("proposalTypeIds");
-			
+
 			for (JsonNode creatorId : jsonCreatorIds) {
 				creatorIds.add(Integer.valueOf(creatorId.toString()));
 			}
-			for(JsonNode proposalTypeId : jsonProposalTypeIds) {
+			for (JsonNode proposalTypeId : jsonProposalTypeIds) {
 				proposalTypeIds.add(Integer.valueOf(proposalTypeId.toString()));
 			}
 			createDateFrom = (jsonObject.get("createDateFrom") != null
@@ -238,10 +248,10 @@ public class ProposalService {
 				// Count by status
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
-				for(Status status : statuses) {
-					int count =0;
-					for(ProposalModel pModel : proposalModels) {
-						if(pModel.getStatus().getId() == status.getId()) {
+				for (Status status : statuses) {
+					int count = 0;
+					for (ProposalModel pModel : proposalModels) {
+						if (pModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
 					}
@@ -283,7 +293,7 @@ public class ProposalService {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
 			JsonNode jsonProposalTypeIds = jsonObject.get("proposalTypeIds");
-			for(JsonNode proposalTypeId : jsonProposalTypeIds) {
+			for (JsonNode proposalTypeId : jsonProposalTypeIds) {
 				proposalTypeIds.add(Integer.valueOf(proposalTypeId.toString()));
 			}
 //			creator = (jsonObject.get("creator") != null && !jsonObject.get("creator").asText().equals("null")
@@ -338,10 +348,10 @@ public class ProposalService {
 				// Count by status
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForProposal();
-				for(Status status : statuses) {
-					int count =0;
-					for(ProposalModel pModel : proposalModels) {
-						if(pModel.getStatus().getId() == status.getId()) {
+				for (Status status : statuses) {
+					int count = 0;
+					for (ProposalModel pModel : proposalModels) {
+						if (pModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
 					}
@@ -435,6 +445,36 @@ public class ProposalService {
 			proposalModel = proposalRepositoryImpl.add(proposal, proposalDetails);
 
 			if (null != proposalModel) {
+//				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposalTypeId), proposal.getCurrentStep().toString());
+//				List<Integer> employeeIds = new ArrayList<>();
+//				List<Integer> positionIds = new ArrayList<>();
+//				List<Integer> departmentIds = new ArrayList<>();
+//				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
+//				for(ApprovalStep appStep : approvalStep) {
+//					// One app step have many appStepDetail
+//					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(statusId);
+//					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
+//						// One appStepDetail have many record;
+//						employeeIds.add(appStepDetail.getEmployeeId());
+//						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+//							employeeIds.add(emp.getId());
+//						}
+//						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
+//							employeeIds.add(emp.getId());
+//						}
+//						
+//					}
+//				}
+//				for(Integer empId : employeeIds) {
+//						Employee employee = employeeRepositoryImpl.findById(empId);
+//						Notify notify = null;
+//						notify = new Notify();
+//						notify.setIsRead(false);
+//						notify.setReceiver(employee);
+//						notify.setTitle("Đề xuất mới");
+//						notify.setDescription("Bạn vừa nhận được đề xuất từ "+ proposalModel.getCreator().getName());
+//				}
+//				
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Thêm đề xuất thành công", proposalModel));
 			} else {
@@ -447,6 +487,7 @@ public class ProposalService {
 					.body(new ResponseObject("ERROR", e.getMessage(), ""));
 		}
 	}
+
 	public ResponseEntity<Object> edit(String json) {
 		ProposalModel proposalModel = null;
 		List<ProposalDetail> proposalDetails = null;
@@ -458,7 +499,7 @@ public class ProposalService {
 			JsonNode jsonObjectProposalDetails;
 			jsonObjectProposal = jsonMapper.readTree(json);
 			jsonObjectProposalDetails = jsonObjectProposal.get("proposalDetails");
-			Integer proposalId = jsonObjectProposal.get("id") != null ? jsonObjectProposal.get("id").asInt():-1	;
+			Integer proposalId = jsonObjectProposal.get("id") != null ? jsonObjectProposal.get("id").asInt() : -1;
 			String modifydate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			Proposal proposal = proposalRepositoryImpl.findById(proposalId);
 			proposal.setModifyDate(modifydate);
@@ -476,15 +517,15 @@ public class ProposalService {
 				proposalDetail.setContent(content);
 				proposalDetails.add(proposalDetail);
 			}
-			
+
 			Integer editStatus = proposalRepositoryImpl.edit(proposal, proposalDetails);
-			
-			if (editStatus > 0 ) {
+
+			if (editStatus > 0) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR","Cập nhật đề xuất thất bại", ""));
+						.body(new ResponseObject("ERROR", "Cập nhật đề xuất thất bại", ""));
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -492,37 +533,43 @@ public class ProposalService {
 					.body(new ResponseObject("ERROR", e.getMessage(), ""));
 		}
 	}
+
 	public ResponseEntity<Object> accept(Integer proposalId) {
 		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
 //		Status status = statusRepositotyImpl.findByIndexAndType(totalStep, null)
-		if(proposal!=null) {
+		if (proposal != null) {
 			Integer totalStep = approvalStepRepository.countByProposalTypeId(proposal.getProposalType().getId());
 			Status curentStatus = proposal.getStatus();
-			// if next step still in total step, current step will be update to next step and keep status is pending
+			// if next step still in total step, current step will be update to next step
+			// and keep status is pending
 			// else "currentStep" will always be total + 1 and change status to complete
-			if(curentStatus.getType().equals("proposal") && (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
+			if (curentStatus.getType().equals("proposal")
+					&& (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX
+							|| curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX
+							|| curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR","Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
+						.body(new ResponseObject("ERROR", "Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
 			}
 			Integer nextStep = proposal.getCurrentStep() + 1;
-			if(nextStep <= totalStep ) {
+			if (nextStep <= totalStep) {
 				proposal.setCurrentStep(nextStep);
-			}else {
-				proposal.setCurrentStep(totalStep+1);
-				Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX, "proposal");
+			} else {
+				proposal.setCurrentStep(totalStep + 1);
+				Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX,
+						"proposal");
 				proposal.setStatus(newStatus);
 			}
-			if(proposalRepositoryImpl.edit(proposal, null)>0) {
+			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(proposalId);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK","Cập nhật đề xuất thành công", ""));
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
 			}
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
-		
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
+
 	}
+
 	public ResponseEntity<Object> denied(String json) {
 		Integer id = -1;
 		String reason = "";
@@ -530,34 +577,39 @@ public class ProposalService {
 			JsonMapper jsonMapper = new JsonMapper();
 			JsonNode jsonObjectProposal;
 			jsonObjectProposal = jsonMapper.readTree(json);
-			id = jsonObjectProposal.get("id") !=null ? jsonObjectProposal.get("id").asInt() : -1;
-			reason = jsonObjectProposal.get("reason") != null ?  jsonObjectProposal.get("reasonl").asText() : "";
+			id = jsonObjectProposal.get("id") != null ? jsonObjectProposal.get("id").asInt() : -1;
+			reason = jsonObjectProposal.get("reason") != null ? jsonObjectProposal.get("reasonl").asText() : "";
 		} catch (Exception e) {
 			// TODO: handle exception
 			LOGGER.error(e.getMessage());
 		}
 		Proposal proposal = proposalRepositoryImpl.findById(id);
-		if(proposal!=null) {
+		if (proposal != null) {
 			Status curentStatus = proposal.getStatus();
-			// if next step still in total step, current step will be update to next step and keep status is pending
+			// if next step still in total step, current step will be update to next step
+			// and keep status is pending
 			// else "currentStep" will always be total + 1 and change status to complete
-			if(curentStatus.getType().equals("proposal") && (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
+			if (curentStatus.getType().equals("proposal")
+					&& (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX
+							|| curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX
+							|| curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR","Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
+						.body(new ResponseObject("ERROR", "Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
 			}
-			Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX, "proposal");
+			Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX,
+					"proposal");
 			proposal.setStatus(newStatus);
 			proposal.setReason(reason);
-			if(proposalRepositoryImpl.edit(proposal, null)>0) {
+			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK","Cập nhật đề xuất thành công", ""));
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
 			}
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
 	}
+
 	public ResponseEntity<Object> cancel(String json) {
 		Integer id = -1;
 		String reason = "";
@@ -565,32 +617,36 @@ public class ProposalService {
 			JsonMapper jsonMapper = new JsonMapper();
 			JsonNode jsonObjectProposal;
 			jsonObjectProposal = jsonMapper.readTree(json);
-			id = jsonObjectProposal.get("id") !=null ? jsonObjectProposal.get("id").asInt() : -1;
-			reason = jsonObjectProposal.get("reason") != null ?  jsonObjectProposal.get("reason").asText() : "";
+			id = jsonObjectProposal.get("id") != null ? jsonObjectProposal.get("id").asInt() : -1;
+			reason = jsonObjectProposal.get("reason") != null ? jsonObjectProposal.get("reason").asText() : "";
 		} catch (Exception e) {
 			// TODO: handle exception
 			LOGGER.error(e.getMessage());
 		}
 		Proposal proposal = proposalRepositoryImpl.findById(id);
-		if(proposal!=null) {
+		if (proposal != null) {
 			Status curentStatus = proposal.getStatus();
-			// if next step still in total step, current step will be update to next step and keep status is pending
+			// if next step still in total step, current step will be update to next step
+			// and keep status is pending
 			// else "currentStep" will always be total + 1 and change status to complete
-			if(curentStatus.getType().equals("proposal") && (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX || curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
+			if (curentStatus.getType().equals("proposal")
+					&& (curentStatus.getIndex() == CMDConstrant.PROPOSAL_COMPLETE_STATUS_INDEX
+							|| curentStatus.getIndex() == CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX
+							|| curentStatus.getIndex() == CMDConstrant.PROPOSAL_DENIED_STATUS_INDEX)) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR","Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
+						.body(new ResponseObject("ERROR", "Đề xuất đã hoàn thành hoặc đã bị từ chối", ""));
 			}
-			Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX, "proposal");
+			Status newStatus = statusRepositotyImpl.findByIndexAndType(CMDConstrant.PROPOSAL_CANCELLED_STATUS_INDEX,
+					"proposal");
 			proposal.setStatus(newStatus);
 			proposal.setReason(reason);
-			if(proposalRepositoryImpl.edit(proposal, null)>0) {
+			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK","Cập nhật đề xuất thành công", ""));
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
 			}
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ResponseObject("ERROR","Có lỗi xảy ra", ""));
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
 	}
 }

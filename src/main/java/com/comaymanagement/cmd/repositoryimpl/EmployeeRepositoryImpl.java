@@ -760,4 +760,46 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			return null;
 		}
 	}
+	public List<Employee> findByPositionId(Integer positionId){
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		List<Employee> employees = new ArrayList();
+		hql.append("from employees emp ");
+		hql.append("inner join emp.positions as pos ");
+		hql.append("where pos.id = :positionId ");
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("positionId", positionId);
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Employee employee = (Employee) it.next();
+				employees.add(employee);
+			}
+			return employees;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in findByPositionId() ", e);
+			return null;
+		}
+	}
+	
+	public List<Employee> findByDepartmentId(Integer departmentId){
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		List<Employee> employees = new ArrayList();
+		hql.append("from employees emp ");
+		hql.append("inner join emp.departments as dep ");
+		hql.append("where dep.id = :departmentId ");
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("departmentId", departmentId);
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Employee employee = (Employee) it.next();
+				employees.add(employee);
+			}
+			return employees;
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in findByDepartmentId() ", e);
+			return null;
+		}
+	}
+	
 }
