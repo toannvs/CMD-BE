@@ -491,7 +491,7 @@ public class EmployeeService {
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE5"), ""));
 			}
 
-			String avatar = (jsonObjectEmployee.get("avatar") != null &&  jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText() : "";
+			String avatar = (jsonObjectEmployee.get("avatar") != null &&  !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText() : "";
 			String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText() : "";
 			String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
 					: jsonObjectEmployee.get("dateOfBirth").asText() == "null" ? ""
@@ -508,6 +508,8 @@ public class EmployeeService {
 			emp.setName(jsonObjectEmployee.get("name").asText());
 			if(avatar.equals("")) {
 				emp.setAvatar(CMDConstrant.AVATAR);
+			}else {
+				emp.setAvatar(avatar);
 			}
 			emp.setGender(gender);
 			emp.setDateOfBirth(dateOfBirth);
@@ -665,7 +667,7 @@ public class EmployeeService {
 					}
 				}
 			}
-			String avatar = (jsonObjectEmployee.get("avatar") != null &&  jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText() : "";
+			String avatar = (jsonObjectEmployee.get("avatar") != null &&  !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText() : "";
 			String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText() : "";
 			String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
 					: jsonObjectEmployee.get("dateOfBirth").asText() == "null" ? ""
