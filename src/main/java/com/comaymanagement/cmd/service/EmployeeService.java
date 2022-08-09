@@ -1099,4 +1099,16 @@ public class EmployeeService {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
 		}
 	}
+	public ResponseEntity<Object> findById(Integer id) {
+			Employee emp =  employeeRepository.findById(id);
+			EmployeeModel empModel =  employeeRepository.toModel(emp);   
+			if(empModel!=null) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "SUCCESSFULLY",empModel));
+			}else {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "Not found", ""));
+			}
+			
+	}
 }

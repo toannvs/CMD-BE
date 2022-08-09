@@ -87,6 +87,13 @@ public class EmployeesController {
 			@RequestParam(value = "name", required = false) String name) {
 		return employeeService.findByName(name);
 	}
+	@PreAuthorize("@customRoleService.canView('employee',principal)")
+	@GetMapping(value = "/{id}")
+	@ResponseBody
+	public ResponseEntity<Object> findByName(
+			@PathVariable(value = "id", required = false) Integer id) {
+		return employeeService.findById(id);
+	}
 
 	// Example return ResponseEntity
 
