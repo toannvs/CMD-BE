@@ -138,7 +138,7 @@ public class TaskService {
 			for (JsonNode jsonNode : jsonObjectTask.get("departmentIds")) {
 				departmentIds.add(jsonNode.asInt());
 			}
-			scanOverdue();
+//			scanOverdue();
 			Integer totalItem = taskRepository.countAllPaging(departmentIds, title, statusIds, creators, receivers,
 					startDate, finishDate, priority, rate, sort, order, offset, limit);
 			taskModelListTMP = taskRepository.findAll(departmentIds, title, statusIds, creators, receivers, startDate,
@@ -889,13 +889,12 @@ public class TaskService {
 	
 	// Scan current time and change status of these task overdue
 	public void scanOverdue() {
-		List<TaskModel>  taskModels =  taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(), "",
-				"", "", "", "id", "asc", -1, -1);
-			for(TaskModel taskModel : taskModels) {
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
-				LocalDate dt = LocalDate.parse(taskModel.getFinishDate(),dtf);
-				System.out.println(dt);
-			}
+//		List<TaskModel>  taskModels =  taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(), "",
+//				"", "", "", "id", "asc", -1, -1);
+//			for(TaskModel taskModel : taskModels) {
+//				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
+//				LocalDate dt = LocalDate.parse(taskModel.getFinishDate(),dtf);
+//			}
 //			LocalDateTime now = LocalDateTime.now();  
 //			System.out.println(dtf.format(now));   
 		   
