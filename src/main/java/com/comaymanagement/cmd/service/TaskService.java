@@ -1,6 +1,8 @@
 package com.comaymanagement.cmd.service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -136,6 +138,7 @@ public class TaskService {
 			for (JsonNode jsonNode : jsonObjectTask.get("departmentIds")) {
 				departmentIds.add(jsonNode.asInt());
 			}
+			scanOverdue();
 			Integer totalItem = taskRepository.countAllPaging(departmentIds, title, statusIds, creators, receivers,
 					startDate, finishDate, priority, rate, sort, order, offset, limit);
 			taskModelListTMP = taskRepository.findAll(departmentIds, title, statusIds, creators, receivers, startDate,
@@ -242,7 +245,7 @@ public class TaskService {
 		JsonNode jsonObjectTask;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
-
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
 			Task task = new Task();
 			Integer statusId = jsonObjectTask.get("statusId") != null ? jsonObjectTask.get("statusId").asInt() : -1;
 			Integer receiverId = jsonObjectTask.get("receiverId") != null ? jsonObjectTask.get("receiverId").asInt()
@@ -883,4 +886,20 @@ public class TaskService {
 					.body(new ResponseObject("ERROR", e.getMessage(), ""));
 		}
 	}
+	
+	// Scan current time and change status of these task overdue
+	public void scanOverdue() {
+		List<TaskModel>  taskModels =  taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(), "",
+				"", "", "", "id", "asc", -1, -1);
+			for(TaskModel taskModel : taskModels) {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
+				LocalDate dt = LocalDate.parse(taskModel.getFinishDate(),dtf);
+				System.out.println(dt);
+			}
+//			LocalDateTime now = LocalDateTime.now();  
+//			System.out.println(dtf.format(now));   
+		   
+	}
+	
+	
 }
