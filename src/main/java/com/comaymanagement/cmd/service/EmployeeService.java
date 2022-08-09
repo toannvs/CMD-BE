@@ -682,6 +682,8 @@ public class EmployeeService {
 			emp.setName(jsonObjectEmployee.get("name").asText());
 			if(avatar.equals("")) {
 				emp.setAvatar(CMDConstrant.AVATAR);
+			}else {
+				emp.setAvatar(avatar);
 			}
 			emp.setGender(gender);
 			emp.setDateOfBirth(dateOfBirth);
