@@ -11,8 +11,8 @@ import com.comaymanagement.cmd.constant.Message;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class ApprovalStepDetailService {
-	@Autowired
-	Message message;
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApprovalStepDetailService.class);
+//	@Autowired
+//	Message message;
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ApprovalStepDetailService.class);
 
 }

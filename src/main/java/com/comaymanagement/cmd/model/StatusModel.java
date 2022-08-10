@@ -1,11 +1,5 @@
 package com.comaymanagement.cmd.model;
 
-import java.util.Set;
-
-import javax.persistence.Entity;
-
-import com.comaymanagement.cmd.entity.Proposal;
-import com.comaymanagement.cmd.entity.Task;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

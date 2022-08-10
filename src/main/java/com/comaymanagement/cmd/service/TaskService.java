@@ -1,7 +1,6 @@
 package com.comaymanagement.cmd.service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -233,9 +232,7 @@ public class TaskService {
 		JsonNode jsonObjectTask;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			Task task = new Task();
-			Integer statusId = jsonObjectTask.get("statusId") != null ? jsonObjectTask.get("statusId").asInt() : -1;
 			Integer receiverId = jsonObjectTask.get("receiverId") != null ? jsonObjectTask.get("receiverId").asInt()
 					: -1;
 //			Integer creatorId = jsonObjectTask.get("creatorId") != null ? jsonObjectTask.get("creatorId").asInt() : -1;
@@ -542,7 +539,6 @@ public class TaskService {
 
 	public ResponseEntity<Object> findAllTaskAssigeToMe(String json, String sort, String order, String page) {
 
-		List<TaskModel> taskModels = null;
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
 		String startDate = null;

@@ -574,7 +574,6 @@ public class EmployeeService {
 		List<Position> positionList = new ArrayList<>();
 		List<Team> teamList = new ArrayList<>();
 		List<Department> departmentList = new ArrayList<>();
-		Department dep = new Department();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectEmployee;
 		JsonNode jsonObjectPosition;
@@ -778,7 +777,7 @@ public class EmployeeService {
 			}
 			multipartFile.transferTo(file);
 
-			final File csvFile = new File(pathFull + nameFile.toString());
+//			final File csvFile = new File(pathFull + nameFile.toString());
 			CSVReader reader = new CSVReaderBuilder(new FileReader(pathFull + nameFile.toString())).withSkipLines(1)
 					.build();
 
