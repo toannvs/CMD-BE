@@ -76,4 +76,5 @@ public interface ITaskRepository {
 	Integer countAllTaskCreatedByMe(Integer employeeId,List<Integer> receiverIds,
 			List<Integer> departmentIds, List<Integer> statusIds,Integer rate,String startDate,
 			String finishDate, String sort, String order, Integer offset, Integer limit);
+	void ScanOverDueTask();
 }

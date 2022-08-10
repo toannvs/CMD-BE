@@ -111,7 +111,7 @@ public class TaskService {
 		List<Integer> departmentIds = new ArrayList<Integer>();
 
 		try {
-			scanOverdue();
+			taskRepository.ScanOverDueTask();
 			int offset = (Integer.valueOf(page) - 1) * limit;
 			jsonObjectTask = jsonMapper.readTree(json);
 			title = ((jsonObjectTask.get("title") == null) || (jsonObjectTask.get("title").asText() == "")) ? ""
@@ -140,7 +140,6 @@ public class TaskService {
 			for (JsonNode jsonNode : jsonObjectTask.get("departmentIds")) {
 				departmentIds.add(jsonNode.asInt());
 			}
-//			scanOverdue();
 			Integer totalItem = taskRepository.countAllPaging(departmentIds, title, statusIds, creators, receivers,
 					startDate, finishDate, priority, rate, sort, order, offset, limit);
 			taskModelListTMP = taskRepository.findAll(departmentIds, title, statusIds, creators, receivers, startDate,
@@ -902,29 +901,6 @@ public class TaskService {
 		}
 	}
 
-	// Scan current time and change status of these task overdue
-	public void scanOverdue() {
-		try {
-			List<TaskModel> taskModels = taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(),
-					new ArrayList<Integer>(), new ArrayList<Integer>(), "", "", "", "", "id", "asc", -1, -1);
-			for(TaskModel taskModel: taskModels) {
-				DateTimeFormatter dtf = null;
-				LocalDateTime now = LocalDateTime.now();
-				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-				LocalDateTime dt = LocalDateTime.parse(taskModel.getFinishDate(), dtf);
-				if(now.isAfter(dt)) {
-					Status status = new Status();
-					status = statusRepositotyImpl.findByIndexAndType(6, "task");
-					Task task = taskRepository.findByIdToEdit(taskModel.getId());
-					task.setStatus(status);
-					taskRepository.edit(task, false, true, false, null);
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
 
-
-	}
 
 }
