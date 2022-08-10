@@ -770,11 +770,15 @@ public class EmployeeService {
 			nameFile.append(countFile);
 			nameFile.append(".csv");
 			File file = new File(pathFull + nameFile.toString());
-			if (file.exists() && !file.isDirectory()) {
-				PrintWriter writer = new PrintWriter(file);
-				writer.print("");
-				writer.close();
+			if(file.exists() && file.isFile()) {
+				file.delete();
 			}
+			file = new File(pathFull + nameFile.toString());
+//			if (file.exists() && !file.isDirectory()) {
+//				PrintWriter writer = new PrintWriter(file);
+//				writer.print("");
+//				writer.close();
+//			}
 			multipartFile.transferTo(file);
 
 //			final File csvFile = new File(pathFull + nameFile.toString());
