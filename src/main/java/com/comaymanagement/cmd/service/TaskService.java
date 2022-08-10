@@ -2,6 +2,7 @@ package com.comaymanagement.cmd.service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,10 +53,10 @@ public class TaskService {
 
 	@Autowired
 	StatusRepositotyImpl statusRepositotyImpl;
-	
+
 	@Autowired
 	TaskHistoryRepositoryImpl taskHistoryRepositoryImpl;
-	
+
 	@Autowired
 	NotifyRepositoryImpl notifyRepositoryImpl;
 
@@ -110,6 +111,7 @@ public class TaskService {
 		List<Integer> departmentIds = new ArrayList<Integer>();
 
 		try {
+			scanOverdue();
 			int offset = (Integer.valueOf(page) - 1) * limit;
 			jsonObjectTask = jsonMapper.readTree(json);
 			title = ((jsonObjectTask.get("title") == null) || (jsonObjectTask.get("title").asText() == "")) ? ""
@@ -157,6 +159,9 @@ public class TaskService {
 			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
 			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
+			
+
+			
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
@@ -245,7 +250,7 @@ public class TaskService {
 		JsonNode jsonObjectTask;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			Task task = new Task();
 			Integer statusId = jsonObjectTask.get("statusId") != null ? jsonObjectTask.get("statusId").asInt() : -1;
 			Integer receiverId = jsonObjectTask.get("receiverId") != null ? jsonObjectTask.get("receiverId").asInt()
@@ -273,7 +278,7 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("EMPE8"), ""));
 			}
-			Status status = statusRepositotyImpl.findByIndexAndType(CMDConstrant.NEW_STATUS,"task");
+			Status status = statusRepositotyImpl.findByIndexAndType(CMDConstrant.NEW_STATUS, "task");
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
@@ -382,7 +387,7 @@ public class TaskService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectTask;
 		String messageCode = "";
-		Notify notify =  null;
+		Notify notify = null;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
 			Integer id = jsonObjectTask.get("id").asInt();
@@ -431,7 +436,7 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("Error", message.getMessageByItemCode("TASKE3"), taskModel));
 			}
-			if(task.getReceiver().getId() != receiverId) {
+			if (task.getReceiver().getId() != receiverId) {
 				notify = new Notify();
 				notify.setReceiver(receiver);
 				notify.setIsRead(false);
@@ -450,7 +455,8 @@ public class TaskService {
 			task.setRate(rate);
 			task.setPriority(priority);
 			task.setStartDate(startDate);
-			taskModel = taskRepository.edit(task,CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
+			taskModel = taskRepository.edit(task, CMDConstrant.UPDATE_TASK, !CMDConstrant.CHANGE_STATUS_TASK,
+					!CMDConstrant.REOPEN_TASK, null);
 			if (null != taskModel) {
 				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
@@ -496,14 +502,14 @@ public class TaskService {
 			results.put("tasks", tasks);
 			if (results.size() > 0) {
 				// Count by status
-				List<TaskModel>  taskForCount =  taskRepository.filter("", "", "", "", "", "", "", "",
-						-1, order, ""	, sort);
+				List<TaskModel> taskForCount = taskRepository.filter("", "", "", "", "", "", "", "", -1, order, "",
+						sort);
 				List<StatusModel> statusModels = new ArrayList<>();
 				List<Status> statuses = statusRepositotyImpl.findAllForTask();
-				for(Status status : statuses) {
-					int count =0;
-					for(TaskModel tModel : taskForCount) {
-						if(tModel.getStatus().getId() == status.getId()) {
+				for (Status status : statuses) {
+					int count = 0;
+					for (TaskModel tModel : taskForCount) {
+						if (tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
 					}
@@ -624,13 +630,14 @@ public class TaskService {
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}
-				List<TaskModel>  taskForCount =  taskRepository.findAllTaskAssigeToMe(userDetail.getId(), new ArrayList<Integer>(),  new ArrayList<Integer>(),
-						statusIds, null, null, null, sort, order, -1, -1);
+				List<TaskModel> taskForCount = taskRepository.findAllTaskAssigeToMe(userDetail.getId(),
+						new ArrayList<Integer>(), new ArrayList<Integer>(), statusIds, null, null, null, sort, order,
+						-1, -1);
 				List<StatusModel> statusModels = new ArrayList<>();
-				for(Status status : statuses) {
-					int count =0;
-					for(TaskModel tModel : taskForCount) {
-						if(tModel.getStatus().getId() == status.getId()) {
+				for (Status status : statuses) {
+					int count = 0;
+					for (TaskModel tModel : taskForCount) {
+						if (tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
 					}
@@ -684,7 +691,7 @@ public class TaskService {
 
 			startDate = (jsonObject.get("startDate") != null && !jsonObject.get("startDate").asText().equals("null")
 					&& !jsonObject.get("startDate").asText().equals("")) ? jsonObject.get("startDate").asText() : null;
-			finishDate = (jsonObject.get("finishDate") != null && !jsonObject.get("finishDate").asText().equals("null")	
+			finishDate = (jsonObject.get("finishDate") != null && !jsonObject.get("finishDate").asText().equals("null")
 					&& !jsonObject.get("finishDate").asText().equals("")) ? jsonObject.get("finishDate").asText()
 							: null;
 			for (JsonNode receiverId : jsonCreatorIds) {
@@ -739,13 +746,14 @@ public class TaskService {
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}
-				List<TaskModel>  taskForCount = taskRepository.findAllTaskCreatedByMe(userDetail.getId(), new ArrayList<Integer>(),  new ArrayList<Integer>(),
-						statusIds, null, null, null, sort, order, -1, -1);
+				List<TaskModel> taskForCount = taskRepository.findAllTaskCreatedByMe(userDetail.getId(),
+						new ArrayList<Integer>(), new ArrayList<Integer>(), statusIds, null, null, null, sort, order,
+						-1, -1);
 				List<StatusModel> statusModels = new ArrayList<>();
-				for(Status status : statuses) {
-					int count =0;
-					for(TaskModel tModel : taskForCount) {
-						if(tModel.getStatus().getId() == status.getId()) {
+				for (Status status : statuses) {
+					int count = 0;
+					for (TaskModel tModel : taskForCount) {
+						if (tModel.getStatus().getId() == status.getId()) {
 							count++;
 						}
 					}
@@ -774,42 +782,47 @@ public class TaskService {
 		try {
 			TaskModel taskModel = null;
 			Task task = taskRepository.findByIdToEdit(Integer.valueOf(id));
-			if(task.getStatus().getId() == CMDConstrant.DONE_STATUS || task.getStatus().getId() == CMDConstrant.CANCEL_STATUS) {
+			if (task.getStatus().getId() == CMDConstrant.DONE_STATUS
+					|| task.getStatus().getId() == CMDConstrant.CANCEL_STATUS) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
 			}
 			Status status = null;
-			if(task.getCreator().getId() != task.getReceiver().getId()) {
-				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1,"task");
-			}else if(task.getCreator().getId() == task.getReceiver().getId() && task.getStatus().getIndex() == CMDConstrant.INPROGESS_STATUS) {
-				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 2,"task");
+			if (task.getCreator().getId() != task.getReceiver().getId()) {
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1, "task");
+			} else if (task.getCreator().getId() == task.getReceiver().getId()
+					&& task.getStatus().getIndex() == CMDConstrant.INPROGESS_STATUS) {
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 2, "task");
 			} else {
-				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1,"task");
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1, "task");
 			}
-	
+
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
 			}
 			Notify notify = null;
-			if(status.getIndex()==CMDConstrant.REVIEW_STATUS) {
+			if (status.getIndex() == CMDConstrant.REVIEW_STATUS) {
 				notify = new Notify();
 				notify.setIsRead(false);
 				notify.setReceiver(task.getCreator());
 				notify.setTitle(message.getMessageByItemCode("TASKN5"));
-				notify.setDescription(message.getMessageByItemCode("TASKN6")+ CMDConstrant.SPACE + task.getReceiver().getName());
-			}else if(status.getIndex()==CMDConstrant.DONE_STATUS) {
+				notify.setDescription(
+						message.getMessageByItemCode("TASKN6") + CMDConstrant.SPACE + task.getReceiver().getName());
+			} else if (status.getIndex() == CMDConstrant.DONE_STATUS) {
 				notify = new Notify();
 				notify.setIsRead(false);
 				notify.setReceiver(task.getCreator());
 				notify.setTitle(message.getMessageByItemCode("TASKN7"));
-				notify.setDescription(task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN8"));
+				notify.setDescription(
+						task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN8"));
 			}
 			task.setStatus(status);
-			taskModel = taskRepository.edit(task,!CMDConstrant.UPDATE_TASK,CMDConstrant.CHANGE_STATUS_TASK,!CMDConstrant.REOPEN_TASK,null);
-			
+			taskModel = taskRepository.edit(task, !CMDConstrant.UPDATE_TASK, CMDConstrant.CHANGE_STATUS_TASK,
+					!CMDConstrant.REOPEN_TASK, null);
+
 			if (null != taskModel) {
-				if(notify != null) {
+				if (notify != null) {
 					notifyRepositoryImpl.add(notify);
 				}
 				return ResponseEntity.status(HttpStatus.OK)
@@ -825,7 +838,7 @@ public class TaskService {
 					.body(new ResponseObject("ERROR", e.getMessage(), ""));
 		}
 	}
-	
+
 	public ResponseEntity<Object> reopen(String json) {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
@@ -835,17 +848,17 @@ public class TaskService {
 					.getPrincipal();
 			jsonObject = jsonMapper.readTree(json);
 			Integer id = jsonObject.get("id") != null ? jsonObject.get("id").asInt() : -1;
-			if(id == CMDConstrant.FAILED) {
+			if (id == CMDConstrant.FAILED) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE6"), ""));
 			}
-			
+
 			String reason = jsonObject.get("reason") != null ? jsonObject.get("reason").asText() : "";
-			
-			
+
 			Task task = taskRepository.findByIdToEdit(Integer.valueOf(id));
-			
-			if(task.getStatus().getId() == CMDConstrant.DONE_STATUS || task.getStatus().getId() == CMDConstrant.CANCEL_STATUS) {
+
+			if (task.getStatus().getId() == CMDConstrant.DONE_STATUS
+					|| task.getStatus().getId() == CMDConstrant.CANCEL_STATUS) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
 			}
@@ -855,22 +868,24 @@ public class TaskService {
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
 			}
 			task.setStatus(status);
-			taskModel = taskRepository.edit(task,!CMDConstrant.UPDATE_TASK,!CMDConstrant.CHANGE_STATUS_TASK,CMDConstrant.REOPEN_TASK,reason);
-			
+			taskModel = taskRepository.edit(task, !CMDConstrant.UPDATE_TASK, !CMDConstrant.CHANGE_STATUS_TASK,
+					CMDConstrant.REOPEN_TASK, reason);
+
 			if (null != taskModel) {
 				Notify notify = new Notify();
-				if(userDetail.getId() == task.getCreator().getId()) {
+				if (userDetail.getId() == task.getCreator().getId()) {
 					notify.setIsRead(false);
 					notify.setReceiver(task.getReceiver());
 					notify.setTitle(message.getMessageByItemCode("TASKN4"));
-					notify.setDescription(task.getCreator().getName()+ CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
-				}else {
+					notify.setDescription(
+							task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
+				} else {
 					notify.setIsRead(false);
 					notify.setReceiver(task.getCreator());
 					notify.setTitle(message.getMessageByItemCode("TASKN4"));
-					notify.setDescription(task.getReceiver().getName()+ CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
+					notify.setDescription(
+							task.getReceiver().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
 				}
-
 
 				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
@@ -886,19 +901,30 @@ public class TaskService {
 					.body(new ResponseObject("ERROR", e.getMessage(), ""));
 		}
 	}
-	
+
 	// Scan current time and change status of these task overdue
 	public void scanOverdue() {
-//		List<TaskModel>  taskModels =  taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(), "",
-//				"", "", "", "id", "asc", -1, -1);
-//			for(TaskModel taskModel : taskModels) {
-//				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
-//				LocalDate dt = LocalDate.parse(taskModel.getFinishDate(),dtf);
-//			}
-//			LocalDateTime now = LocalDateTime.now();  
-//			System.out.println(dtf.format(now));   
-		   
+		try {
+			List<TaskModel> taskModels = taskRepository.findAll(new ArrayList<Integer>(), "", new ArrayList<Integer>(),
+					new ArrayList<Integer>(), new ArrayList<Integer>(), "", "", "", "", "id", "asc", -1, -1);
+			for(TaskModel taskModel: taskModels) {
+				DateTimeFormatter dtf = null;
+				LocalDateTime now = LocalDateTime.now();
+				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime dt = LocalDateTime.parse(taskModel.getFinishDate(), dtf);
+				if(now.isAfter(dt)) {
+					Status status = new Status();
+					status = statusRepositotyImpl.findByIndexAndType(6, "task");
+					Task task = taskRepository.findByIdToEdit(taskModel.getId());
+					task.setStatus(status);
+					taskRepository.edit(task, false, true, false, null);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+
+
 	}
-	
-	
+
 }

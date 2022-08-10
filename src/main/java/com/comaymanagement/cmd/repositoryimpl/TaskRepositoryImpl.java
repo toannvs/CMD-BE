@@ -1547,19 +1547,6 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHisModel.setModifyDate(itemTaskHis.getModifyDate());
 					taskHisModel.setStatus(itemTaskHis.getStatus());
 					taskHisModel.setMessage(itemTaskHis.getMessage());
-					
-//					EmployeeModel receiverHis = new EmployeeModel();
-//					receiverHis.setId(itemTaskHis.getReceiver().getId());
-//					receiverHis.setCode(itemTaskHis.getReceiver().getCode());
-//					receiverHis.setName(itemTaskHis.getReceiver().getName());
-//					receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
-//					receiverHis.setGender(itemTaskHis.getReceiver().getGender());
-//					receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
-//					receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
-//					receiverHis.setPhoneNumber(itemTaskHis.getReceiver().getPhoneNumber());
-//					receiverHis.setActive(itemTaskHis.getReceiver().isActive());
-//					receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
-//					taskHisModel.setReceiver(receiverHis);
 
 					EmployeeModel editor = new EmployeeModel();
 					editor.setId(itemTaskHis.getModifyBy().getId());
