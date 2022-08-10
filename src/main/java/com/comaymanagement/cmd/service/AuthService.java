@@ -84,7 +84,7 @@ public class AuthService {
 			for(Integer roleId : roleIds) {
 				roleDetailModel = roleRepository.findRoleDetailByRoleId(roleId);
 				roleDetailModels.add(roleDetailModel);
-			}
+			} 
 			// Summary of role list
 			RoleDetailModel roleDetailResult = new RoleDetailModel();
 			
@@ -164,9 +164,10 @@ public class AuthService {
 
 	}
 	public Map<String, Object> convertRoleForFEGantPermission(RoleDetailModel roleDetailModel){
-		Map<String, Object> permissionMaps = new LinkedHashMap<>();
+	
 		Map<String, Object> optionMaps = new LinkedHashMap<>();
 		for(OptionModel opModel : roleDetailModel.getOptions()) {
+			Map<String, Object> permissionMaps = new LinkedHashMap<>();
 			for(PermissionModel perModel : opModel.getPermissions()) {
 				permissionMaps.put(perModel.getName(), perModel.isSelected());
 			}
