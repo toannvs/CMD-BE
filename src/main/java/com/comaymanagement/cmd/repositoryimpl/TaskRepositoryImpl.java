@@ -1,5 +1,7 @@
 package com.comaymanagement.cmd.repositoryimpl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,6 +26,7 @@ import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Employee;
+import com.comaymanagement.cmd.entity.Status;
 import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.DepartmentModel;
@@ -49,6 +52,8 @@ public class TaskRepositoryImpl implements ITaskRepository {
 	@Autowired
 	EmployeeRepositoryImpl employeeRepositoryImpl;
 	
+	@Autowired
+	StatusRepositotyImpl statusRepositotyImpl;
 	@Autowired
 	Message message;
 	
@@ -143,8 +148,6 @@ public class TaskRepositoryImpl implements ITaskRepository {
 		hql.append("INNER JOIN t.creator as c ");
 		hql.append("INNER JOIN t.status as s ");
 		hql.append("INNER JOIN t.receiver as r ");
-//		hql.append("INNER JOIN c.departments as dep ");
-//		hql.append("WHERE dep.name LIKE CONCAT('%',:dep,'%') ");
 		hql.append("WHERE t.title LIKE CONCAT('%',:title,'%') ");
 		if(statusIds.size()>0) {
 			hql.append("AND s.id IN :statusIds ");
@@ -252,19 +255,6 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHisModel.setStatus(itemTaskHis.getStatus());
 					taskHisModel.setMessage(itemTaskHis.getMessage());
 					
-//					EmployeeModel receiverHis = new EmployeeModel();
-//					receiverHis.setId(itemTaskHis.getReceiver().getId());
-//					receiverHis.setCode(itemTaskHis.getReceiver().getCode());
-//					receiverHis.setName(itemTaskHis.getReceiver().getName());
-//					receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
-//					receiverHis.setGender(itemTaskHis.getReceiver().getGender());
-//					receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
-//					receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
-//					receiverHis.setPhoneNumber(itemTaskHis.getReceiver().getPhoneNumber());
-//					receiverHis.setActive(itemTaskHis.getReceiver().isActive());
-//					receiverHis.setCreateDate(itemTaskHis.getReceiver().getCreateDate());
-//					taskHisModel.setReceiver(receiverHis);
-
 					EmployeeModel editor = new EmployeeModel();
 					editor.setId(itemTaskHis.getModifyBy().getId());
 					editor.setCode(itemTaskHis.getModifyBy().getCode());
@@ -1614,7 +1604,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			Integer offset, Integer limit) {
 		try {
 			Integer countTotal = 0;
-			List<TaskModel> customTasks = null;
+			List<Integer> taskIds = null;
 			Session session = sessionFactory.getCurrentSession();
 			StringBuilder hql = new StringBuilder();
 			hql.append("FROM tasks AS tas ");
@@ -1679,6 +1669,34 @@ public class TaskRepositoryImpl implements ITaskRepository {
 		return 0;
 	}
 
+	@Override
+	public void ScanOverDueTask() {
+		List<Integer> taskIds = null;
+		StringBuilder hql = new StringBuilder("FROM tasks AS t ");
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			LOGGER.info(hql.toString());
+			taskIds = new ArrayList<Integer>();
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object obj = (Object) it.next();
+				Task task = (Task) obj;
+				DateTimeFormatter dtf = null;
+				LocalDateTime now = LocalDateTime.now();
+				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime dt = LocalDateTime.parse(task.getFinishDate(), dtf);
+				if(now.isAfter(dt)) {
+					Status status = new Status();
+					status = statusRepositotyImpl.findByIndexAndType(6, "task");
+					task.setStatus(status);
+					session.update(task);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in findAll() ", e);
+		}
+	}
+
 }
 
 class TaskComparator implements Comparator<Department> {
@@ -1693,3 +1711,4 @@ class TaskComparator implements Comparator<Department> {
 		return 0;
 	}
 }
+
