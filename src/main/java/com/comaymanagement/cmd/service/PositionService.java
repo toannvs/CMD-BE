@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class PositionService{
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	PositionRepositoryImpl positionRepository;
 	@Autowired

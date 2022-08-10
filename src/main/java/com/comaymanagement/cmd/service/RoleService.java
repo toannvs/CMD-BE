@@ -106,8 +106,6 @@ public class RoleService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectRole;
 		JsonNode jsonObjectOption;
-		JsonNode jsonObjectPermission;
-		List<RoleDetail> roleDetails = new ArrayList<>();
 		Role role = new Role();
 		try {
 			jsonObjectRole = jsonMapper.readTree(json);
@@ -115,12 +113,10 @@ public class RoleService {
 			
 			String roleName = jsonObjectRole.get("name").asText();
 			Integer createBy = jsonObjectRole.get("createBy").asInt();
-			Integer modifyBy = jsonObjectRole.get("modifyBy").asInt();
 			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			
 			role.setName(roleName);
 			Integer idAdded = roleRepository.add(role);
-			Role roleAdded = roleRepository.findById(idAdded);
 			for(JsonNode optionNode : jsonObjectOption) {
 				for(JsonNode permissionNode : optionNode.get("permissions")) {
 					if(permissionNode.get("selected").asBoolean() == true) {
@@ -158,7 +154,6 @@ public class RoleService {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectRole;
 		JsonNode jsonObjectOption;
-		JsonNode jsonObjectPermission;
 		List<RoleDetail> roleDetails = new ArrayList<>();
 		Role role = null;
 		try {

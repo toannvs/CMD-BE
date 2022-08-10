@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.persistence.criteria.CriteriaBuilder.In;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +72,6 @@ public class ProposalService {
 		List<ProposalModel> proposalModels = new ArrayList<>();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
-		String content = null;
 		String createDateFrom = null;
 		String createDateTo = null;
 		List<Integer> creatorIds = new ArrayList<Integer>();
@@ -183,7 +180,6 @@ public class ProposalService {
 		List<ProposalModel> proposalModels = new ArrayList<>();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
-		String content = null;
 		String createDateFrom = null;
 		String createDateTo = null;
 		List<Integer> creatorIds = new ArrayList<Integer>();
@@ -290,8 +286,6 @@ public class ProposalService {
 		List<ProposalModel> proposalModels = new ArrayList<>();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObject;
-		String content = null;
-		Integer creator = null;
 		String createDateFrom = null;
 		String createDateTo = null;
 		List<Integer> proposalTypeIds = new ArrayList<>();
@@ -463,8 +457,6 @@ public class ProposalService {
 			if (null != proposalModel) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposalTypeId), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
-				List<Integer> positionIds = new ArrayList<>();
-				List<Integer> departmentIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
 				for(ApprovalStep appStep : approvalStep) {
 					// One app step have many appStepDetail
@@ -584,8 +576,6 @@ public class ProposalService {
 			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
-				List<Integer> positionIds = new ArrayList<>();
-				List<Integer> departmentIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
 				for(ApprovalStep appStep : approvalStep) {
 					// One app step have many appStepDetail
@@ -617,7 +607,7 @@ public class ProposalService {
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(proposalId);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			}
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra khi lưu thông báo", ""));
@@ -660,8 +650,6 @@ public class ProposalService {
 			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
-				List<Integer> positionIds = new ArrayList<>();
-				List<Integer> departmentIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
 				for(ApprovalStep appStep : approvalStep) {
 					// One app step have many appStepDetail
@@ -693,7 +681,7 @@ public class ProposalService {
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			}
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
@@ -735,8 +723,6 @@ public class ProposalService {
 			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
-				List<Integer> positionIds = new ArrayList<>();
-				List<Integer> departmentIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
 				for(ApprovalStep appStep : approvalStep) {
 					// One app step have many appStepDetail
@@ -768,7 +754,7 @@ public class ProposalService {
 				// Response data for FE to show
 				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", ""));
+						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			}
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
@@ -779,8 +765,6 @@ public class ProposalService {
 				.getPrincipal();
 		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndexForCheck(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 		List<Integer> employeeIds = new ArrayList<>();
-		List<Integer> positionIds = new ArrayList<>();
-		List<Integer> departmentIds = new ArrayList<>();
 		List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
 		for(ApprovalStep appStep : approvalStep) {
 			// One app step have many appStepDetail

@@ -286,7 +286,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
-		List<EmployeeModel> employeeModelList = new ArrayList();
 		try {
 			Query query = session.createQuery(hql.toString());
 
@@ -334,7 +333,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	public Integer countAllPagingIncludeDuplicate(String name, String dob, String email, String phone,
 			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
-		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from ");
 		hql.append("employees emp ");
@@ -409,7 +407,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 // Paging with team - start
 	public Set<EmployeeModel> findAllTeams(String name, String dob, String email, String phone, List<Integer> teamIds,
 			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
-		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from employees emp ");
 		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
@@ -577,7 +574,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
-		List<EmployeeModel> employeeModelList = new ArrayList();
 		try {
 			Query query = session.createQuery(hql.toString());
 
@@ -623,7 +619,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	public Integer countAllPagingIncludeDuplicateTeams(String name, String dob, String email, String phone,
 			List<Integer> teamIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
-		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from ");
 		hql.append("employees emp ");
@@ -653,7 +648,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
-		List<EmployeeModel> employeeModelList = new ArrayList();
 		try {
 			Query query = session.createQuery(hql.toString());
 			if(!name.equals("")) {
@@ -870,31 +864,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	public EmployeeModel toModelForTeam(Employee e) {
 		EmployeeModel employeeModel = new EmployeeModel();
 		List<PositionModel> positionModelList = new ArrayList<>();
-		List<DepartmentModel> departmentModelList = new ArrayList<>();
-		List<TeamModel> teamModelList = new ArrayList<>();
-		// Add team list
-		// Add position list
-		// Add department list
 		for (Position p : e.getPositions()) {
-//			PositionModel positionModel = new PositionModel();
-//			Role role = new Role();
-//			role.setId(p.getRole().getId());
-//			role.setName(p.getRole().getName());
-//			positionModel.setId(p.getId());
-//			positionModel.setName(p.getName());
-//			positionModel.setIsManager(p.getIsManager());
-//			positionModel.setRole(role);
-//			if (p.getDepartment() == null && p.getTeam() != null) {
-//				Team team = p.getTeam();
-//				TeamModel teamModel = new TeamModel();
-//				teamModel.setId(team.getId());
-//				teamModel.setCode(team.getCode());
-//				teamModel.setName(team.getName());
-//				teamModel.setDescription(team.getDescription());
-//				teamModel.setHeadPosition(team.getHeadPosition());
-//				teamModel.setPosition(positionModel);
-//				teamModelList.add(teamModel);
-//			}
 			if (p.getDepartment() == null && p.getTeam() != null) {
 				PositionModel positionModel = new PositionModel();
 				Role role = new Role();

@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class PostService {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	PostRepositoryImpl postRepositoryImpl;
 	
@@ -132,7 +131,6 @@ public class PostService {
 	}
 
 	public ResponseEntity<Object> delete(Integer id) {
-		Post postDelete = (Post) postRepositoryImpl.findById(id);
 		String deleteStatus = postRepositoryImpl.delete(id);
 		try {
 			if (deleteStatus.equals("1")) {

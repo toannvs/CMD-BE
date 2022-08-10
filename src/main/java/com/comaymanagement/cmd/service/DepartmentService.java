@@ -266,7 +266,6 @@ public class DepartmentService {
 		if(depDelete.getEmployees().size()>0) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", message.getMessageByItemCode("DEPE1") , ""));
 		}
-		List<Position> positions = depDelete.getPositions();
 		for(Position p : depDelete.getPositions()) {
 			positionRepository.delete(p.getId());
 		}

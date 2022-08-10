@@ -64,12 +64,9 @@ public class OptionRepositoryImpl implements IOptionRepository{
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("roleId", roleId);
-			Object[] obTMP = (Object[]) query.getResultList().iterator().next();
 			for(Iterator it = query.getResultList().iterator();it.hasNext();) {
 				Object[] ob = (Object[]) it.next();
-				RoleDetail roleDetail = (RoleDetail) ob[0];
 				Option option = (Option) ob[2];
-				Permission permission = (Permission) ob[3];
 				options.add(option);
 			}
 			
