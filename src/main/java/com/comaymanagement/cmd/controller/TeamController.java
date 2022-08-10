@@ -47,7 +47,13 @@ public class TeamController {
 	public ResponseEntity<Object> findAll(@RequestParam(value = "name", required = false) String name) {
 		return teamService.findAll(name);
 	}
-	
+//	
+//	@PreAuthorize("@customRoleService.canView('team',principal)")
+//	@GetMapping("")
+//	public ResponseEntity<Object> findAllWith(@RequestParam(value = "name", required = false) String name) {
+//		return teamService.findAll(name);
+//	}
+//	
 	@PreAuthorize("@customRoleService.canCreate('team',principal)")
 	@PostMapping("/add")
 	public ResponseEntity<Object> add(@RequestBody String json){

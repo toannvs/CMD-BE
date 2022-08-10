@@ -777,7 +777,7 @@ public class ProposalService {
 		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
+		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndexForCheck(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 		List<Integer> employeeIds = new ArrayList<>();
 		List<Integer> positionIds = new ArrayList<>();
 		List<Integer> departmentIds = new ArrayList<>();

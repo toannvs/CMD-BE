@@ -859,7 +859,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		employeeModel.setActive(e.isActive());
 		employeeModel.setCreateDate(e.getCreateDate());
 		employeeModel.setDepartments(departmentModelList);
-		;
 		employeeModel.setPositions(positionModelList);
 		employeeModel.setUser(user);
 		employeeModel.setCreateDate(e.getCreateDate());
@@ -867,6 +866,69 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		employeeModel.setCreateBy(e.getCreateBy());
 		employeeModel.setModifyBy(e.getModifyBy());
 		employeeModel.setTeams(teamModelList);
+		return employeeModel;
+	}
+	public EmployeeModel toModelForTeam(Employee e) {
+		EmployeeModel employeeModel = new EmployeeModel();
+		List<PositionModel> positionModelList = new ArrayList<>();
+		List<DepartmentModel> departmentModelList = new ArrayList<>();
+		List<TeamModel> teamModelList = new ArrayList<>();
+		// Add team list
+		// Add position list
+		// Add department list
+		for (Position p : e.getPositions()) {
+//			PositionModel positionModel = new PositionModel();
+//			Role role = new Role();
+//			role.setId(p.getRole().getId());
+//			role.setName(p.getRole().getName());
+//			positionModel.setId(p.getId());
+//			positionModel.setName(p.getName());
+//			positionModel.setIsManager(p.getIsManager());
+//			positionModel.setRole(role);
+//			if (p.getDepartment() == null && p.getTeam() != null) {
+//				Team team = p.getTeam();
+//				TeamModel teamModel = new TeamModel();
+//				teamModel.setId(team.getId());
+//				teamModel.setCode(team.getCode());
+//				teamModel.setName(team.getName());
+//				teamModel.setDescription(team.getDescription());
+//				teamModel.setHeadPosition(team.getHeadPosition());
+//				teamModel.setPosition(positionModel);
+//				teamModelList.add(teamModel);
+//			}
+			if (p.getDepartment() == null && p.getTeam() != null) {
+				PositionModel positionModel = new PositionModel();
+				Role role = new Role();
+				role.setId(p.getRole().getId());
+				role.setName(p.getRole().getName());
+				positionModel.setId(p.getId());
+				positionModel.setName(p.getName());
+				positionModel.setIsManager(p.getIsManager());
+				positionModel.setRole(role);
+				positionModelList.add(positionModel);
+			}
+		}
+		UserModel user = new UserModel();
+//		user.setUsername(e.getUsername());
+//		user.setEnableLogin(e.isEnableLogin());
+		employeeModel.setId(e.getId());
+		employeeModel.setCode(e.getCode());
+		employeeModel.setName(e.getName());
+		employeeModel.setAvatar(e.getAvatar());
+		employeeModel.setGender(e.getGender());
+		employeeModel.setDateOfBirth(e.getDateOfBirth());
+		employeeModel.setEmail(e.getEmail());
+		employeeModel.setPhoneNumber(e.getPhoneNumber());
+//		employeeModel.setActive(e.isActive());
+//		employeeModel.setCreateDate(e.getCreateDate());
+//		employeeModel.setDepartments(departmentModelList);
+		employeeModel.setPositions(positionModelList);
+//		employeeModel.setUser(user);
+//		employeeModel.setCreateDate(e.getCreateDate());
+//		employeeModel.setModifyDate(e.getModifyDate());
+//		employeeModel.setCreateBy(e.getCreateBy());
+//		employeeModel.setModifyBy(e.getModifyBy());
+//		employeeModel.setTeams(teamModelList);
 		return employeeModel;
 	}
 }

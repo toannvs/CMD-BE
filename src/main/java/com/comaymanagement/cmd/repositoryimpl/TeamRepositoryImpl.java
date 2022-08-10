@@ -16,9 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.Role;
 import com.comaymanagement.cmd.entity.Team;
+import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.model.TeamModel;
 import com.comaymanagement.cmd.repository.ITeamRepository;
@@ -28,7 +30,8 @@ public class TeamRepositoryImpl implements ITeamRepository {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeRepositoryImpl.class);
 	@Autowired
 	private SessionFactory sessionFactory;
-
+	@Autowired
+	EmployeeRepositoryImpl employeeRepository;
 
 	
 	@Override
@@ -38,7 +41,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 		String hql = "from teams team where team.name like CONCAT('%',:name,'%')";
 		Set<TeamModel> teamModelSet = new LinkedHashSet<TeamModel>();
 		Set<Team> teamSetTMP = new LinkedHashSet<Team>();
-		
+		List<EmployeeModel> employeeModels = new ArrayList<>();
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("name", name);
@@ -64,8 +67,12 @@ public class TeamRepositoryImpl implements ITeamRepository {
 					positionModel.setRole(role);
 					positionModelList.add(positionModel);
 				}
+				for(Employee emp : t.getEmployees()) {
+					employeeModels.add(employeeRepository.toModelForTeam(emp));
+				}
 				teamModel.setPositions(positionModelList);
 				teamModel.setHeadPosition(t.getHeadPosition());
+				teamModel.setEmployees(employeeModels);
 				teamModelSet.add(teamModel);
 			}
 		} catch (Exception e) {
