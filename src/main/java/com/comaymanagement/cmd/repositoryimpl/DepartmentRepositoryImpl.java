@@ -155,7 +155,7 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 		StringBuilder hql = new StringBuilder();
 		Department department = null;
 		hql.append("FROM departments dep WHERE dep.name= :name");
-		
+		System.out.println(name);
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("name", name);
