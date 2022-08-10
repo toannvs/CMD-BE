@@ -40,7 +40,7 @@ public class EmployeesController {
 		return result;
 	}
 	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
-	@PostMapping(value = "teams", produces = "application/json")
+	@PostMapping(value = "/teams", produces = "application/json")
 	public ResponseEntity<Object> paggingAllEmployeeTeam(
 			@RequestParam(value = "page", required = false) String page,
 			@RequestParam(value = "sort", required = false) String sort,
