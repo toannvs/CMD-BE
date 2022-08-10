@@ -371,6 +371,7 @@ public class TaskService {
 		JsonNode jsonObjectTask;
 		String messageCode = "";
 		Notify notify = null;
+		Status status = null;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
 			Integer id = jsonObjectTask.get("id").asInt();
@@ -402,11 +403,7 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("EMPE8"), ""));
 			}
-			Status status = statusRepositotyImpl.findById(statusId);
-			if (status == null) {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
-			}
+
 
 			// statusId 3 = Đã hủy
 			if (statusId == 3) {
@@ -426,6 +423,21 @@ public class TaskService {
 				notify.setTitle(message.getMessageByItemCode("TASKN2"));
 				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
 			}
+			
+			DateTimeFormatter dtf = null;
+			LocalDateTime now = LocalDateTime.now();
+			dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime dt = LocalDateTime.parse(finishDate, dtf);
+			if(now.isAfter(dt)) {
+				status = statusRepositotyImpl.findByIndexAndType(6, "task");
+			}else {
+				status = statusRepositotyImpl.findById(statusId);
+				if (status == null) {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
+				}
+			}
+
 			task.setId(id);
 			task.setCreator(creator);
 			task.setReceiver(receiver);

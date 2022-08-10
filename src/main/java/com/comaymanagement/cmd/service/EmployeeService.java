@@ -296,8 +296,6 @@ public class EmployeeService {
 		int quantityDifference = 0;
 		int newOffset = offset;
 		int newLimit = limit;
-		int total = employeeRepository.countAllPaging(name, dob, email, phone, departmentIds, positionIds, sort, order,
-				-1, -1); // 10, 3
 		Map<String, Integer> result = new LinkedHashMap<>();
 		do {
 
@@ -315,9 +313,6 @@ public class EmployeeService {
 		result.put("offset", newOffset); // 22+0
 		result.put("limit", limit); // 22+0
 
-//		if(count>0) {
-//			caculatorOffset((count-1) +"" ,name,  dob,  email,  phone, dep,  pos,  sort,  order, limit);
-//		}
 		return result;
 	}
 
@@ -334,7 +329,6 @@ public class EmployeeService {
 		String email = "";
 		String phone = "";
 
-//		name = name == null ? "" : name.trim();
 		try {
 			JsonMapper jsonMapper = new JsonMapper();
 			JsonNode jsonObject;
@@ -430,8 +424,6 @@ public class EmployeeService {
 		int quantityDifference = 0;
 		int newOffset = offset;
 		int newLimit = limit;
-		int total = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds, positionIds, sort, order,
-				-1, -1); // 10, 3
 		Map<String, Integer> result = new LinkedHashMap<>();
 		do {
 
@@ -449,22 +441,17 @@ public class EmployeeService {
 		result.put("offset", newOffset); // 22+0
 		result.put("limit", limit); // 22+0
 
-//		if(count>0) {
-//			caculatorOffset((count-1) +"" ,name,  dob,  email,  phone, dep,  pos,  sort,  order, limit);
-//		}
 		return result;
 	}
 // Paging team - end
 	// Add and edit employee
 	public ResponseEntity<Object> addEmployee(String json) {
 		Employee emp = new Employee();
-		UserModel user = new UserModel();
 		String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 		String modifyDate = createDate;
 		List<Position> positionList = new ArrayList<>();
 		List<Team> teamList = new ArrayList<>();
 		List<Department> departmentList = new ArrayList<>();
-		Department dep = new Department();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectEmployee;
 		JsonNode jsonObjectDepartment;
@@ -530,34 +517,6 @@ public class EmployeeService {
 				emp.setUsername("");
 				emp.setPassword("");
 			}
-//			if (jsonObjectPosition.isArray()) {
-//				for (JsonNode p : jsonObjectPosition) {
-//					Position pos = new Position();
-//					pos.setId(Integer.valueOf(p.toString()));
-//					positionList.add(pos);
-//				}
-//			}
-//			if (jsonObjectTeam.isArray()) {
-//				for (JsonNode t : jsonObjectTeam) {
-//					Team team = new Team();
-//					team.setId(Integer.valueOf(t.toString()));
-//					teamList.add(team);
-//				}
-//			}
-//			
-//			if (jsonObjectDepartment.isArray()) {
-//				for (JsonNode d : jsonObjectDepartment) {
-//					Department department = new Department();
-//					department.setId(Integer.valueOf(d.toString()));
-//					departmentList.add(department);
-//				}
-//			}
-//			
-//			for (JsonNode p : jsonObjectPosition) {
-//				Position pos = new Position();
-//				pos.setId(p.get("id").asInt());
-//				positionList.add(pos);
-//			}
 			for (JsonNode t : jsonObjectTeam) {
 				Integer teamId = t.get("id") != null ? t.get("id").asInt() : -1;
 				Team team = teamRepository.findById(teamId);
@@ -612,7 +571,6 @@ public class EmployeeService {
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		Employee emp = new Employee();
-		UserModel user = new UserModel();
 		List<Position> positionList = new ArrayList<>();
 		List<Team> teamList = new ArrayList<>();
 		List<Department> departmentList = new ArrayList<>();
@@ -707,32 +665,6 @@ public class EmployeeService {
 				emp.setUsername("");
 				emp.setPassword("");
 			}
-//			if (jsonObjectPosition.isArray()) {
-//				for (JsonNode p : jsonObjectPosition) {
-//					Position pos = new Position();
-//					pos.setId(Integer.valueOf(p.toString()));
-//					positionList.add(pos);
-//				}
-//			}
-//			if (jsonObjectTeam.isArray()) {
-//				for (JsonNode t : jsonObjectTeam) {
-//					Team team = new Team();
-//					team.setId(Integer.valueOf(t.toString()));
-//					teamList.add(team);
-//				}
-//			}
-//			if (jsonObjectDepartment.isArray()) {
-//				for (JsonNode t : jsonObjectDepartment) {
-//					Department department = new Department();
-//					department.setId(Integer.valueOf(t.toString()));
-//					departmentList.add(department);
-//				}
-//			}
-//			for (JsonNode p : jsonObjectPosition) {
-//				Position pos = new Position();
-//				pos.setId(p.get("id").asInt());
-//				positionList.add(pos);
-//			}
 			for (JsonNode t : jsonObjectTeam) {
 				Integer teamId = t.get("id") != null ? t.get("id").asInt() : -1;
 				Team team = teamRepository.findById(teamId);
@@ -1057,8 +989,6 @@ public class EmployeeService {
 			for (JsonNode statusId : jsonStatusObject) {
 				notifyIds.add(Integer.valueOf(statusId.toString()));
 			}
-			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
 			Boolean result = notifyRepositoryImpl.delete(notifyIds);
 			if (result) {
 				return ResponseEntity.status(HttpStatus.OK)

@@ -45,7 +45,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	@Override
 	public Set<EmployeeModel> findAll(String name, String dob, String email, String phone, List<Integer> departmentIds,
 			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
-		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from employees emp ");
 		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
