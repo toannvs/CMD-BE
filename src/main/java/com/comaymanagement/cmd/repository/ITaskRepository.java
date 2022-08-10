@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
+import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.model.TaskModel;
 
 
@@ -77,4 +78,5 @@ public interface ITaskRepository {
 			List<Integer> departmentIds, List<Integer> statusIds,Integer rate,String startDate,
 			String finishDate, String sort, String order, Integer offset, Integer limit);
 	void ScanOverDueTask();
+	List<StatusModel> countTaskByStatus();
 }

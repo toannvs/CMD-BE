@@ -31,6 +31,7 @@ import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.EmployeeModel;
+import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.model.TaskHisModel;
 import com.comaymanagement.cmd.model.TaskHisModelTemp;
 import com.comaymanagement.cmd.model.TaskModel;
@@ -1695,6 +1696,42 @@ public class TaskRepositoryImpl implements ITaskRepository {
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in findAll() ", e);
 		}
+	}
+
+	@Override
+	public List<StatusModel> countTaskByStatus() {
+		StringBuilder hql = new StringBuilder("FROM tasks AS t ");
+		List<StatusModel> statusModels = new ArrayList<>();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			LOGGER.info(hql.toString());
+			List<Status> statuses = statusRepositotyImpl.findAllForTask();
+			List<Task> tasks = new ArrayList<Task>();
+
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object obj = (Object) it.next();
+				Task task = (Task) obj;
+				tasks.add(task);
+
+			}
+			for(Status status : statuses) {
+				int count =0;
+				for(Task item : tasks) {
+					if(item.getStatus().getId() == status.getId()) {
+						count++;
+					}
+				}
+				StatusModel statusModel = new StatusModel();
+				statusModel.setId(status.getId());
+				statusModel.setName(status.getName());
+				statusModel.setCountByStatus(count);
+				statusModels.add(statusModel);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in findAll() ", e);
+		}
+		return statusModels;
 	}
 
 }
