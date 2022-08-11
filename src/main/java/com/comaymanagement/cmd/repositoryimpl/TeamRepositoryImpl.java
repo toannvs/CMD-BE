@@ -78,6 +78,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in DepartmentRepositoryImpl at findAll() ", e);
+			return null;
 		}
 		return teamModelSet;
 	}

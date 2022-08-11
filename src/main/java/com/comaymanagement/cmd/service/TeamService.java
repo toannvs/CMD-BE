@@ -44,10 +44,10 @@ public class TeamService {
 		name = name == null ? "" : name.trim();
 		Set<TeamModel> teamModelSet = teamRepository.findAll(name);
 
-		if (teamModelSet.size() > 0) {
+		if (teamModelSet!=null) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "SUCCESSFULLY", teamModelSet));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra",teamModelSet ));
 		}
 
 	}

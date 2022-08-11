@@ -72,6 +72,7 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in DepartmentRepositoryImpl at findAll() ", e);
+			return null;
 		}
 		return departmentModelSet;
 	}

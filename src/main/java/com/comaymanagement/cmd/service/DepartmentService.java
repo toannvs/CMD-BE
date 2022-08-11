@@ -42,10 +42,10 @@ public class DepartmentService {
 		name = name == null ? "" : name.trim();
 		Set<DepartmentModel> departmentModelSet = departmentRepository.findAll(name);
 		
-		if (departmentModelSet.size() > 0) {
+		if (departmentModelSet!=null) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", departmentModelSet));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","Có lỗi xảy ra", departmentModelSet));
 		}
 
 	}

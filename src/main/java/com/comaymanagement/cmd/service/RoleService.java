@@ -73,8 +73,8 @@ public class RoleService {
 			results.put("pagination", pagination);
 			
 			if(roleModelList == null) {
-				LOGGER.info("NOT FOUND");
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject("Have error:","NOT FOUND",""));
+				LOGGER.info("Null error line 76");
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","Có lỗi xảy ra",roleModelList));
 			}else {
 				for(RoleModel roleModel : roleModelList) {
 					RoleDetailModel roleDetailModel = roleRepository.findRoleDetailByRoleId(roleModel.getId());
@@ -84,7 +84,7 @@ public class RoleService {
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("ERROR","Have error: ",e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR",e.getMessage(),null));
 		}
 
 	}
