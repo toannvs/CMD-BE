@@ -166,6 +166,7 @@ public class ProposalTypeService {
 										.body(new ResponseObject("ERROR", "Cập nhật loại đề xuất thất bại", ""));
 							}
 						}
+						
 					}
 				}
 				
@@ -173,39 +174,43 @@ public class ProposalTypeService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Cập nhật loại đề xuất thất bại", ""));
 			}
-			
-			// Response data
-			approvalOptionViews = new ArrayList<>();
-			for (ProposalPermission proposalPermission : proposalPermissionSaves) {
-				// have list of all emp or dep or position in all step of proposal
-				ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(proposalPermission.getEmployeeId(),
-						"employees");
-				ApprovalOption_View approvalOptionDep = approvalOptionReposiroty
-						.findById(proposalPermission.getDepartmentId(), "departments");
-				ApprovalOption_View approvalOptionPos = approvalOptionReposiroty.findById(proposalPermission.getPositionId(),
-						"positions");
-				if (approvalOptionEmp != null) {
-					approvalOptionViews.add(approvalOptionEmp);
-				}
-				if (approvalOptionDep != null) {
-					approvalOptionViews.add(approvalOptionDep);
-				}
-				if (approvalOptionPos != null) {
-					approvalOptionViews.add(approvalOptionPos);
-				}
+			// Affter update permission => update name
+			if(proposalTypeRepository.edit(proposalType)>0) {
+				// Response data
+				approvalOptionViews = new ArrayList<>();
+				for (ProposalPermission proposalPermission : proposalPermissionSaves) {
+					// have list of all emp or dep or position in all step of proposal
+					ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(proposalPermission.getEmployeeId(),
+							"employees");
+					ApprovalOption_View approvalOptionDep = approvalOptionReposiroty
+							.findById(proposalPermission.getDepartmentId(), "departments");
+					ApprovalOption_View approvalOptionPos = approvalOptionReposiroty.findById(proposalPermission.getPositionId(),
+							"positions");
+					if (approvalOptionEmp != null) {
+						approvalOptionViews.add(approvalOptionEmp);
+					}
+					if (approvalOptionDep != null) {
+						approvalOptionViews.add(approvalOptionDep);
+					}
+					if (approvalOptionPos != null) {
+						approvalOptionViews.add(approvalOptionPos);
+					}
 
+				}
+//				ApprovalStepModel approvalStepModel = new ApprovalStepModel();
+//				approvalStepModel.setId(approvalStepEdit.getId());
+//				approvalStepModel.setIndex(approvalStepEdit.getApprovalStepIndex());
+//				approvalStepModel.setName(approvalStepEdit.getApprovalStepName());
+//				approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
+				ProposalTypeModel proposalTypeModel = new ProposalTypeModel();
+				proposalTypeModel.setId(proposalTypeId);
+				proposalTypeModel.setName(proposalTypeName);
+				proposalTypeModel.setProposalConfigTargets(approvalOptionViews);
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "Cập nhật loại để xuất thành công", proposalTypeModel));
 			}
-//			ApprovalStepModel approvalStepModel = new ApprovalStepModel();
-//			approvalStepModel.setId(approvalStepEdit.getId());
-//			approvalStepModel.setIndex(approvalStepEdit.getApprovalStepIndex());
-//			approvalStepModel.setName(approvalStepEdit.getApprovalStepName());
-//			approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
-			ProposalTypeModel proposalTypeModel = new ProposalTypeModel();
-			proposalTypeModel.setId(proposalTypeId);
-			proposalTypeModel.setName(proposalTypeName);
-			proposalTypeModel.setProposalConfigTargets(approvalOptionViews);
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("OK", "Cập nhật loại để xuất thành công", proposalTypeModel));
+					.body(new ResponseObject("ERROR", "Cập nhật loại để xuất thất bại", ""));
 		} catch (Exception e) {
 			LOGGER.error(e.getStackTrace().toString());
 		return ResponseEntity.status(HttpStatus.OK)
