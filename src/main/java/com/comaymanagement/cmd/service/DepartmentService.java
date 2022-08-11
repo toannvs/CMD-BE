@@ -67,6 +67,7 @@ public class DepartmentService {
 			}
 			String name = jsonObjectDepartment.get("name") != null ? jsonObjectDepartment.get("name").asText() : "";
 			Integer fatherDepartmentId = jsonObjectDepartment.get("fatherDepartmentId") != null ? jsonObjectDepartment.get("fatherDepartmentId").asInt() : -1;
+			fatherDepartmentId = fatherDepartmentId == 0 ? -1 : fatherDepartmentId;
 			String description = jsonObjectDepartment.get("description") != null ? jsonObjectDepartment.get("description").asText() : "";
 			Integer createBy = jsonObjectDepartment.get("createBy") != null ? jsonObjectDepartment.get("createBy").asInt() : -1;
 			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
