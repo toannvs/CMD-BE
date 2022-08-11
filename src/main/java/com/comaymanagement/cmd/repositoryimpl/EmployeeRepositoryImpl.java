@@ -861,12 +861,11 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		employeeModel.setTeams(teamModelList);
 		return employeeModel;
 	}
-	public EmployeeModel toModelForTeam(Employee e) {
+	public EmployeeModel toModelForTeam(Employee e, Integer teamId) {
 		EmployeeModel employeeModel = new EmployeeModel();
-		List<PositionModel> positionModelList = new ArrayList<>();
+		PositionModel positionModel = new PositionModel();
 		for (Position p : e.getPositions()) {
-			if (p.getDepartment() == null && p.getTeam() != null) {
-				PositionModel positionModel = new PositionModel();
+			if (p.getDepartment() == null && p.getTeam() != null && p.getTeam().getId() == teamId) {
 				Role role = new Role();
 				role.setId(p.getRole().getId());
 				role.setName(p.getRole().getName());
@@ -874,7 +873,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				positionModel.setName(p.getName());
 				positionModel.setIsManager(p.getIsManager());
 				positionModel.setRole(role);
-				positionModelList.add(positionModel);
 			}
 		}
 		UserModel user = new UserModel();
@@ -888,10 +886,10 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		employeeModel.setDateOfBirth(e.getDateOfBirth());
 		employeeModel.setEmail(e.getEmail());
 		employeeModel.setPhoneNumber(e.getPhoneNumber());
+		employeeModel.setPosition(positionModel);
 //		employeeModel.setActive(e.isActive());
 //		employeeModel.setCreateDate(e.getCreateDate());
 //		employeeModel.setDepartments(departmentModelList);
-		employeeModel.setPositions(positionModelList);
 //		employeeModel.setUser(user);
 //		employeeModel.setCreateDate(e.getCreateDate());
 //		employeeModel.setModifyDate(e.getModifyDate());

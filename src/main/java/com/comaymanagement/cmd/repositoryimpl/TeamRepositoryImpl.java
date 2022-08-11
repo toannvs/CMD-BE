@@ -68,7 +68,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 					positionModelList.add(positionModel);
 				}
 				for(Employee emp : t.getEmployees()) {
-					employeeModels.add(employeeRepository.toModelForTeam(emp));
+					employeeModels.add(employeeRepository.toModelForTeam(emp,t.getId()));
 				}
 				teamModel.setPositions(positionModelList);
 				teamModel.setHeadPosition(t.getHeadPosition());

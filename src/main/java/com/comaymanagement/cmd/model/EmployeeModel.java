@@ -26,6 +26,8 @@ public class EmployeeModel {
 	private String avatar;
 	private String gender;
 	private List<PositionModel> positions;
+	// for team list api
+	private PositionModel position;
 	private List<DepartmentModel> departments;
 	private List<TeamModel> teams;
 	private UserModel user;
