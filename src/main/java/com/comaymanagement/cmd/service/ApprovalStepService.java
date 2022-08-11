@@ -90,12 +90,11 @@ public class ApprovalStepService {
 		List<ApprovalOption_View> approvalOptionViews;
 		try {
 			jsonObjectApprovalStep = jsonMapper.readTree(json);
-			jsonObjectStep = jsonObjectApprovalStep.get("step");
-			jsonObjectApprovalConfigTarget = jsonObjectStep.get("approvalConfigTargets");
+			jsonObjectApprovalConfigTarget = jsonObjectApprovalStep.get("approvalConfigTargets");
 			Integer proposalTypeId = jsonObjectApprovalStep.get("id").asInt();
 			ProposalType proposalType = proposalTypeRepository.findById(String.valueOf(proposalTypeId));
-			String index = jsonObjectStep.get("index").asText();
-			String name = jsonObjectStep.get("name").asText();
+			String index = jsonObjectApprovalStep.get("index").asText();
+			String name = jsonObjectApprovalStep.get("name").asText();
 			// save approvalStep
 			ApprovalStep approvalStep = new ApprovalStep();
 			approvalStep.setApprovalStepIndex(Integer.valueOf(index));
@@ -252,12 +251,11 @@ public class ApprovalStepService {
 		List<ApprovalOption_View> approvalOptionViews;
 		try {
 			jsonObjectApprovalStep = jsonMapper.readTree(json);
-			jsonObjectStep = jsonObjectApprovalStep.get("step");
-			jsonObjectApprovalConfigTarget = jsonObjectStep.get("approvalConfigTargets");
+			jsonObjectApprovalConfigTarget = jsonObjectApprovalStep.get("approvalConfigTargets");
 //			Integer proposalTypeId = jsonObjectApprovalStep.get("id").asInt();
-			Integer stepId = jsonObjectStep.get("id").asInt();
+			Integer stepId = jsonObjectApprovalStep.get("id").asInt();
 //			ProposalType proposalType = proposalTypeRepository.findById(String.valueOf(proposalTypeId));
-			String name = jsonObjectStep.get("name").asText();
+			String name = jsonObjectApprovalStep.get("name").asText();
 			
 			// find approvalStep edit
 			ApprovalStep approvalStepEdit = approvalStepRepository.findById(stepId);
