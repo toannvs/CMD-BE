@@ -30,7 +30,9 @@ public class PositionRepositoryImpl implements IPositionRepository {
 	
 	@Override
 	public List<PositionModel> findAllByRoleId(Integer roleId) {
-		StringBuilder hql = new StringBuilder("FROM positions WHERE role_id = :roleId");
+		StringBuilder hql = new StringBuilder("FROM positions pos ");
+		 hql.append("WHERE pos.department.id is not null AND pos.team.id is null ");
+		 hql.append("AND pos.role.id = :roleId");
 		List <PositionModel> positionModelList = null;
 		List <Position> positions = new ArrayList<Position>();
 
