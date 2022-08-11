@@ -68,6 +68,7 @@ public class PostRepositoryImpl implements IPostRepository{
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("id", id);
 			post  = (Post) query.getSingleResult();
+			post.getEmployees().size();
 			return post;
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in findById() ", e);

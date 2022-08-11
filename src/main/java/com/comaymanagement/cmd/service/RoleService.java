@@ -103,6 +103,8 @@ public class RoleService {
 	
 	// add
 	public ResponseEntity<Object> add(String json){
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectRole;
 		JsonNode jsonObjectOption;
@@ -112,13 +114,28 @@ public class RoleService {
 			jsonObjectOption = jsonObjectRole.get("options");
 			
 			String roleName = jsonObjectRole.get("name").asText();
-			Integer createBy = jsonObjectRole.get("createBy").asInt();
+			Integer createBy = userDetail.getId();
 			String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			
 			role.setName(roleName);
 			Integer idAdded = roleRepository.add(role);
 			for(JsonNode optionNode : jsonObjectOption) {
+				
 				for(JsonNode permissionNode : optionNode.get("permissions")) {
+					// Auto add permission view post by default
+					if(optionNode.get("name").asText().equals("post") 
+							&& permissionNode.get("name").asText().equals("view") 
+							&& permissionNode.get("selected").asBoolean() == false) {
+						RoleDetail roleDetail = new RoleDetail();
+						roleDetail.setOptionId(optionNode.get("id").asInt());
+						roleDetail.setPermissionId(permissionNode.get("id").asInt());
+						roleDetail.setCreateBy(createBy);
+						roleDetail.setModifyBy(createBy);
+						roleDetail.setCreateDate(createDate);
+						roleDetail.setModifyDate(createDate);
+						roleDetail.setRoleId(idAdded);
+						Integer rdAddedId  = roleDetailRepository.add(roleDetail);
+					}
 					if(permissionNode.get("selected").asBoolean() == true) {
 						RoleDetail roleDetail = new RoleDetail();
 						roleDetail.setOptionId(optionNode.get("id").asInt());

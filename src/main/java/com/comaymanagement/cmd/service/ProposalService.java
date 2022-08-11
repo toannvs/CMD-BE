@@ -475,7 +475,7 @@ public class ProposalService {
 				}
 				for(Integer empId : employeeIds) {
 						if(empId!=-1) {
-							Employee employee = employeeRepositoryImpl.findById(empId);
+							Employee employee = employeeRepositoryImpl.findById(empId);	
 							Notify notify = null;
 							notify = new Notify();
 							notify.setIsRead(false);
