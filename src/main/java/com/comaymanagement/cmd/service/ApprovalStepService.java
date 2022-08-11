@@ -43,14 +43,34 @@ public class ApprovalStepService {
 	public ResponseEntity<Object> findAllByProposalId(Integer proposalTypeId) {
 			
 		List<ApprovalStepModel> approvalStepModels = approvalStepRepository.toModel(approvalStepRepository.findByProposalTypeId(proposalTypeId));
+		List<ApprovalStepDetail> tmp = new ArrayList<>();
+		List<ApprovalOption_View> approvalOptionViews;
+		for(ApprovalStepModel approvalStepModel : approvalStepModels) {
+			tmp  = approvalStepDetailRepository.findAllByApprovalStepId(approvalStepModel.getId());
+			approvalOptionViews = new ArrayList<>();
+			for(ApprovalStepDetail appStepDetail : tmp) {
+				// have list of all emp or dep or position in all step of proposal
+//				approvalStepDetails.add(appStepDetail);
+				ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(appStepDetail.getEmployeeId(),"employees");
+				ApprovalOption_View approvalOptionDep  = approvalOptionReposiroty.findById(appStepDetail.getDepartmentId(),"departments");
+				ApprovalOption_View approvalOptionPos  = approvalOptionReposiroty.findById(appStepDetail.getPositionId(),"positions");
+				if(approvalOptionEmp!=null) {
+					approvalOptionViews.add(approvalOptionEmp);
+				}
+				if(approvalOptionDep!=null) {
+					approvalOptionViews.add(approvalOptionDep);
+				}
+				if(approvalOptionPos!=null) {
+					approvalOptionViews.add(approvalOptionPos);
+				}
+				
+			}
+			tmp.clear();
+			approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
+		}
 			if (approvalStepModels!=null ) {
-				if(approvalStepModels.size() > 0) {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("OK", "OK", approvalStepModels));
-				}else {
-					return ResponseEntity.status(HttpStatus.OK)
-							.body(new ResponseObject("OK", "Not found", ""));
-				}
 			}else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));

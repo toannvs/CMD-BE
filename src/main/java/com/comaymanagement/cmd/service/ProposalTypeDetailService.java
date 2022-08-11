@@ -54,7 +54,7 @@ public class ProposalTypeDetailService {
 		approvalSteps = approvalStepRepository.findByProposalTypeId(id);
 		proposalTypeDetails = proposalTypeDetailReposiotory.findById(id);
 		List<ApprovalStepDetail> tmp = new ArrayList<>();
-		if (proposalTypeDetails.size() > 0 && approvalSteps.size() > 0) {
+		if (proposalTypeDetails!=null && approvalSteps !=null) {
 			proposalTypeDetailModels = proposalTypeDetailReposiotory.toModel(proposalTypeDetails);
 			approvalStepModels = approvalStepRepository.toModel(approvalSteps);
 			// have list of all emp or dep or position in all step of proposal
@@ -92,7 +92,7 @@ public class ProposalTypeDetailService {
 			result.put("steps", approvalStepModels);
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "",result ));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
 		}
 	}
 	
