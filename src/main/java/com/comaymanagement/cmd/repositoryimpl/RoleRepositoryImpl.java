@@ -72,6 +72,7 @@ public class RoleRepositoryImpl implements IRoleRepository {
 
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
+			return null;
 		}
 
 		return roleModelList;
