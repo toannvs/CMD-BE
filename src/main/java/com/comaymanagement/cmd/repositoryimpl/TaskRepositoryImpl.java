@@ -1,5 +1,6 @@
 package com.comaymanagement.cmd.repositoryimpl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1678,14 +1679,14 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			Session session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql.toString());
 			LOGGER.info(hql.toString());
-			taskIds = new ArrayList<Integer>();
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object obj = (Object) it.next();
 				Task task = (Task) obj;
 				DateTimeFormatter dtf = null;
-				LocalDateTime now = LocalDateTime.now();
-				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-				LocalDateTime dt = LocalDateTime.parse(task.getFinishDate(), dtf);
+				LocalDate now = LocalDate.now();
+//				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate dt = LocalDate.parse(task.getFinishDate(), dtf);
 				if(now.isAfter(dt)) {
 					Status status = new Status();
 					status = statusRepositotyImpl.findByIndexAndType(6, "task");
