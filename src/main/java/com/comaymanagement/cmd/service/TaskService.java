@@ -1,7 +1,7 @@
 package com.comaymanagement.cmd.service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -230,6 +230,7 @@ public class TaskService {
 	public ResponseEntity<Object> add(String json) {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectTask;
+		Status status = null;
 		try {
 			jsonObjectTask = jsonMapper.readTree(json);
 			Task task = new Task();
@@ -258,10 +259,21 @@ public class TaskService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("EMPE8"), ""));
 			}
-			Status status = statusRepositotyImpl.findByIndexAndType(CMDConstrant.NEW_STATUS, "task");
-			if (status == null) {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
+
+			
+			
+			DateTimeFormatter dtf = null;
+			LocalDate now = LocalDate.now();
+			dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate dt = LocalDate.parse(finishDate, dtf);
+			if(now.isAfter(dt)) {
+				status = statusRepositotyImpl.findByIndexAndType(6, "task");
+			}else {
+				status = statusRepositotyImpl.findByIndexAndType(1,"task");
+				if (status == null) {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
+				}
 			}
 			task.setCreator(creator);
 			task.setReceiver(receiver);
@@ -422,9 +434,9 @@ public class TaskService {
 			}
 			
 			DateTimeFormatter dtf = null;
-			LocalDateTime now = LocalDateTime.now();
-			dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime dt = LocalDateTime.parse(finishDate, dtf);
+			LocalDate now = LocalDate.now();
+			dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate dt = LocalDate.parse(finishDate, dtf);
 			if(now.isAfter(dt)) {
 				status = statusRepositotyImpl.findByIndexAndType(6, "task");
 			}else {
