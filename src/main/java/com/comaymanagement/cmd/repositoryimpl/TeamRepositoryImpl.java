@@ -41,7 +41,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 		String hql = "from teams team where team.name like CONCAT('%',:name,'%')";
 		Set<TeamModel> teamModelSet = new LinkedHashSet<TeamModel>();
 		Set<Team> teamSetTMP = new LinkedHashSet<Team>();
-		List<EmployeeModel> employeeModels = new ArrayList<>();
+		
 		try {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("name", name);
@@ -50,6 +50,7 @@ public class TeamRepositoryImpl implements ITeamRepository {
 				teamSetTMP.add(tmp);
 			}
 			for(Team t : teamSetTMP) {
+				List<EmployeeModel> employeeModels = new ArrayList<>();
 				TeamModel teamModel = new TeamModel();
 				List<PositionModel> positionModelList = new ArrayList<>();
 				teamModel.setId(t.getId());
