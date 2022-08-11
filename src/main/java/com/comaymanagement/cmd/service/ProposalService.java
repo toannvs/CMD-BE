@@ -784,6 +784,6 @@ public class ProposalService {
 		if(employeeIds.contains(userDetail.getId())) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Có quyền approve",true));
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Không có quyền approve", ""));
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Không có quyền approve", false));
 	}
 }
