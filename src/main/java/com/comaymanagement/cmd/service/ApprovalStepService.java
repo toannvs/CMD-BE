@@ -188,54 +188,60 @@ public class ApprovalStepService {
 	
 	// After delete must update all step index
 	public ResponseEntity<Object> delete(Integer id) {
-		List<ApprovalStepDetail> approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(id);
-		ApprovalStep approvalStep = approvalStepRepository.findById(id);
-		for (ApprovalStepDetail approvalStepDetail : approvalStepDetails) {
-			if (approvalStepDetailRepository.delete(approvalStepDetail.getId()) < 0) {
+		try {
+			List<ApprovalStepDetail> approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(id);
+			ApprovalStep approvalStep = approvalStepRepository.findById(id);
+			for (ApprovalStepDetail approvalStepDetail : approvalStepDetails) {
+				if (approvalStepDetailRepository.delete(approvalStepDetail.getId()) < 0) {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình xóa", ""));
+				}
+			}
+			if(approvalStepRepository.delete(id) < 0 ) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình xóa", ""));
-			}
-		}
-		if(approvalStepRepository.delete(id) < 0 ) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình xóa", ""));
-		}else {
-			// Update index 
-			List<ApprovalStep> approvalSteps = approvalStepRepository.findByProposalTypeId(approvalStep.getProposalType().getId());
-			for(int i=0;i<approvalSteps.size();i++) {
-				ApprovalStep approStep = approvalSteps.get(i);
-				approStep.setApprovalStepIndex(i+1);
-				approvalStepRepository.edit(approStep);
-			}
-			// Prepare response data
-			List<ApprovalStepModel>	approvalStepModels = approvalStepRepository.toModel(approvalSteps);
-			List<ApprovalStepDetail> tmp = new ArrayList<>();
-			for(ApprovalStepModel approvalStepModel : approvalStepModels) {
-				tmp  = approvalStepDetailRepository.findAllByApprovalStepId(approvalStepModel.getId());
-				List<ApprovalOption_View> approvalOptionViews = new ArrayList<>();
-				for(ApprovalStepDetail appStepDetail : tmp) {
-					// have list of all emp or dep or position in all step of proposal
-//					approvalStepDetails.add(appStepDetail);
-					ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(appStepDetail.getEmployeeId(),"employees");
-					ApprovalOption_View approvalOptionDep  = approvalOptionReposiroty.findById(appStepDetail.getDepartmentId(),"departments");
-					ApprovalOption_View approvalOptionPos  = approvalOptionReposiroty.findById(appStepDetail.getPositionId(),"positions");
-					if(approvalOptionEmp!=null) {
-						approvalOptionViews.add(approvalOptionEmp);
-					}
-					if(approvalOptionDep!=null) {
-						approvalOptionViews.add(approvalOptionDep);
-					}
-					if(approvalOptionPos!=null) {
-						approvalOptionViews.add(approvalOptionPos);
-					}
-					
+			}else {
+				// Update index 
+				List<ApprovalStep> approvalSteps = approvalStepRepository.findByProposalTypeId(approvalStep.getProposalType().getId());
+				for(int i=0;i<approvalSteps.size();i++) {
+					ApprovalStep approStep = approvalSteps.get(i);
+					approStep.setApprovalStepIndex(i+1);
+					approvalStepRepository.edit(approStep);
 				}
-				tmp.clear();
-				approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
+				// Prepare response data
+				List<ApprovalStepModel>	approvalStepModels = approvalStepRepository.toModel(approvalSteps);
+				List<ApprovalStepDetail> tmp = new ArrayList<>();
+				for(ApprovalStepModel approvalStepModel : approvalStepModels) {
+					tmp  = approvalStepDetailRepository.findAllByApprovalStepId(approvalStepModel.getId());
+					List<ApprovalOption_View> approvalOptionViews = new ArrayList<>();
+					for(ApprovalStepDetail appStepDetail : tmp) {
+						// have list of all emp or dep or position in all step of proposal
+//						approvalStepDetails.add(appStepDetail);
+						ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(appStepDetail.getEmployeeId(),"employees");
+						ApprovalOption_View approvalOptionDep  = approvalOptionReposiroty.findById(appStepDetail.getDepartmentId(),"departments");
+						ApprovalOption_View approvalOptionPos  = approvalOptionReposiroty.findById(appStepDetail.getPositionId(),"positions");
+						if(approvalOptionEmp!=null) {
+							approvalOptionViews.add(approvalOptionEmp);
+						}
+						if(approvalOptionDep!=null) {
+							approvalOptionViews.add(approvalOptionDep);
+						}
+						if(approvalOptionPos!=null) {
+							approvalOptionViews.add(approvalOptionPos);
+						}
+						
+					}
+					tmp.clear();
+					approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
+				}
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", "Xóa bước duyệt thành công",approvalStepModels));
 			}
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("ERROR", "Xóa bước duyệt thành công",approvalStepModels));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "Thêm bước duyệt thất bại", ""));
 		}
+		
 		
 	}
 	
