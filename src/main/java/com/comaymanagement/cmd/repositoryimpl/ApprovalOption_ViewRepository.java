@@ -27,9 +27,9 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 		List<ApprovalOption_View> appApprovalOption_Views = new ArrayList<>();
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
-		hql.append("from v_approval_options ");
+		hql.append("select code, table, name from v_approval_options as app_pro ");
 		if(!name.equals("") && name!=null) {
-			hql.append("where name like CONCAT('%',:name,'%') ");
+			hql.append("where app_pro.name like CONCAT('%',:name,'%') ");
 		}
 		try {
 			Query query = session.createQuery(hql.toString());
@@ -39,7 +39,15 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 			}
 			LOGGER.info(hql.toString());
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				ApprovalOption_View approvalOption = (ApprovalOption_View) it.next();
+				Object[] ob = (Object[])it.next();
+				String code = (String) ob[0];
+				String table = (String)ob[1];
+				String vname = (String)ob[2];
+				
+				ApprovalOption_View approvalOption =  new ApprovalOption_View();
+				approvalOption.setCode(code);
+				approvalOption.setTable(table);
+				approvalOption.setName(vname);
 				appApprovalOption_Views.add(approvalOption);
 			}
 			return appApprovalOption_Views;
