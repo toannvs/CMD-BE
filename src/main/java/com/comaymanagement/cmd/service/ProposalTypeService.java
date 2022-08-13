@@ -46,10 +46,35 @@ public class ProposalTypeService {
 	ApprovalOption_ViewRepository approvalOptionReposiroty;
 	// findAll for config
 	public ResponseEntity<Object> findAllConfig() {
+		List<ApprovalOption_View> approvalOptionViews;
 		List<ProposalType> proposalTypes = proposalTypeRepository.findAll();
 		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 		for (ProposalType proposalType : proposalTypes) {
-			proposalTypeModels.add(proposalTypeRepository.toModel(proposalType));
+			ProposalTypeModel proposalModel = proposalTypeRepository.toModel(proposalType);
+			
+			approvalOptionViews = new ArrayList<>();
+			List<ProposalPermission> proposalPermissionOlds = proposalPermissionRepository.findAllByProposalTypeId(proposalType.getId());
+			for (ProposalPermission proposalPermission : proposalPermissionOlds) {
+				// have list of all emp or dep or position in all step of proposal
+				ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(proposalPermission.getEmployeeId(),
+						"employees");
+				ApprovalOption_View approvalOptionDep = approvalOptionReposiroty
+						.findById(proposalPermission.getDepartmentId(), "departments");
+				ApprovalOption_View approvalOptionPos = approvalOptionReposiroty.findById(proposalPermission.getPositionId(),
+						"positions");
+				if (approvalOptionEmp != null) {
+					approvalOptionViews.add(approvalOptionEmp);
+				}
+				if (approvalOptionDep != null) {
+					approvalOptionViews.add(approvalOptionDep);
+				}
+				if (approvalOptionPos != null) {
+					approvalOptionViews.add(approvalOptionPos);
+				}
+
+			}
+			proposalModel.setProposalConfigTargets(approvalOptionViews);
+			proposalTypeModels.add(proposalModel);
 		}
 		if (proposalTypes == null) {
 			return ResponseEntity.status(HttpStatus.OK)

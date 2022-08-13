@@ -36,7 +36,7 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 			if(!name.equals("") && name!=null ) {
 			query.setParameter("name","%" + name + "%");
 			}
-			LOGGER.info(hql.toString());
+ 			LOGGER.info(hql.toString());
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				ApprovalOption_View approvalOption = (ApprovalOption_View)it.next();
 				appApprovalOption_Views.add(approvalOption);
