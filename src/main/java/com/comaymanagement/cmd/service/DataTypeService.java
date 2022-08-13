@@ -1,5 +1,6 @@
 package com.comaymanagement.cmd.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,12 @@ public class DataTypeService {
 	DataTypeRepository dataTypeRepository;
 	
 	public ResponseEntity<Object> findAll() {
-		List<DataType> dataTypes = dataTypeRepository.findAll();
+		List<DataType> dataTypes = new ArrayList<>();
+		dataTypes = dataTypeRepository.findAll();
 		if (dataTypes.size() > 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", dataTypes));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", dataTypes));
 		}
 
 	}

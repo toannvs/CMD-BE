@@ -42,7 +42,7 @@ public class ApprovalOption_ViewService {
 		if (approvalOption_View!=null) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", approvalOption_View));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", approvalOption_View));
 		}
 		
 	}

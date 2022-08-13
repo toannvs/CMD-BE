@@ -41,8 +41,8 @@ public class ApprovalStepService {
 	ApprovalOption_ViewRepository approvalOptionReposiroty;
 	
 	public ResponseEntity<Object> findAllByProposalId(Integer proposalTypeId) {
-			
-		List<ApprovalStepModel> approvalStepModels = approvalStepRepository.toModel(approvalStepRepository.findByProposalTypeId(proposalTypeId));
+		List<ApprovalStepModel> approvalStepModels = new ArrayList<>();
+		approvalStepModels = approvalStepRepository.toModel(approvalStepRepository.findByProposalTypeId(proposalTypeId));
 		List<ApprovalStepDetail> tmp = new ArrayList<>();
 		List<ApprovalOption_View> approvalOptionViews;
 		for(ApprovalStepModel approvalStepModel : approvalStepModels) {
@@ -73,7 +73,7 @@ public class ApprovalStepService {
 							.body(new ResponseObject("OK", "OK", approvalStepModels));
 			}else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
+						.body(new ResponseObject("ERROR", "Có lỗi xảy ra", approvalStepModels));
 			}
 			
 	}
@@ -239,7 +239,7 @@ public class ApprovalStepService {
 			}
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", "Thêm bước duyệt thất bại", ""));
+					.body(new ResponseObject("ERROR", "Xóa thất bại", ""));
 		}
 		
 		
@@ -355,11 +355,11 @@ public class ApprovalStepService {
 			approvalStepModel.setName(approvalStepEdit.getApprovalStepName());
 			approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("OK", "Thêm bước duyệt thành công", approvalStepModel));
+					.body(new ResponseObject("OK", "Cập nhật bước duyệt thành công", approvalStepModel));
 		} catch (Exception e) {
 			LOGGER.error(e.getStackTrace().toString());
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("ERROR", "Thêm bước duyệt thất bại", ""));
+					.body(new ResponseObject("ERROR", "Cập nhật bước duyệt thất bại", ""));
 		}
 	}
 }

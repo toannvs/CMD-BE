@@ -49,7 +49,7 @@ public class PositionService{
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", "Have error: ", e.getMessage()));
+					.body(new ResponseObject("ERROR", e.getMessage(),positionModelList));
 		}
 	}
 	public ResponseEntity<Object> findAllByDepartmentId(Integer depId) {
@@ -73,7 +73,7 @@ public class PositionService{
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", "Have error: ", e.getMessage()));
+					.body(new ResponseObject("ERROR", e.getMessage(), positionModelList));
 		}
 	}
 	public ResponseEntity<Object> findAllByTeamId(Integer teamId) {
@@ -96,7 +96,7 @@ public class PositionService{
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ResponseObject("ERROR", "Have error: ", e.getMessage()));
+					.body(new ResponseObject("ERROR", e.getMessage(), positionModelList));
 		}
 	}
 
@@ -132,7 +132,7 @@ public class PositionService{
 					.body(new ResponseObject("OK", "SUCCESSFULLY:", positionModelList));
 		}else {
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("ERROR", "Not found", ""));
+					.body(new ResponseObject("ERROR", "Not found", positionModelList));
 		}
 			
 	}
