@@ -29,7 +29,7 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 		StringBuilder hql = new StringBuilder();
 		hql.append("select code, table, name from v_approval_options as app_pro ");
 		if(!name.equals("") && name!=null) {
-			hql.append("where app_pro.name like CONCAT('%',:name,'%') ");
+			hql.append("where app_pro.name = :name ");
 		}
 		try {
 			Query query = session.createQuery(hql.toString());
