@@ -22,11 +22,11 @@ public class OptionService {
 	public ResponseEntity<Object> findAllWithPermissionDefault() {
 		List<OptionModel> optionModels = new ArrayList<OptionModel>();;
 		optionModels = optionRepository.findAllWithPermissionDefault();
-		if(optionModels!=null && optionModels.size()>0) {
+		if(optionModels.size()>0) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("OK", "OK", optionModels));
 		}
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ResponseObject("ERROR", "Not found", ""));
+				.body(new ResponseObject("ERROR", "Not found", optionModels));
 	}
 }

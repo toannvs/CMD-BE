@@ -78,7 +78,7 @@ public class ProposalService {
 		List<Integer> proposalTypeIds = new ArrayList<>();
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
@@ -134,7 +134,7 @@ public class ProposalService {
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForAll());
 
-			Map<String, Object> results = new TreeMap<String, Object>();
+			
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 			results.put("notifies", notifyModels);
@@ -172,7 +172,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 	}
 
@@ -187,6 +187,7 @@ public class ProposalService {
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
@@ -240,7 +241,6 @@ public class ProposalService {
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForProposalApproveByMe());
 
-			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 
@@ -278,7 +278,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 	}
 
@@ -292,7 +292,7 @@ public class ProposalService {
 
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
@@ -344,7 +344,7 @@ public class ProposalService {
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForProposalCratedByMe());
 
-			Map<String, Object> results = new TreeMap<String, Object>();
+			
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 
@@ -382,7 +382,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 	}
 
@@ -495,7 +495,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), proposalModel));
 		}
 	}
 

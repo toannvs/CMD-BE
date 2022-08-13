@@ -55,7 +55,8 @@ public class ProposalTypeService {
 	// findAll for config
 	public ResponseEntity<Object> findAllConfig() {
 //		List<ApprovalOption_View> approvalOptionViews;
-		List<ProposalType> proposalTypes = proposalTypeRepository.findAll();
+		List<ProposalType> proposalTypes = new ArrayList<>();
+		proposalTypes = proposalTypeRepository.findAll();
 		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 		List<ProposalTypeDetailModel> proposalTypeDetailModels = new ArrayList<>();
 		List<ProposalTypeDetail> proposalTypeDetails = new ArrayList<>();
@@ -72,11 +73,11 @@ public class ProposalTypeService {
 			result.put("fields", proposalTypeDetailModels);
 			results.add(result);
 		}
-		if (proposalTypes != null) {
+		if (proposalTypes.size() > 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", results));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình tìm kiếm", results));
+					.body(new ResponseObject("ERROR", "Not found", results));
 
 		}
 
@@ -103,15 +104,15 @@ public class ProposalTypeService {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình tìm kiếm", ""));
 		}
+		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 		if (proposalTypes != null && proposalTypes.size() > 0) {
 			proposalTypes.addAll(proposalTypeEnableAll);
-			List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 			for (ProposalType proType : proposalTypes) {
 				proposalTypeModels.add(proposalTypeRepository.toModel(proType));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", proposalTypeModels));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", proposalTypeModels));
 		}
 
 	}

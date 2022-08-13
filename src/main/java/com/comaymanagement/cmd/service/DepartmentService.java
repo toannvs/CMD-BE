@@ -3,7 +3,6 @@ package com.comaymanagement.cmd.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Position;
@@ -42,9 +40,10 @@ public class DepartmentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentService.class);
 
 	public ResponseEntity<Object> findAll(String name) {
+		Set<DepartmentModel> departmentModelSet = new LinkedHashSet<>();
 		try {
 			name = name == null ? "" : name.trim();
-			Set<DepartmentModel> departmentModelSet = departmentRepository.findAll(name);
+			departmentModelSet = departmentRepository.findAll(name);
 			if(!name.equals("")) {
 				Set<DepartmentModel> departmentModelSetResults = new LinkedHashSet<>();
 				for(DepartmentModel departmentModel : departmentModelSet) {
@@ -68,14 +67,14 @@ public class DepartmentService {
 			}
 			
 			
-			if (departmentModelSet!=null) {
+			if (departmentModelSet.size()>0) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", departmentModelSet));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","Có lỗi xảy ra", departmentModelSet));
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", e.getMessage(), ""));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", e.getMessage(), departmentModelSet));
 		}
 		
 

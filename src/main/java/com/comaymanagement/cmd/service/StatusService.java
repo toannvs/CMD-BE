@@ -52,12 +52,13 @@ public class StatusService {
 						.body(new ResponseObject("OK", "SUCCESSFULLY: ", statuses));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", "NOT FOUND", ""));
+						.body(new ResponseObject("ERROR", "NOT FOUND", statuses));
 			}
 		} catch (Exception e) {
 			LOOGER.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("ERROR", "NOT FOUND", statuses));
 		}
-		return null;
 		
 	}
 

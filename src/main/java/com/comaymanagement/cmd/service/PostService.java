@@ -51,14 +51,14 @@ public class PostService {
 		}
 		posts = postRepositoryImpl.findAll(title, content,sort, order);
 		
+		List<PostModel> postModels = new ArrayList<>();
 		if (posts.size() > 0) {
-			List<PostModel> postModels = new ArrayList<>();
 			for(Post p : posts) {
 				postModels.add(postRepositoryImpl.toModel(p));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", postModels));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", postModels));
 		}
 	}
 	public ResponseEntity<Object> add(String json) {

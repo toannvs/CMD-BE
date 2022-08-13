@@ -68,19 +68,19 @@ public class TaskService {
 		page = page == null ? "1" : page;
 		Integer limit = CMDConstrant.LIMIT;
 		int offset = (Integer.valueOf(page) - 1) * limit;
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			List<TaskModel> tasksByStatusId = taskRepository.findByStatusId(statusId, sort, order, offset, limit);
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
 			// pagination.setTotalItem(taskRepository.CountTotalItemTaskAll());
-			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("tasks", tasksByStatusId);
 			results.put("pagination", pagination);
 			if (tasksByStatusId == null) {
 				LOGGER.info("Have no task by status_id: " + statusId);
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("", "Have no task by status_id: " + statusId, ""));
+						.body(new ResponseObject("", "Have no task by status_id: " + statusId, results));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Query produce successfully:", results));
@@ -88,7 +88,7 @@ public class TaskService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ResponseObject("ERROR", "Have error: ", e.getMessage()));
+					.body(new ResponseObject("ERROR", e.getMessage(),results));
 		}
 
 	}
@@ -108,7 +108,7 @@ public class TaskService {
 		List<Integer> creators = new ArrayList<Integer>();
 		List<Integer> receivers = new ArrayList<Integer>();
 		List<Integer> departmentIds = new ArrayList<Integer>();
-
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			taskRepository.ScanOverDueTask();
 			int offset = (Integer.valueOf(page) - 1) * limit;
@@ -164,7 +164,7 @@ public class TaskService {
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItem);
-			Map<String, Object> results = new TreeMap<String, Object>();
+			
 			results.put("pagination", pagination);
 			results.put("tasks", taskModelResult);
 			results.put("notifies", notifyModels);
@@ -180,7 +180,7 @@ public class TaskService {
 			}
 		} catch (Exception e) {
 			LOGGER.error("ERROR:" + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("ERROR", e.getMessage(), ""));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 
 	}
