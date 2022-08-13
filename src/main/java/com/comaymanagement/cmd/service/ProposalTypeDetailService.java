@@ -16,6 +16,7 @@ import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.ApprovalOption_View;
 import com.comaymanagement.cmd.entity.ApprovalStep;
 import com.comaymanagement.cmd.entity.ApprovalStepDetail;
+import com.comaymanagement.cmd.entity.ProposalPermission;
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ProposalTypeDetail;
 import com.comaymanagement.cmd.entity.ResponseObject;
@@ -24,6 +25,7 @@ import com.comaymanagement.cmd.model.ProposalTypeDetailModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalOption_ViewRepository;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepDetailRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.ProposalPermissionImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeDetailRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeRepositoryImpl;
 
@@ -44,6 +46,9 @@ public class ProposalTypeDetailService {
 	ApprovalStepDetailRepositoryImpl approvalStepDetailRepository;
 	@Autowired
 	ApprovalOption_ViewRepository approvalOptionReposiroty;
+	@Autowired
+	ProposalPermissionImpl proposalPermissionRepository;
+
 	public ResponseEntity<Object> findById(Integer id){
 		List<ProposalTypeDetail> proposalTypeDetails= new ArrayList<>();
 		List<ApprovalStep> approvalSteps = new ArrayList<>();
@@ -82,10 +87,32 @@ public class ProposalTypeDetailService {
 				approvalStepModel.setApprovalConfigTargets(approvalOptionViews);
 			}
 			ProposalType proposalType = proposalTypeRepository.findById(id.toString());
-			
+			// Response data
+			approvalOptionViews = new ArrayList<>();
+			List<ProposalPermission> proposalPermissionOlds = proposalPermissionRepository.findAllByProposalTypeId(id);
+			for (ProposalPermission proposalPermission : proposalPermissionOlds) {
+				// have list of all emp or dep or position in all step of proposal
+				ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(proposalPermission.getEmployeeId(),
+						"employees");
+				ApprovalOption_View approvalOptionDep = approvalOptionReposiroty
+						.findById(proposalPermission.getDepartmentId(), "departments");
+				ApprovalOption_View approvalOptionPos = approvalOptionReposiroty.findById(proposalPermission.getPositionId(),
+						"positions");
+				if (approvalOptionEmp != null) {
+					approvalOptionViews.add(approvalOptionEmp);
+				}
+				if (approvalOptionDep != null) {
+					approvalOptionViews.add(approvalOptionDep);
+				}
+				if (approvalOptionPos != null) {
+					approvalOptionViews.add(approvalOptionPos);
+				}
+
+			}
 			Map<String, Object> result = new LinkedHashMap<>();
 			result.put("id", proposalType.getId());
 			result.put("name", proposalType.getName());
+			result.put("proposalConfigTargets", approvalOptionViews);
 			result.put("activeFlag", proposalType.isActiveFlag());
 			result.put("createDate", proposalType.getCreateDate());
 			result.put("fields", proposalTypeDetailModels);
