@@ -759,31 +759,5 @@ public class ProposalService {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
 	}
-	public ResponseEntity<Object> checkIfCanApprove(Integer proposalId) {
-		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
-		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndexForCheck(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
-		List<Integer> employeeIds = new ArrayList<>();
-		List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-		for(ApprovalStep appStep : approvalStep) {
-			// One app step have many appStepDetail
-			approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
-			for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-				// One appStepDetail have many record;
-				employeeIds.add(appStepDetail.getEmployeeId());
-				for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-					employeeIds.add(emp.getId());
-				}
-				for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-					employeeIds.add(emp.getId());
-				}
-				
-			}
-		}
-		if(employeeIds.contains(userDetail.getId())) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Có quyền approve",true));
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Không có quyền approve", false));
-	}
+
 }

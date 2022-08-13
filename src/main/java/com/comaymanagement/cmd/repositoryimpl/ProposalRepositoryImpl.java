@@ -13,10 +13,12 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.entity.ApprovalStep;
+import com.comaymanagement.cmd.entity.ApprovalStepDetail;
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Position;
@@ -30,6 +32,7 @@ import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.model.ProposalModel;
 import com.comaymanagement.cmd.repository.IProposalRepository;
+import com.comaymanagement.cmd.service.UserDetailsImpl;
 
 @Repository
 @Transactional(rollbackFor = Exception.class)
@@ -43,7 +46,17 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 
 	@Autowired
 	PositionRepositoryImpl positionRepository;
+	@Autowired
+	ApprovalStepRepositoryImpl approvalStepRepository;
 
+	@Autowired
+	NotifyRepositoryImpl notifyRepositoryImpl;
+
+	@Autowired
+	ApprovalStepDetailRepositoryImpl approvalStepDetailRepository;
+	@Autowired
+	EmployeeRepositoryImpl employeeRepositoryImpl;
+	
 	private final Logger LOGGER = LoggerFactory.getLogger(ProposalRepositoryImpl.class);
 	public int countAllForAll = 0;
 	public int countAllForProposalApproveByMe = 0;
@@ -559,6 +572,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			proposalModel.setCurrentStep(proposal.getCurrentStep());
 			proposalModel.setContents(contents);
 			proposalModel.setReason(proposal.getReason());
+			proposalModel.setCanApprove(checkIfCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString()));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
@@ -690,5 +704,31 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 
 	public void setCountAllForProposalCratedByMe(int countAllForProposalCratedByMe) {
 		this.countAllForProposalCratedByMe = countAllForProposalCratedByMe;
+	}
+	public boolean checkIfCanApprove(Integer proposalTypeId, String currentStep) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndexForCheck(proposalTypeId, currentStep);
+		List<Integer> employeeIds = new ArrayList<>();
+		List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
+		for(ApprovalStep appStep : approvalStep) {
+			// One app step have many appStepDetail
+			approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
+			for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
+				// One appStepDetail have many record;
+				employeeIds.add(appStepDetail.getEmployeeId());
+				for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+					employeeIds.add(emp.getId());
+				}
+				for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
+					employeeIds.add(emp.getId());
+				}
+				
+			}
+		}
+		if(employeeIds.contains(userDetail.getId())) {
+			return true;
+		}
+		return false;
 	}
 }
