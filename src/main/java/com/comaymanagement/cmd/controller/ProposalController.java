@@ -132,12 +132,12 @@ public class ProposalController {
 		return proposalService.cancel(json);
 		
 	}
-	@PreAuthorize("@customRoleService.canUpdate('proposal',principal)")
-	@GetMapping(value= "/checkPermissionApprove/{id}",produces = "application/json")
-	@ResponseBody
-	public ResponseEntity<Object> checkIfCanApprove(@PathVariable Integer id){
-		return proposalService.checkIfCanApprove(id);
-	}
+//	@PreAuthorize("@customRoleService.canUpdate('proposal',principal)")
+//	@GetMapping(value= "/checkPermissionApprove/{id}",produces = "application/json")
+//	@ResponseBody
+//	public ResponseEntity<Object> checkIfCanApprove(@PathVariable Integer id){
+//		return proposalService.checkIfCanApprove(id);
+//	}
 	
 	
 	
