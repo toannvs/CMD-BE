@@ -72,7 +72,7 @@ public class DepartmentController {
 	@PreAuthorize("@customRoleService.canUpdate('department',principal) or @customRoleService.canUpdateAll('department', principal)")
 	@PutMapping("/edit")
 	public ResponseEntity<Object> edit(@RequestBody String json){
-		return departmentService.edit(json);
+		return departmentService.edit(json);	
 	}
 
 	@PreAuthorize("@customRoleService.canDelete('department',principal) or @customRoleService.canDeleteAll('department', principal)")
