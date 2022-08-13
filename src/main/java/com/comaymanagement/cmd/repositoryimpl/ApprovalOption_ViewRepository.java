@@ -28,13 +28,14 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from v_approval_options ");
-		if(!name.equals("")) {
+		if(!name.equals("") && name!=null) {
 			hql.append("where name like CONCAT('%',:name,'%') ");
 		}
 		try {
 			Query query = session.createQuery(hql.toString());
-			if(!name.equals("")) {
+			if(!name.equals("") && name!=null ) {
 			query.setParameter("name", name);
+			System.out.println(name);
 			}
 			LOGGER.info(hql.toString());
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
