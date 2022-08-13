@@ -25,13 +25,10 @@ public class ApprovalOption_View {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(name="code")
 	private String code;
 
-	@Column(name="table")
 	private String table;
 
-	@Column(name="name")
 	private String name;
 	
 }
