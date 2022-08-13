@@ -24,16 +24,16 @@
 
 
     <!-- Turn off some annoying logger -->
-    <logger name="org.hibernate" level="OFF" additivity="false">
+    <logger name="org.hibernate" level="OFF" additivity="true ">
     </logger>
 
     <!-- Logger for integral -->
-    <logger name="com.comaymanagement" level="DEBUG" additivity="false">
+    <logger name="com.comaymanagement" level="DEBUG" additivity="true">
         <appender-ref ref="console" /> 
        <appender-ref ref="rollingFile" /> 
     </logger>
         <!-- Logger for integral -->
-    <logger name="com.comaymanagement" level="INFO" additivity="false">
+    <logger name="com.comaymanagement" level="INFO" additivity="true">
         <appender-ref ref="console" /> 
        <appender-ref ref="rollingFile" /> 
     </logger>
