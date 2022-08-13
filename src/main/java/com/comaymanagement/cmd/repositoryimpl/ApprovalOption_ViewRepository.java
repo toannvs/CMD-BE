@@ -27,7 +27,7 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 		List<ApprovalOption_View> appApprovalOption_Views = new ArrayList<>();
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
-		hql.append("select code, table, name from v_approval_options as app_pro ");
+		hql.append("from v_approval_options as app_pro ");
 		if(!name.equals("") && name!=null) {
 			hql.append("where app_pro.name like :name ");
 		}
@@ -35,19 +35,10 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 			Query query = session.createQuery(hql.toString());
 			if(!name.equals("") && name!=null ) {
 			query.setParameter("name","%" + name + "%");
-			System.out.println(name);
 			}
 			LOGGER.info(hql.toString());
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object[] ob = (Object[])it.next();
-				String code = (String) ob[0];
-				String table = (String)ob[1];
-				String vname = (String)ob[2];
-				
-				ApprovalOption_View approvalOption =  new ApprovalOption_View();
-				approvalOption.setCode(code);
-				approvalOption.setTable(table);
-				approvalOption.setName(vname);
+				ApprovalOption_View approvalOption = (ApprovalOption_View)it.next();
 				appApprovalOption_Views.add(approvalOption);
 			}
 			return appApprovalOption_Views;
