@@ -27,10 +27,10 @@ public class ApprovalOption_ViewService {
 		name = name != null ? name.trim() : "";
 		List<ApprovalOption_View> approvalOption_Views = approvalOptionReposiroty.findAll(name);
 		
-		if (approvalOption_Views != null && approvalOption_Views.size() > 0 ) {
+		if (approvalOption_Views != null) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", approvalOption_Views));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", approvalOption_Views));
 		}
 
 	}
