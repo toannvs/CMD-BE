@@ -27,9 +27,9 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 		List<ApprovalOption_View> appApprovalOption_Views = new ArrayList<>();
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
-		hql.append("from v_approval_options app_option ");
+		hql.append("from v_approval_options ");
 		if(!name.equals("")) {
-			hql.append("where app_option.name like CONCAT('%',:name,'%') ");
+			hql.append("where name like CONCAT('%',:name,'%') ");
 		}
 		try {
 			Query query = session.createQuery(hql.toString());
