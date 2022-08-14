@@ -62,13 +62,13 @@ public class RoleService {
 		if (order == null || order == "") {
 			order = "desc";
 		}
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			List<RoleModel> roleModelList = roleRepository.findAll(name, sort, order , limit, offset);
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(roleRepository.countAllPaging(name, sort, order , limit, offset));
-			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("roles", roleModelList);
 			results.put("pagination", pagination);
 			
@@ -84,7 +84,7 @@ public class RoleService {
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR",e.getMessage(),null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR",e.getMessage(),results));
 		}
 
 	}

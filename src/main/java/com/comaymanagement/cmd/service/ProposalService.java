@@ -78,7 +78,7 @@ public class ProposalService {
 		List<Integer> proposalTypeIds = new ArrayList<>();
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
@@ -134,7 +134,7 @@ public class ProposalService {
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForAll());
 
-			Map<String, Object> results = new TreeMap<String, Object>();
+			
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 			results.put("notifies", notifyModels);
@@ -172,7 +172,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 	}
 
@@ -187,6 +187,7 @@ public class ProposalService {
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
@@ -240,7 +241,6 @@ public class ProposalService {
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForProposalApproveByMe());
 
-			Map<String, Object> results = new TreeMap<String, Object>();
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 
@@ -278,7 +278,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 	}
 
@@ -292,7 +292,7 @@ public class ProposalService {
 
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-
+		Map<String, Object> results = new TreeMap<String, Object>();
 		try {
 			jsonObject = jsonMapper.readTree(json);
 			JsonNode jsonStatusObject = jsonObject.get("statusIds");
@@ -344,7 +344,7 @@ public class ProposalService {
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForProposalCratedByMe());
 
-			Map<String, Object> results = new TreeMap<String, Object>();
+			
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
 
@@ -382,7 +382,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), results));
 		}
 	}
 
@@ -495,7 +495,7 @@ public class ProposalService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), proposalModel));
 		}
 	}
 
@@ -759,31 +759,5 @@ public class ProposalService {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Có lỗi xảy ra", ""));
 	}
-	public ResponseEntity<Object> checkIfCanApprove(Integer proposalId) {
-		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
-		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndexForCheck(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
-		List<Integer> employeeIds = new ArrayList<>();
-		List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-		for(ApprovalStep appStep : approvalStep) {
-			// One app step have many appStepDetail
-			approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
-			for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-				// One appStepDetail have many record;
-				employeeIds.add(appStepDetail.getEmployeeId());
-				for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-					employeeIds.add(emp.getId());
-				}
-				for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-					employeeIds.add(emp.getId());
-				}
-				
-			}
-		}
-		if(employeeIds.contains(userDetail.getId())) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Có quyền approve",true));
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Không có quyền approve", false));
-	}
+
 }

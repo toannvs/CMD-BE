@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.comaymanagement.cmd.entity.Option;
-import com.comaymanagement.cmd.entity.Permission;
-import com.comaymanagement.cmd.entity.RoleDetail;
 import com.comaymanagement.cmd.model.OptionModel;
 import com.comaymanagement.cmd.model.PermissionModel;
 import com.comaymanagement.cmd.repository.IOptionRepository;

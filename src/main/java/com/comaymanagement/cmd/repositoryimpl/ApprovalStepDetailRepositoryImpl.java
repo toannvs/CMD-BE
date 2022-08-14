@@ -29,7 +29,7 @@ public class ApprovalStepDetailRepositoryImpl implements IApprovalStepDetailRepo
 			try {
 				Session session = sessionFactory.getCurrentSession();
 				Query query = session.createQuery(hql.toString());
-				LOGGER.info(hql.toString());
+//				LOGGER.info(hql.toString());
 				query.setParameter("approvalStepId", approvalStepId);
 				for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 					ApprovalStepDetail app = (ApprovalStepDetail) it.next();

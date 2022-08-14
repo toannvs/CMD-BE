@@ -26,4 +26,5 @@ public class ProposalModel {
 	private Status status;
 	private Integer currentStep;
 	private String reason;
+	private boolean canApprove;
 }

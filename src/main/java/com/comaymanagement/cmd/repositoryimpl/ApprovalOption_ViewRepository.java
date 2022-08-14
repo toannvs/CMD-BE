@@ -27,14 +27,18 @@ public class ApprovalOption_ViewRepository implements IApprovalOption_ViewReposi
 		List<ApprovalOption_View> appApprovalOption_Views = new ArrayList<>();
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
-		hql.append("from v_approval_options app_option ");
-		hql.append("where app_option.name like CONCAT('%',:name,'%') ");
+		hql.append("from v_approval_options as app_pro ");
+		if(!name.equals("") && name!=null) {
+			hql.append("where app_pro.name like :name ");
+		}
 		try {
 			Query query = session.createQuery(hql.toString());
-			query.setParameter("name", name);
-			LOGGER.info(hql.toString());
+			if(!name.equals("") && name!=null ) {
+			query.setParameter("name","%" + name + "%");
+			}
+ 			LOGGER.info(hql.toString());
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				ApprovalOption_View approvalOption = (ApprovalOption_View) it.next();
+				ApprovalOption_View approvalOption = (ApprovalOption_View)it.next();
 				appApprovalOption_Views.add(approvalOption);
 			}
 			return appApprovalOption_Views;

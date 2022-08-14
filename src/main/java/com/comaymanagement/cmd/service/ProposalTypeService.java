@@ -1,7 +1,9 @@
 package com.comaymanagement.cmd.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +19,15 @@ import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ProposalPermission;
 import com.comaymanagement.cmd.entity.ProposalType;
+import com.comaymanagement.cmd.entity.ProposalTypeDetail;
 import com.comaymanagement.cmd.entity.ResponseObject;
+import com.comaymanagement.cmd.model.ProposalTypeDetailModel;
 import com.comaymanagement.cmd.model.ProposalTypeModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalOption_ViewRepository;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalPermissionImpl;
+import com.comaymanagement.cmd.repositoryimpl.ProposalTypeDetailRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -44,21 +49,36 @@ public class ProposalTypeService {
 	ProposalPermissionImpl proposalPermissionRepository;
 	@Autowired
 	ApprovalOption_ViewRepository approvalOptionReposiroty;
+	@Autowired
+	ProposalTypeDetailRepositoryImpl proposalTypeDetailReposiotory;
+
 	// findAll for config
 	public ResponseEntity<Object> findAllConfig() {
-		List<ProposalType> proposalTypes = proposalTypeRepository.findAll();
+//		List<ApprovalOption_View> approvalOptionViews;
+		List<ProposalType> proposalTypes = new ArrayList<>();
+		proposalTypes = proposalTypeRepository.findAll();
 		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
+		List<ProposalTypeDetailModel> proposalTypeDetailModels = new ArrayList<>();
+		List<ProposalTypeDetail> proposalTypeDetails = new ArrayList<>();
+		List<Map<String, Object>> results = new ArrayList<>();
 		for (ProposalType proposalType : proposalTypes) {
+			proposalTypeDetails = proposalTypeDetailReposiotory.findById(proposalType.getId());
+			proposalTypeDetailModels = proposalTypeDetailReposiotory.toModel(proposalTypeDetails);
 			proposalTypeModels.add(proposalTypeRepository.toModel(proposalType));
+			Map<String, Object> result = new LinkedHashMap<>();
+			result.put("id", proposalType.getId());
+			result.put("name", proposalType.getName());
+			result.put("activeFlag", proposalType.isActiveFlag());
+			result.put("createDate", proposalType.getCreateDate());
+			result.put("fields", proposalTypeDetailModels);
+			results.add(result);
 		}
-		if (proposalTypes == null) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình tìm kiếm", ""));
-		}
-		if (proposalTypes != null && proposalTypes.size() > 0) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", proposalTypeModels));
+		if (proposalTypes.size() > 0) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", results));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("ERROR", "Not found", results));
+
 		}
 
 	}
@@ -84,46 +104,51 @@ public class ProposalTypeService {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình tìm kiếm", ""));
 		}
+		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 		if (proposalTypes != null && proposalTypes.size() > 0) {
 			proposalTypes.addAll(proposalTypeEnableAll);
-			List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 			for (ProposalType proType : proposalTypes) {
 				proposalTypeModels.add(proposalTypeRepository.toModel(proType));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", proposalTypeModels));
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", ""));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", proposalTypeModels));
 		}
 
 	}
 
-	public ResponseEntity<Object> updateAndGantPermission(String json){
+	public ResponseEntity<Object> updateAndGantPermission(String json) {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonObjectProposalType;
 		JsonNode jsonObjectProposalConfigTargets;
 		List<Integer> empIds;
 		List<Integer> depIds;
 		List<Integer> posIds;
-		List<ProposalPermission> proposalPermissionSaves  = new ArrayList<>();;
+		List<ProposalPermission> proposalPermissionSaves = new ArrayList<>();
+		;
 		List<ApprovalOption_View> approvalOptionViews;
 		try {
 			jsonObjectProposalType = jsonMapper.readTree(json);
-			Integer proposalTypeId = jsonObjectProposalType.get("id") != null ? jsonObjectProposalType.get("id").asInt() : -1;
-			String proposalTypeName = jsonObjectProposalType.get("name") !=null ? jsonObjectProposalType.get("name").asText() : "";
+			Integer proposalTypeId = jsonObjectProposalType.get("id") != null ? jsonObjectProposalType.get("id").asInt()
+					: -1;
+			String proposalTypeName = jsonObjectProposalType.get("name") != null
+					? jsonObjectProposalType.get("name").asText()
+					: "";
 			jsonObjectProposalConfigTargets = jsonObjectProposalType.get("proposalConfigTargets");
 			ProposalType proposalType = proposalTypeRepository.findById(proposalTypeId.toString());
-			if(proposalType!=null) {
+			if (proposalType != null) {
 				proposalType.setName(proposalTypeName);
-				if(jsonObjectProposalConfigTargets!=null) {
-					// delete all old permission 
-					List<ProposalPermission> proposalPermissionOlds = proposalPermissionRepository.findAllByProposalTypeId(proposalTypeId);
-					if(proposalPermissionOlds!=null && proposalPermissionOlds.size()>0) {
-						for(ProposalPermission permission : proposalPermissionOlds) {
+				if (jsonObjectProposalConfigTargets != null) {
+					// delete all old permission
+					List<ProposalPermission> proposalPermissionOlds = proposalPermissionRepository
+							.findAllByProposalTypeId(proposalTypeId);
+					if (proposalPermissionOlds != null && proposalPermissionOlds.size() > 0) {
+						for (ProposalPermission permission : proposalPermissionOlds) {
 							proposalPermissionRepository.delete(permission);
 						}
 					}
 					// if size < 0 => do nothing
-					if(jsonObjectProposalConfigTargets.size()>0) {
+					if (jsonObjectProposalConfigTargets.size() > 0) {
 						empIds = new ArrayList<>();
 						depIds = new ArrayList<>();
 						posIds = new ArrayList<>();
@@ -166,26 +191,26 @@ public class ProposalTypeService {
 										.body(new ResponseObject("ERROR", "Cập nhật loại đề xuất thất bại", ""));
 							}
 						}
-						
+
 					}
 				}
-				
-			}else {
+
+			} else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Cập nhật loại đề xuất thất bại", ""));
 			}
 			// Affter update permission => update name
-			if(proposalTypeRepository.edit(proposalType)>0) {
+			if (proposalTypeRepository.edit(proposalType) > 0) {
 				// Response data
 				approvalOptionViews = new ArrayList<>();
 				for (ProposalPermission proposalPermission : proposalPermissionSaves) {
 					// have list of all emp or dep or position in all step of proposal
-					ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty.findById(proposalPermission.getEmployeeId(),
-							"employees");
+					ApprovalOption_View approvalOptionEmp = approvalOptionReposiroty
+							.findById(proposalPermission.getEmployeeId(), "employees");
 					ApprovalOption_View approvalOptionDep = approvalOptionReposiroty
 							.findById(proposalPermission.getDepartmentId(), "departments");
-					ApprovalOption_View approvalOptionPos = approvalOptionReposiroty.findById(proposalPermission.getPositionId(),
-							"positions");
+					ApprovalOption_View approvalOptionPos = approvalOptionReposiroty
+							.findById(proposalPermission.getPositionId(), "positions");
 					if (approvalOptionEmp != null) {
 						approvalOptionViews.add(approvalOptionEmp);
 					}
@@ -213,8 +238,8 @@ public class ProposalTypeService {
 					.body(new ResponseObject("ERROR", "Cập nhật loại để xuất thất bại", ""));
 		} catch (Exception e) {
 			LOGGER.error(e.getStackTrace().toString());
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ResponseObject("ERROR", "Cập nhật loại để xuất thất bại", ""));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("ERROR", "Cập nhật loại để xuất thất bại", ""));
 		}
 	}
 }

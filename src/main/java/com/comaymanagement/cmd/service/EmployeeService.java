@@ -2,7 +2,6 @@ package com.comaymanagement.cmd.service;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -152,6 +151,7 @@ public class EmployeeService {
 			limitCaculated = caculatorOffset.get("limit");
 			count--;
 		}
+		Map<String, Object> result = new TreeMap<>();
 		try {
 
 			// Get with limit = -1
@@ -161,7 +161,7 @@ public class EmployeeService {
 				employeeModelSet.add(employeeModel);
 			}
 			Pagination pagination = new Pagination();
-			Map<String, Object> result = new TreeMap<>();
+			
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
@@ -177,7 +177,7 @@ public class EmployeeService {
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in employeePaging() ", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), result));
 		}
 
 	}
@@ -251,6 +251,7 @@ public class EmployeeService {
 			limitCaculated = caculatorOffset.get("limit");
 			count--;
 		}
+		Map<String, Object> result = new TreeMap<>();
 		try {
 			// if duplicate => limit will alway be >= CMDConstrant.LIMIT
 			if (limitCaculated < 15) {
@@ -268,7 +269,7 @@ public class EmployeeService {
 					.getPrincipal();
 			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
 			Pagination pagination = new Pagination();
-			Map<String, Object> result = new TreeMap<>();
+			
 			pagination.setLimit(CMDConstrant.LIMIT);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
@@ -285,7 +286,7 @@ public class EmployeeService {
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in employeePaging() ", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), result));
 		}
 
 	}
@@ -384,6 +385,7 @@ public class EmployeeService {
 			limitCaculated = caculatorOffset.get("limit");
 			count--;
 		}
+		Map<String, Object> result = new TreeMap<>();
 		try {
 			// if duplicate => limit will alway be >= CMDConstrant.LIMIT
 			if (limitCaculated < 15) {
@@ -398,7 +400,7 @@ public class EmployeeService {
 				employeeModelSet.add(employeeModel);
 			}
 			Pagination pagination = new Pagination();
-			Map<String, Object> result = new TreeMap<>();
+			
 			pagination.setLimit(CMDConstrant.LIMIT);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
@@ -414,7 +416,7 @@ public class EmployeeService {
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in employeePaging() ", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseObject("ERROR", e.getMessage(), ""));
+					.body(new ResponseObject("ERROR", e.getMessage(), result));
 		}
 
 	}
@@ -929,7 +931,7 @@ public class EmployeeService {
 	}
 
 	public ResponseEntity<Object> findAllNotifies(String page, String sort, String order, String keySearch) {
-		List<NotifyModel> notifyModels = null;
+		List<NotifyModel> notifyModels = new ArrayList<>();
 		try {
 			page = page == null ? "1" : page.trim();
 			// Order by defaut
@@ -954,7 +956,7 @@ public class EmployeeService {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyModels));
 		}
 
 	}
@@ -980,8 +982,8 @@ public class EmployeeService {
 	public ResponseEntity<Object> deleteNotifies(String json) {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonNode = null;
+		List<Integer> notifyIds = new ArrayList<Integer>();
 		try {
-			List<Integer> notifyIds = new ArrayList<Integer>();
 			jsonNode = jsonMapper.readTree(json);
 			if (null == jsonNode.get("notifyIds")) {
 				return ResponseEntity.status(HttpStatus.OK)
@@ -995,22 +997,22 @@ public class EmployeeService {
 			Boolean result = notifyRepositoryImpl.delete(notifyIds);
 			if (result) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), ""));
+						.body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), notifyIds));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+						.body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), notifyIds));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyIds));
 		}
 	}
 
 	public ResponseEntity<Object> markIsReadNotifies(String json) {
 		JsonMapper jsonMapper = new JsonMapper();
 		JsonNode jsonNode = null;
+		List<Integer> notifyIds = new ArrayList<Integer>();
 		try {
-			List<Integer> notifyIds = new ArrayList<Integer>();
 			jsonNode = jsonMapper.readTree(json);
 			if (null == jsonNode.get("notifyIds")) {
 				return ResponseEntity.status(HttpStatus.OK)
@@ -1026,14 +1028,14 @@ public class EmployeeService {
 			Boolean result = notifyRepositoryImpl.allRead(userDetail.getId(), notifyIds);
 			if (result) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), ""));
+						.body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"),notifyIds));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), ""));
+						.body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), notifyIds));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", ""));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyIds));
 		}
 	}
 	public ResponseEntity<Object> findById(Integer id) {

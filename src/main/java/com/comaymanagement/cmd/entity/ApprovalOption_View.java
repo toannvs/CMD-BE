@@ -19,16 +19,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-
 public class ApprovalOption_View {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	private String code;
-	
+
 	private String table;
-	
+
 	private String name;
 	
 }

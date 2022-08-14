@@ -40,9 +40,10 @@ public class DepartmentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentService.class);
 
 	public ResponseEntity<Object> findAll(String name) {
+		Set<DepartmentModel> departmentModelSet = new LinkedHashSet<>();
 		try {
 			name = name == null ? "" : name.trim();
-			Set<DepartmentModel> departmentModelSet = departmentRepository.findAll(name);
+			departmentModelSet = departmentRepository.findAll(name);
 			if(!name.equals("")) {
 				Set<DepartmentModel> departmentModelSetResults = new LinkedHashSet<DepartmentModel>();
 				for(DepartmentModel departmentModel : departmentModelSet) {
@@ -74,14 +75,14 @@ public class DepartmentService {
 			}
 			
 			
-			if (departmentModelSet!=null) {
+			if (departmentModelSet.size()>0) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", departmentModelSet));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","Có lỗi xảy ra", departmentModelSet));
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", e.getMessage(), ""));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", e.getMessage(), departmentModelSet));
 		}
 		
 
