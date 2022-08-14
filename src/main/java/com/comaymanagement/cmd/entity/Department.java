@@ -12,6 +12,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -66,5 +67,8 @@ public class Department {
 			@JoinColumn(name = "department_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "employee_id", referencedColumnName = "id") })
 	private List<Employee> employees;
-
+	@OneToMany()
+	@JsonIgnore
+	@JoinColumn(name = "department_id")
+	private List<DepartmentHasDevice> departmentHasDevices;
 }
