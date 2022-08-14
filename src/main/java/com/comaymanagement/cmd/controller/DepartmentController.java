@@ -50,7 +50,7 @@ public class DepartmentController {
     private JwtUtils jwtUtils;
 	@Autowired
     private UserDetailsServiceImpl userDetailsService;
-	
+
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
 	@PreAuthorize("@customRoleService.canView('department', principal) or @customRoleService.canViewAll('department', principal)")
@@ -85,6 +85,11 @@ public class DepartmentController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Object> findById(@PathVariable Integer id) {
 		return departmentService.findById(id);
+	}
+	@PreAuthorize("@customRoleService.canView('department', principal) or @customRoleService.canViewAll('department', principal)")
+	@GetMapping("/devices")
+	public ResponseEntity<Object> findAllDeviceByDepartmentName(@RequestParam(value = "name", required = false) String name) {
+		return departmentService.findAllDeviceByDepartmentName(name);
 	}
 	
 }

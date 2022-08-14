@@ -17,11 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Department;
+import com.comaymanagement.cmd.entity.DepartmentHasDevice;
+import com.comaymanagement.cmd.entity.Device;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Role;
 import com.comaymanagement.cmd.model.DepartmentModel;
+import com.comaymanagement.cmd.model.DeviceModel;
 import com.comaymanagement.cmd.model.PositionModel;
+import com.comaymanagement.cmd.repositoryimpl.DepartmentHasDeviceRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,7 +38,8 @@ public class DepartmentService {
 	DepartmentRepositoryImpl departmentRepository;
 	@Autowired
 	PositionRepositoryImpl positionRepository;
-	
+	@Autowired
+	DepartmentHasDeviceRepositoryImpl departmentHasDeviceRepository;
 	@Autowired
 	Message message;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentService.class);
@@ -363,6 +368,36 @@ public class DepartmentService {
 			LOGGER.error("Error has occured at findById() ", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ResponseObject("OK","Not found", ""));
+		}
+	}
+	public ResponseEntity<Object> findAllDeviceByDepartmentName (String name) {
+		List<DepartmentModel> depModelResults = new ArrayList<>();
+		try {
+			Set<Department> departmentWithDevices = new LinkedHashSet<>();
+			List<DeviceModel> deviceModels;
+			departmentWithDevices = departmentHasDeviceRepository.findAll(name);
+			for(Department dep : departmentWithDevices) {
+				List<DepartmentHasDevice> depHasDevices = dep.getDepartmentHasDevices();
+				deviceModels = new ArrayList<>();
+				for(DepartmentHasDevice departmentHasDevice: depHasDevices) {
+					Device device = departmentHasDevice.getDevice();
+					DeviceModel deviceModel = new DeviceModel();
+					deviceModel.setId(device.getId());
+					deviceModel.setName(device.getName());
+					deviceModel.setDescription(departmentHasDevice.getDescription());
+					deviceModel.setActive(departmentHasDevice.isActive());
+					deviceModels.add(deviceModel);
+				}
+				DepartmentModel depModel = departmentRepository.toModel(dep);
+				depModel.setDevices(deviceModels);
+				depModelResults.add(depModel);
+			}
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("OK","", depModelResults));
+		} catch (Exception e) {
+			LOGGER.error("Error has occured at findById() ", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("OK","Not found", depModelResults));
 		}
 	}
 }
