@@ -45,7 +45,7 @@ public class DepartmentService {
 			name = name == null ? "" : name.trim();
 			departmentModelSet = departmentRepository.findAll(name);
 			if(!name.equals("")) {
-				Set<DepartmentModel> departmentModelSetResults = new LinkedHashSet<>();
+				Set<DepartmentModel> departmentModelSetResults = new LinkedHashSet<DepartmentModel>();
 				for(DepartmentModel departmentModel : departmentModelSet) {
 					if(departmentModel.getFatherDepartmentId()!= -1) {
 						Boolean loop = true;
@@ -53,7 +53,15 @@ public class DepartmentService {
 						while(loop) {
 							Department departmentTemp = departmentRepository.findById(idTemp);
 							DepartmentModel departmentModelTemp = departmentRepository.toModel(departmentTemp);
-							departmentModelSetResults.add(departmentModelTemp);
+							Boolean addFlag = true;
+							for(DepartmentModel item: departmentModelSetResults) {
+								if(item.getId() == departmentModelTemp.getId()) {
+									addFlag = false;
+								}
+							}
+							if(addFlag) {
+								departmentModelSetResults.add(departmentModelTemp);
+							}
 							if(departmentModelTemp.getFatherDepartmentId() != -1) {
 								idTemp = departmentModelTemp.getFatherDepartmentId(); 
 							}else {
