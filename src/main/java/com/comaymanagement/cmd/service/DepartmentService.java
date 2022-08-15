@@ -375,7 +375,7 @@ public class DepartmentService {
 		try {
 			Set<Department> departmentWithDevices = new LinkedHashSet<>();
 			List<DeviceModel> deviceModels;
-			departmentWithDevices = departmentHasDeviceRepository.findAll(name);
+			departmentWithDevices = departmentHasDeviceRepository.findAllDeviceByDepartmentName(name);
 			for(Department dep : departmentWithDevices) {
 				List<DepartmentHasDevice> depHasDevices = dep.getDepartmentHasDevices();
 				deviceModels = new ArrayList<>();

@@ -24,7 +24,7 @@ public class DepartmentHasDeviceRepositoryImpl implements IDepartmentHasDeviceRe
 	private SessionFactory sessionFactory;
 	
 	
-	public Set<Department> findAll(String name) {
+	public Set<Department> findAllDeviceByDepartmentName(String name) {
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from departments dep ");
