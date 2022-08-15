@@ -482,6 +482,8 @@ public class ProposalService {
 							notify.setReceiver(employee);
 							notify.setTitle("Đề xuất mới");
 							notify.setDescription("Bạn vừa nhận được đề xuất từ "+ proposalModel.getCreator().getName());
+							notify.setType("proposal");
+							notify.setDetailId(proposal.getId());
 							notifyRepositoryImpl.add(notify);
 						}
 					System.out.println("Save notify sucessfully");
@@ -601,6 +603,8 @@ public class ProposalService {
 						notify.setReceiver(employee);
 						notify.setTitle("Duyệt đề xuất");
 						notify.setDescription("Đề xuất vừa được duyệt bởi "+ userEmp.getName());
+						notify.setType("proposal");
+						notify.setDetailId(proposal.getId());
 						notifyRepositoryImpl.add(notify);
 					}
 				}
@@ -675,6 +679,8 @@ public class ProposalService {
 						notify.setReceiver(employee);
 						notify.setTitle("Từ chối đề xuất");
 						notify.setDescription("Đề xuất bị từ chối bởi "+ userEmp.getName());
+						notify.setType("proposal");
+						notify.setDetailId(proposal.getId());
 						notifyRepositoryImpl.add(notify);
 					}
 				}
@@ -748,6 +754,8 @@ public class ProposalService {
 						notify.setReceiver(employee);
 						notify.setTitle("Hủy đề xuất");
 						notify.setDescription("Đề xuất đã bị hủy bởi "+ userEmp.getName());
+						notify.setType("proposal");
+						notify.setDetailId(proposal.getId());
 						notifyRepositoryImpl.add(notify);
 					}
 				}

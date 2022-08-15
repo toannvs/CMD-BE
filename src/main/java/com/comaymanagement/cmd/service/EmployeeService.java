@@ -268,15 +268,25 @@ public class EmployeeService {
 			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
 			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
+			
 			Pagination pagination = new Pagination();
+			Pagination paginationOfNotify = new Pagination();
+			paginationOfNotify.setLimit(CMDConstrant.LIMIT);
+			paginationOfNotify.setPage(Integer.valueOf(1));
+			paginationOfNotify.setTotalItem(notifyRepositoryImpl.countAll(userDetail.getId(), null, 0, limit, "id", order));
+			Long countAllUnread = notifyRepositoryImpl.countAllUnread(userDetail.getId());
 			
 			pagination.setLimit(CMDConstrant.LIMIT);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
-
+			
+			Map<String, Object> notifyMap = new LinkedHashMap<>();
+			notifyMap.put("items", notifyModels);
+			notifyMap.put("pagination", paginationOfNotify);
+			notifyMap.put("countUnread", countAllUnread);
 			result.put("pagination", pagination);
 			result.put("employees", employeeModelSet);
-			result.put("notifies", notifyModels);
+			result.put("notifies",notifyMap );
 			if (employeeModelSet.size() > 0) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 			} else {
@@ -932,6 +942,8 @@ public class EmployeeService {
 
 	public ResponseEntity<Object> findAllNotifies(String page, String sort, String order, String keySearch) {
 		List<NotifyModel> notifyModels = new ArrayList<>();
+//		Map<String, Object> result = new LinkedHashMap<>();
+		Map<String, Object> notifyMap = new LinkedHashMap<>();
 		try {
 			page = page == null ? "1" : page.trim();
 			// Order by defaut
@@ -948,15 +960,26 @@ public class EmployeeService {
 
 			notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), keySearch, offset, limit, sort,
 					order);
+			Pagination paginationOfNotify = new Pagination();
+			paginationOfNotify.setLimit(CMDConstrant.LIMIT);
+			paginationOfNotify.setPage(Integer.valueOf(1));
+			paginationOfNotify.setTotalItem(notifyRepositoryImpl.countAll(userDetail.getId(), keySearch, offset, limit, sort,
+					order));
+			Long countAllUnread = notifyRepositoryImpl.countAllUnread(userDetail.getId());
+		
+			notifyMap.put("items", notifyModels);
+			notifyMap.put("pagination", paginationOfNotify);
+			notifyMap.put("countUnread", countAllUnread);
+//			result.put("notifies",notifyMap );
 			if (notifyModels.size() > 0) {
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", notifyModels));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", notifyMap));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", "Not found", notifyModels));
+						.body(new ResponseObject("ERROR", "Not found", notifyMap));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyModels));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyMap));
 		}
 
 	}
