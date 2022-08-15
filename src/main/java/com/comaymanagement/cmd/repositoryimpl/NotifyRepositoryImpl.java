@@ -67,6 +67,8 @@ public class NotifyRepositoryImpl implements INotifyRepository {
 					notifyModel.setIsRead(itemNotify.getIsRead());
 					notifyModel.setTitle(itemNotify.getTitle());
 					notifyModel.setReceiverId(itemNotify.getReceiver().getId());
+					notifyModel.setType(itemNotify.getType());
+					notifyModel.setDetailId(itemNotify.getDetailId());
 					notifyModels.add(notifyModel);
 				}
 			}
@@ -176,5 +178,54 @@ public class NotifyRepositoryImpl implements INotifyRepository {
 		}
 		return notifies;
 	}
+	public Integer countAll(Integer employeeId, String keySearch, Integer offset, Integer limit,
+			String sort, String order) {
+		Session session = null;
+		List<NotifyModel> notifyModels = null;
+		List<Notify> notifies = null;
+		try {
 
+			StringBuilder hql = new StringBuilder();
+			hql.append("FROM notify as no WHERE no.receiver.id = " + employeeId);
+			if (null != keySearch && !keySearch.equals("")) {
+				hql.append(" and no.description LIKE CONCAT('%',:keySearch,'%')");
+			}
+			hql.append(" order by no." + sort + " " + order);
+			LOGGER.debug(hql.toString());
+			session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			if (null != keySearch && !keySearch.equals("")) {
+				query.setParameter("keySearch", keySearch);
+			}
+			query.setFirstResult(offset);
+			query.setMaxResults(limit);
+			notifies = new ArrayList<Notify>();
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object obj = (Object) it.next();
+				Notify notify = (Notify) obj;
+				notifies.add(notify);
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return notifies.size();
+	}
+	public Long countAllUnread(Integer employeeId) {
+		Long result = 0L;
+		Session session = null;
+		List<Notify> notifies = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			StringBuilder hql = new StringBuilder();
+			hql.append("select count(*) FROM notify as no WHERE no.receiver.id = " + employeeId);
+			hql.append(" and no.isRead = false");
+			Query query = session.createQuery(hql.toString());
+//			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				result = (Long) query.getSingleResult();
+//			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return result;
+	}
 }

@@ -31,4 +31,11 @@ public class Notify {
 	
 	@Column(name = "is_read")
 	Boolean isRead;
+	
+	String type;
+	
+	@Column(name = "type_detail_id")
+	Integer detailId;
+	
+	
 }

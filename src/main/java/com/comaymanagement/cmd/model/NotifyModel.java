@@ -17,5 +17,7 @@ public class NotifyModel {
 	String title;
 	String description;
 	Integer receiverId;
+	String type;
+	Integer detailId;
 	Boolean isRead;
 }

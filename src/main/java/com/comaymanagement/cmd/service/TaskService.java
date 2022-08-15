@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -158,7 +159,21 @@ public class TaskService {
 					.getPrincipal();
 			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
 			
-
+			Pagination paginationOfNotify = new Pagination();
+			paginationOfNotify.setLimit(CMDConstrant.LIMIT);
+			paginationOfNotify.setPage(Integer.valueOf(1));
+			paginationOfNotify.setTotalItem(notifyRepositoryImpl.countAll(userDetail.getId(), null, 0, limit, "id", order));
+			Long countAllUnread = notifyRepositoryImpl.countAllUnread(userDetail.getId());
+			
+			Map<String, Object> notifyMap = new LinkedHashMap<>();
+			notifyMap.put("items", notifyModels);
+			notifyMap.put("pagination", paginationOfNotify);
+			notifyMap.put("countUnread", countAllUnread);
+			
+			notifyMap.put("items", notifyModels);
+			notifyMap.put("pagination", paginationOfNotify);
+			notifyMap.put("countUnread", countAllUnread);
+			
 			
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
@@ -167,7 +182,7 @@ public class TaskService {
 			
 			results.put("pagination", pagination);
 			results.put("tasks", taskModelResult);
-			results.put("notifies", notifyModels);
+			results.put("notifies", notifyMap);
 			if (results.size() > 0) {
 				// Count by status
 				List<StatusModel> statusModels = taskRepository.countTaskByStatus();
@@ -294,6 +309,8 @@ public class TaskService {
 				notify.setReceiver(receiver);
 				notify.setTitle(message.getMessageByItemCode("TASKN2"));
 				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
+				notify.setType("task");
+				notify.setDetailId(task.getId());
 				notifyRepositoryImpl.add(notify);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode("TASKS1"), taskModel));
@@ -431,6 +448,8 @@ public class TaskService {
 				notify.setIsRead(false);
 				notify.setTitle(message.getMessageByItemCode("TASKN2"));
 				notify.setDescription(message.getMessageByItemCode("TASKN1") + CMDConstrant.SPACE + creator.getName());
+				notify.setType("task");
+				notify.setDetailId(task.getId());
 			}
 			
 			DateTimeFormatter dtf = null;
@@ -812,6 +831,8 @@ public class TaskService {
 				notify.setTitle(message.getMessageByItemCode("TASKN5"));
 				notify.setDescription(
 						message.getMessageByItemCode("TASKN6") + CMDConstrant.SPACE + task.getReceiver().getName());
+				notify.setType("task");
+				notify.setDetailId(task.getId());
 			} else if (status.getIndex() == CMDConstrant.DONE_STATUS) {
 				notify = new Notify();
 				notify.setIsRead(false);
@@ -819,6 +840,8 @@ public class TaskService {
 				notify.setTitle(message.getMessageByItemCode("TASKN7"));
 				notify.setDescription(
 						task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN8"));
+				notify.setType("task");
+				notify.setDetailId(task.getId());
 			}
 			task.setStatus(status);
 			taskModel = taskRepository.edit(task, !CMDConstrant.UPDATE_TASK, CMDConstrant.CHANGE_STATUS_TASK,
@@ -882,12 +905,16 @@ public class TaskService {
 					notify.setTitle(message.getMessageByItemCode("TASKN4"));
 					notify.setDescription(
 							task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
+					notify.setType("task");
+					notify.setDetailId(task.getId());
 				} else {
 					notify.setIsRead(false);
 					notify.setReceiver(task.getCreator());
 					notify.setTitle(message.getMessageByItemCode("TASKN4"));
 					notify.setDescription(
 							task.getReceiver().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN3"));
+					notify.setType("task");
+					notify.setDetailId(task.getId());
 				}
 
 				notifyRepositoryImpl.add(notify);
