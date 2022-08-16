@@ -92,4 +92,22 @@ public class DepartmentController {
 		return departmentService.findAllDeviceByDepartmentName(name);
 	}
 	
+	@PreAuthorize("@customRoleService.canCreate('department', principal) or @customRoleService.canCreateAll('department', principal)")
+	@PostMapping("/devices/add")
+	public ResponseEntity<Object> addDeviceForDepartment(@RequestBody String json) {
+		return departmentService.addDeviceForDepartment(json);
+	}
+	
+	@PreAuthorize("@customRoleService.canCreate('department', principal) or @customRoleService.canCreateAll('department', principal)")
+	@PostMapping("/devices/edit")
+	public ResponseEntity<Object> editDeviceForDepartment(@RequestBody String json) {
+		return departmentService.editDeviceForDepartment(json);
+	}
+	
+	@PreAuthorize("@customRoleService.canCreate('department', principal) or @customRoleService.canCreateAll('department', principal)")
+	@GetMapping("/devices/delete/{id}")
+	public ResponseEntity<Object> deleteDeviceForDepartment(@PathVariable Integer id) {
+		return departmentService.deleteDeviceForDepartment(id);
+	}
+	
 }

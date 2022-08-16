@@ -34,5 +34,5 @@ public class DepartmentHasDevice {
 	
 	private String description;
 	@Column(name="active")
-	private boolean isActive;
+	private Boolean isActive;
 }
