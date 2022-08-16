@@ -15,6 +15,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.entity.Department;
+import com.comaymanagement.cmd.entity.DepartmentHasDevice;
+import com.comaymanagement.cmd.entity.Device;
+import com.comaymanagement.cmd.model.DeviceModel;
+import com.comaymanagement.cmd.model.DeviceOfDepartment;
 import com.comaymanagement.cmd.repository.IDepartmentHasDeviceRepository;
 @Repository
 @Transactional(rollbackFor = Exception.class)
@@ -49,6 +53,97 @@ public class DepartmentHasDeviceRepositoryImpl implements IDepartmentHasDeviceRe
 			return null;
 		}
 		return deppartments;
+	}
+
+
+	@Override
+	public DeviceModel add(DepartmentHasDevice departmentHasDevice) {
+		DeviceModel deviceModel = null;
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Integer result = (Integer) session.save(departmentHasDevice);
+			if(result > 0) {
+				deviceModel = new DeviceModel();
+				deviceModel.setId(result);
+				deviceModel.setDescription(departmentHasDevice.getDescription());
+				deviceModel.setName(departmentHasDevice.getDevice().getName());
+				deviceModel.setIsActive(departmentHasDevice.getIsActive());
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in DepartmentRepositoryImpl at add() ", e);
+		}
+		return deviceModel;
+	}
+
+
+	@Override
+	public Device findById(Integer id) {
+		Device device = null;
+		StringBuilder hql = new StringBuilder("FROM devices AS dv ");
+		hql.append("WHERE dv.id = " + id);
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			LOGGER.info(hql.toString());
+			device = (Device) query.getSingleResult();
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return device;
+	}
+
+
+	@Override
+	public DeviceModel edit(DepartmentHasDevice departmentHasDevice) {
+		DeviceModel deviceModel = null;
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			session.update(departmentHasDevice);
+			deviceModel = new DeviceModel();
+			deviceModel.setId(departmentHasDevice.getId());
+			deviceModel.setName(departmentHasDevice.getDevice().getName());
+			deviceModel.setDescription(departmentHasDevice.getDescription());
+			deviceModel.setIsActive(departmentHasDevice.getIsActive());
+			return deviceModel;
+
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in DepartmentRepositoryImpl at add() ", e);
+		}
+		return null;
+	}
+
+
+	@Override
+	public DepartmentHasDevice findDepartmentHasDeviceById(Integer id) {
+		DepartmentHasDevice deviceDepartmentHasDevice = null;
+		StringBuilder hql = new StringBuilder("FROM departments_devices AS dv ");
+		hql.append("WHERE dv.id = " + id);
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql.toString());
+			LOGGER.info(hql.toString());
+			deviceDepartmentHasDevice = (DepartmentHasDevice) query.getSingleResult();
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return deviceDepartmentHasDevice;
+	}
+
+
+	@Override
+	public Boolean delete(DepartmentHasDevice departmentHasDevice) {
+		DeviceOfDepartment deviceOfDepartment = null;
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			session.delete(departmentHasDevice);
+			return true;
+
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in DepartmentRepositoryImpl at add() ", e);
+		}
+		return false;
 	}
 
 }
