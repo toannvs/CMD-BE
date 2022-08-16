@@ -18,7 +18,6 @@ import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.DepartmentHasDevice;
 import com.comaymanagement.cmd.entity.Device;
 import com.comaymanagement.cmd.model.DeviceModel;
-import com.comaymanagement.cmd.model.DeviceOfDepartment;
 import com.comaymanagement.cmd.repository.IDepartmentHasDeviceRepository;
 @Repository
 @Transactional(rollbackFor = Exception.class)
@@ -134,7 +133,6 @@ public class DepartmentHasDeviceRepositoryImpl implements IDepartmentHasDeviceRe
 
 	@Override
 	public Boolean delete(DepartmentHasDevice departmentHasDevice) {
-		DeviceOfDepartment deviceOfDepartment = null;
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			session.delete(departmentHasDevice);
