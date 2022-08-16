@@ -99,13 +99,13 @@ public class DepartmentController {
 	}
 	
 	@PreAuthorize("@customRoleService.canCreate('department', principal) or @customRoleService.canCreateAll('department', principal)")
-	@PostMapping("/devices/edit")
+	@PutMapping("/devices/edit")
 	public ResponseEntity<Object> editDeviceForDepartment(@RequestBody String json) {
 		return departmentService.editDeviceForDepartment(json);
 	}
 	
 	@PreAuthorize("@customRoleService.canCreate('department', principal) or @customRoleService.canCreateAll('department', principal)")
-	@GetMapping("/devices/delete/{id}")
+	@DeleteMapping("/devices/delete/{id}")
 	public ResponseEntity<Object> deleteDeviceForDepartment(@PathVariable Integer id) {
 		return departmentService.deleteDeviceForDepartment(id);
 	}
