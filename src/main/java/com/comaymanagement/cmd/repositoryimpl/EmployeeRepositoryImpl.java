@@ -43,7 +43,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	
 	// find all employee with position in department
 	@Override
-	public Set<EmployeeModel> findAll(String name, String dob, String email, String phone, List<Integer> departmentIds,
+	public Set<EmployeeModel> findAll(String code, String name, String dob, String email, String phone, List<Integer> departmentIds,
 			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("from employees emp ");
@@ -51,6 +51,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("where pos.team.id is null ");
 		hql.append("and pos.department.id is not null ");
 		hql.append("and emp.activeFlag = true ");
+		if (!code.equals("")) {
+			hql.append("and emp.code like CONCAT('%',:code,'%') ");
+		}
 		if (!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
 		}
@@ -77,8 +80,11 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
 		try {
 			Query query = session.createQuery(hql.toString());
+			if (!code.equals("")) {
+				query.setParameter("code", code);
+			}
 			if (!name.equals("")) {
-				query.setParameter("name","\\" +  name);
+				query.setParameter("name",name);
 			}
 			if (!dob.equals("")) {
 				query.setParameter("dob", dob);
@@ -254,7 +260,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	}
 
 	@Override
-	public Integer countAllPaging(String name, String dob, String email, String phone, List<Integer> departmentIds,
+	public Integer countAllPaging(String code, String name, String dob, String email, String phone, List<Integer> departmentIds,
 			List<Integer> positionIds, String sort, String order, Integer offset, Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
@@ -264,6 +270,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("where pos.team.id is null ");
 		hql.append("and pos.department.id is not null ");
 		hql.append("and emp.activeFlag = true ");
+		if (!code.equals("")) {
+			hql.append("and emp.code like CONCAT('%',:code,'%') ");
+		}
 		if (!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
 		}
@@ -289,6 +298,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		try {
 			Query query = session.createQuery(hql.toString());
 
+			if (!code.equals("")) {
+				query.setParameter("code", code);
+			}
 			if (!name.equals("")) {
 				query.setParameter("name", name);
 			}
@@ -330,7 +342,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	}
 
 
-	public Integer countAllPagingIncludeDuplicate(String name, String dob, String email, String phone,
+	public Integer countAllPagingIncludeDuplicate(String code, String name, String dob, String email, String phone,
 			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
 		StringBuilder hql = new StringBuilder();
@@ -340,6 +352,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("where pos.team.id is null ");
 		hql.append("and pos.department.id is not null ");
 		hql.append("and emp.activeFlag = true ");
+		if(!code.equals("")) {
+			hql.append("and emp.code like CONCAT('%',:code,'%') ");
+		}
 		if(!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
 		}
@@ -365,6 +380,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		List<EmployeeModel> employeeModelList = new ArrayList();
 		try {
 			Query query = session.createQuery(hql.toString());
+			if(!code.equals("")) {
+				query.setParameter("code", code);
+			}
 			if(!name.equals("")) {
 				query.setParameter("name", name);
 			}
