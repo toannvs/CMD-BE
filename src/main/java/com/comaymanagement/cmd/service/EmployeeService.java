@@ -267,26 +267,14 @@ public class EmployeeService {
 			}
 			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
 			
 			Pagination pagination = new Pagination();
-			Pagination paginationOfNotify = new Pagination();
-			paginationOfNotify.setLimit(CMDConstrant.LIMIT);
-			paginationOfNotify.setPage(Integer.valueOf(1));
-			paginationOfNotify.setTotalItem(notifyRepositoryImpl.countAll(userDetail.getId(), null, 0, limit, "id", order));
-			Long countAllUnread = notifyRepositoryImpl.countAllUnread(userDetail.getId());
 			
 			pagination.setLimit(CMDConstrant.LIMIT);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
-			
-			Map<String, Object> notifyMap = new LinkedHashMap<>();
-			notifyMap.put("items", notifyModels);
-			notifyMap.put("pagination", paginationOfNotify);
-			notifyMap.put("countUnread", countAllUnread);
 			result.put("pagination", pagination);
 			result.put("employees", employeeModelSet);
-			result.put("notifies",notifyMap );
 			if (employeeModelSet.size() > 0) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 			} else {

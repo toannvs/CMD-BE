@@ -1672,7 +1672,6 @@ public class TaskRepositoryImpl implements ITaskRepository {
 
 	@Override
 	public void ScanOverDueTask() {
-		List<Integer> taskIds = null;
 		StringBuilder hql = new StringBuilder("FROM tasks AS t ");
 		try {
 			Session session = sessionFactory.getCurrentSession();

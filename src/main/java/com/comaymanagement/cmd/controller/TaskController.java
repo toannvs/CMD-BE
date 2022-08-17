@@ -56,22 +56,6 @@ public class TaskController {
 	@Autowired
 	StatusService statusService;
 	
-	/*
-	@GetMapping("/{id}")
-	public ResponseEntity<Object> findById(@PathVariable String id) {
-
-		Optional<Task> task = taskService.findById(id);
-
-		if (task != null) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseObject("OK", "Query produce successfully: ", task));
-		} else {
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new ResponseObject("Not found", "Can not find task list", ""));
-		}
-	}*/
-	
 	@PreAuthorize("@customRoleService.canView('task',principal)")
 	@PostMapping(value= "",produces = "application/json")
 	public ResponseEntity<Object> findAll(				

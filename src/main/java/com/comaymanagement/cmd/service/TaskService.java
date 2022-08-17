@@ -157,23 +157,6 @@ public class TaskService {
 			}
 			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit, "id", order);
-			
-			Pagination paginationOfNotify = new Pagination();
-			paginationOfNotify.setLimit(CMDConstrant.LIMIT);
-			paginationOfNotify.setPage(Integer.valueOf(1));
-			paginationOfNotify.setTotalItem(notifyRepositoryImpl.countAll(userDetail.getId(), null, 0, limit, "id", order));
-			Long countAllUnread = notifyRepositoryImpl.countAllUnread(userDetail.getId());
-			
-			Map<String, Object> notifyMap = new LinkedHashMap<>();
-			notifyMap.put("items", notifyModels);
-			notifyMap.put("pagination", paginationOfNotify);
-			notifyMap.put("countUnread", countAllUnread);
-			
-			notifyMap.put("items", notifyModels);
-			notifyMap.put("pagination", paginationOfNotify);
-			notifyMap.put("countUnread", countAllUnread);
-			
 			
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
@@ -182,7 +165,6 @@ public class TaskService {
 			
 			results.put("pagination", pagination);
 			results.put("tasks", taskModelResult);
-			results.put("notifies", notifyMap);
 			if (results.size() > 0) {
 				// Count by status
 				List<StatusModel> statusModels = taskRepository.countTaskByStatus();

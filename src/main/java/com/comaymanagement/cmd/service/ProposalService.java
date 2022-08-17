@@ -123,21 +123,13 @@ public class ProposalService {
 			proposalModels = proposalRepositoryImpl.findAllProposalForAll(proposalTypeIds, statusIds, creatorIds,
 					createDateFrom, createDateTo, sort, order, offset, limit);
 
-//			Integer totalProposal  = 0;
-//			totalProposal = proposalRepositoryImpl.countAllPaging(userDetail.getId(), proposal, content, status, creator, createDate, finishDate, sort, order, offset, limit);
-//			
 
-			List<NotifyModel> notifyModels = notifyRepositoryImpl.findByEmployeeId(userDetail.getId(), null, 0, limit,
-					"id", order);
 			Pagination pagination = new Pagination();
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(proposalRepositoryImpl.getCountAllForAll());
-
-			
 			results.put("pagination", pagination);
 			results.put("proposals", proposalModels);
-			results.put("notifies", notifyModels);
 
 			if (results.size() > 0) {
 				// Count by status
