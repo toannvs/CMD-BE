@@ -898,4 +898,50 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 //		employeeModel.setTeams(teamModelList);
 		return employeeModel;
 	}
+
+	@Override
+	public Employee findByResetPasswordToken(String token) {
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from employees emp ");
+		hql.append("where emp.resetPasswordToken = :token");
+		Employee employee = null;
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("token", token);
+			employee = (Employee) query.getSingleResult();
+			
+			// Please don't delete this line, this fix lazy load error when load position
+			employee.getPositions().size();
+			employee.getDepartments().size();
+			employee.getTeams().size();
+			// Please don't delete this line, this fix lazy load error when load position
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in findById() ", e);
+		}
+		return employee;
+	}
+
+	@Override
+	public Employee findByEmail(String username) {
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		hql.append("from employees emp ");
+		hql.append("where emp.username = :username");
+		Employee employee = null;
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("username", username);
+			employee = (Employee) query.getSingleResult();
+			
+			// Please don't delete this line, this fix lazy load error when load position
+			employee.getPositions().size();
+			employee.getDepartments().size();
+			employee.getTeams().size();
+			// Please don't delete this line, this fix lazy load error when load position
+		} catch (Exception e) {
+			LOGGER.error("Error has occured in findById() ", e);
+		}
+		return employee;
+	}
 }

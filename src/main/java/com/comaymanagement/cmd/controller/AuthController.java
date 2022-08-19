@@ -1,14 +1,20 @@
 package com.comaymanagement.cmd.controller;
 
+import java.net.URI;
+import java.net.http.HttpHeaders;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -97,4 +103,20 @@ public class AuthController {
      
      return authService.changePassword(json);
     }
+    
+	@PostMapping("/forgot_password")
+	public ResponseEntity<Object> processForgotPassword(@RequestBody String json) {
+		return authService.updateResetPasswordToken(json);
+	}
+	
+	@GetMapping("/reset_password")
+	public ResponseEntity<Object> checkToken(@RequestParam String token) {
+		return authService.checkToken(token);
+	}
+	
+	@PostMapping("/reset_password")
+	public ResponseEntity<Object> resetPassword(@RequestBody String json) {
+		return authService.updatePassword(json);
+	}
+	
 }

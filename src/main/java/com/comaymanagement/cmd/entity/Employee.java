@@ -114,4 +114,7 @@ public class Employee{
 	@JsonIgnore
 	@JoinColumn(name = "modify_by")
 	private List<TaskHis> taskHistories;
+	
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
 }

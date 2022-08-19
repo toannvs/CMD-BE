@@ -52,4 +52,8 @@ public interface IEmployeeRepository {
 	public boolean add(Set<Employee> emps);
 	public Set<EmployeeModel> findByName(String name);
 	
+	public Employee findByResetPasswordToken(String token);
+	
+	public Employee findByEmail(String email);
+	
 }
