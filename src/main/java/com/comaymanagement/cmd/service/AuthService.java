@@ -188,16 +188,16 @@ public class AuthService {
 	}
 	
 	public ResponseEntity<Object> updateResetPasswordToken(String json){
-    	String email  = null;
+    	String username  = null;
     	JsonNode jsonNode = null;
     	JsonMapper jsonMapper = new JsonMapper();
     	try {
     		jsonNode = jsonMapper.readTree(json);
-    		email = (jsonNode.get("email") == null || jsonNode.get("email").asText().equals("")) ? "" : jsonNode.get("email").asText();
-    		if (email.equals("")) {
+    		username = (jsonNode.get("username") == null || jsonNode.get("username").asText().equals("")) ? "" : jsonNode.get("username").asText();
+    		if (username.equals("")) {
 				
 			}
-			Employee employee = employeeRepository.findByEmail(email);
+			Employee employee = employeeRepository.findByEmail(username);
 			String token = RandomString.make(30);
 			if(null != employee) {
 				employee.setResetPasswordToken(token);
