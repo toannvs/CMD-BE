@@ -97,7 +97,7 @@ public class EmployeesController {
 
 
 	
-	@PreAuthorize("@customRoleService.canImport('employee',principal)")
+//	@PreAuthorize("@customRoleService.canImport('employee',principal)")
 	@PostMapping("/import")
 	public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
 		return employeeService.importEmployees(multipartFile);
