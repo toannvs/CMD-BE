@@ -214,4 +214,27 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 		departmentModel.setHeadPosition(d.getHeadPosition());
 		return departmentModel;
 	}
+	
+	public List<Department> findAllChild(Integer fatherId) {
+		Session session = sessionFactory.getCurrentSession();
+		StringBuilder hql = new StringBuilder();
+		List<Department> departments = new ArrayList<>();
+		hql.append("from departments dep ");
+		hql.append("where dep.fatherDepartmentId = :fatherId");
+		try {
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("fatherId", fatherId);
+			LOGGER.info(hql.toString());
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Department tmp= (Department) it.next();
+				departments.add(tmp);
+			}
+			return departments;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+	}
+
+	
 }
