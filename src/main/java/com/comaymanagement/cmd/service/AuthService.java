@@ -203,7 +203,7 @@ public class AuthService {
 				employee.setResetPasswordToken(token);
 				employeeRepository.edit(employee);
 			}
-			String resetPasswordLink = CMDConstrant.LOCAL_LINK + "/api/auth/reset_password?token=" + token;
+			String resetPasswordLink = CMDConstrant.SERVER_LINK + "/api/auth/reset_password?token=" + token;
 			sendEmail(employee.getEmail(),resetPasswordLink);
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("OK", "Đã gửi link reset password đến email", ""));
