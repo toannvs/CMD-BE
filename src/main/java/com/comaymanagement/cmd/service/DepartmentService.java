@@ -133,7 +133,11 @@ public class DepartmentService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("DEPE2"), ""));
 			}
-
+			if(fatherDepartmentId!=-1) {
+				Department fatherDepartment = departmentRepository.findById(fatherDepartmentId);
+				dep.setLevel(fatherDepartment.getLevel()+1);
+			}
+			
 			dep.setCode(code);
 			dep.setName(name);
 			dep.setFatherDepartmentId(fatherDepartmentId);
@@ -142,7 +146,6 @@ public class DepartmentService {
 			dep.setCreateDate(createDate);
 			dep.setModifyBy(modifyBy);
 			dep.setModifyDate(modifyDate);
-			dep.setLevel(level);
 			dep.setHeadPosition(headPosition);
 			// save department..............
 			Integer idDepAdded = departmentRepository.add(dep);
@@ -237,6 +240,16 @@ public class DepartmentService {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("DEPE2"), ""));
 			}
+			if(fatherDepartmentId!=-1) {
+				Department fatherDepartment = departmentRepository.findById(fatherDepartmentId);
+				int newlevel = fatherDepartment.getLevel()+1;
+				dep.setLevel(newlevel);
+				List<Department> childs = departmentRepository.findAllChild(fatherDepartmentId);
+				for(Department child : childs) {
+					child.setLevel(newlevel + 1);
+					departmentRepository.edit(child);
+				}
+			}
 			dep.setCode(code);
 			dep.setName(name);
 			dep.setFatherDepartmentId(fatherDepartmentId);
@@ -245,7 +258,6 @@ public class DepartmentService {
 			dep.setCreateBy(createBy);
 			dep.setModifyBy(modifyBy);
 			dep.setModifyDate(modifyDate);
-			dep.setLevel(level);
 			dep.setHeadPosition(headPosition);
 
 			// save department..............
