@@ -204,7 +204,7 @@ public class AuthService {
 				employeeRepository.edit(employee);
 			}
 			String resetPasswordLink = CMDConstrant.SERVER_LINK + "/api/auth/reset_password?token=" + token;
-			sendEmail(employee.getEmail(),resetPasswordLink);
+			sendEmail(employee,resetPasswordLink);
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("OK", "Đã gửi link reset password đến email", ""));
 		} catch (Exception e) {
@@ -215,17 +215,17 @@ public class AuthService {
 
     }
      
-	public void sendEmail(String recipientEmail, String link)
+	public void sendEmail(Employee employee, String link)
 	        throws MessagingException, UnsupportedEncodingException {
 	    MimeMessage message = mailSender.createMimeMessage();              
 	    MimeMessageHelper helper = new MimeMessageHelper(message);
 	     
 	    helper.setFrom("nguyenminhdungtd98@gmail.com", "Admin Support");
-	    helper.setTo(recipientEmail);
+	    helper.setTo(employee.getEmail());
 	     
 	    String subject = "Here's the link to reset your password";
 	     
-	    String content = "<p>Hello,</p>"
+	    String content = "<p>Hello "+ employee.getName() +",</p>"
 	            + "<p>You have requested to reset your password.</p>"
 	            + "<p>Click the link below to change your password:</p>"
 	            + "<p><a href=\"" + link + "\">Change my password</a></p>"
