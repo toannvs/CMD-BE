@@ -136,6 +136,8 @@ public class DepartmentService {
 			if(fatherDepartmentId!=-1) {
 				Department fatherDepartment = departmentRepository.findById(fatherDepartmentId);
 				dep.setLevel(fatherDepartment.getLevel()+1);
+			}else {
+				dep.setLevel(1);
 			}
 			
 			dep.setCode(code);
@@ -244,11 +246,13 @@ public class DepartmentService {
 				Department fatherDepartment = departmentRepository.findById(fatherDepartmentId);
 				int newlevel = fatherDepartment.getLevel()+1;
 				dep.setLevel(newlevel);
-				List<Department> childs = departmentRepository.findAllChild(fatherDepartmentId);
+				List<Department> childs = departmentRepository.findAllChild(id);
 				for(Department child : childs) {
 					child.setLevel(newlevel + 1);
 					departmentRepository.edit(child);
 				}
+			}else {
+				dep.setLevel(1);
 			}
 			dep.setCode(code);
 			dep.setName(name);
