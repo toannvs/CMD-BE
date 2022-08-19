@@ -1,11 +1,14 @@
 package com.comaymanagement.cmd.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -13,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.ResponseObject;
@@ -37,6 +43,8 @@ import com.comaymanagement.cmd.repositoryimpl.RoleRepositoryImpl;
 import com.comaymanagement.cmd.security.jwt.JwtUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+
+import net.bytebuddy.utility.RandomString;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -61,6 +69,9 @@ public class AuthService {
 	@Autowired
 	EmployeeRepositoryImpl employeeRepository;
 
+	@Autowired
+    private JavaMailSender mailSender;
+	
 	@Autowired
 	RoleRepositoryImpl roleRepository;
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -175,4 +186,104 @@ public class AuthService {
 		}
 		return optionMaps;
 	}
+	
+	public ResponseEntity<Object> updateResetPasswordToken(String json){
+    	String email  = null;
+    	JsonNode jsonNode = null;
+    	JsonMapper jsonMapper = new JsonMapper();
+    	try {
+    		jsonNode = jsonMapper.readTree(json);
+    		email = (jsonNode.get("email") == null || jsonNode.get("email").asText().equals("")) ? "" : jsonNode.get("email").asText();
+    		if (email.equals("")) {
+				
+			}
+			Employee employee = employeeRepository.findByEmail(email);
+			String token = RandomString.make(30);
+			if(null != employee) {
+				employee.setResetPasswordToken(token);
+				employeeRepository.edit(employee);
+			}
+			String resetPasswordLink = CMDConstrant.LOCAL_LINK + "/api/auth/reset_password?token=" + token;
+			sendEmail(employee.getEmail(),resetPasswordLink);
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("OK", "Đã gửi link reset password đến email", ""));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "Đã có lỗi xảy ra", ""));
+		}
+
+    }
+     
+	public void sendEmail(String recipientEmail, String link)
+	        throws MessagingException, UnsupportedEncodingException {
+	    MimeMessage message = mailSender.createMimeMessage();              
+	    MimeMessageHelper helper = new MimeMessageHelper(message);
+	     
+	    helper.setFrom("nguyenminhdungtd98@gmail.com", "Admin Support");
+	    helper.setTo(recipientEmail);
+	     
+	    String subject = "Here's the link to reset your password";
+	     
+	    String content = "<p>Hello,</p>"
+	            + "<p>You have requested to reset your password.</p>"
+	            + "<p>Click the link below to change your password:</p>"
+	            + "<p><a href=\"" + link + "\">Change my password</a></p>"
+	            + "<br>"
+	            + "<p>Ignore this email if you do remember your password, "
+	            + "or you have not made the request.</p>";
+	     
+	    helper.setSubject(subject);
+	     
+	    helper.setText(content, true);
+	     
+	    mailSender.send(message);
+	}
+	public ResponseEntity<Object> checkToken(String token) {
+    	Employee employee = null;
+    	try {
+			employee = employeeRepository.findByResetPasswordToken(token);
+			if(employee == null) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR", "Token invalid", ""));
+			}
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("OK", "Successful authentication", employee));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "Đã có lỗi xảy ra", e.getMessage()));
+		}
+    }
+     
+	public ResponseEntity<Object> updatePassword(String json) {
+    	JsonNode jsonNode = null;
+    	JsonMapper jsonMapper = new JsonMapper();
+    	Employee employee = null;
+    	Integer id = null;
+    	String newPassword = null;
+		try {
+			jsonNode = jsonMapper.readTree(json);
+			id = jsonNode.get("id").asInt();
+			newPassword = (jsonNode.get("newPassword") == null || jsonNode.get("newPassword").asText().equals("")) ? "" : jsonNode.get("newPassword").asText();
+			
+			employee = employeeRepository.findById(id);
+			if(null == employee) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE8"), ""));
+			}
+	    	employee.setPassword(encoder.encode(newPassword));
+	    	employee.setResetPasswordToken(null);
+	    	
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseObject("OK", "Reset password successfully", ""));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "Đã có lỗi xảy ra", ""));
+		}
+
+    }
+    
+    
 }

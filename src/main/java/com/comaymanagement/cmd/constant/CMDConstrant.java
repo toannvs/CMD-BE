@@ -23,6 +23,8 @@ public class CMDConstrant {
 	public static final boolean REOPEN_TASK = true;
 	public static final String SPACE = " ";
 	public static final String AVATAR = "http://222.255.238.159:9090/api/get-image/default-avatar.jpg";
+	public static final String SERVER_LINK = "cmd.ktxcomay.com.vn";
+	public static final String LOCAL_LINK = "http://localhost:9090";
 	
 }
 
