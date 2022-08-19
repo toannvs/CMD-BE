@@ -15,15 +15,18 @@ import org.springframework.stereotype.Service;
 
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.ApprovalOption_View;
+import com.comaymanagement.cmd.entity.ApprovalStep;
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ProposalPermission;
 import com.comaymanagement.cmd.entity.ProposalType;
 import com.comaymanagement.cmd.entity.ProposalTypeDetail;
 import com.comaymanagement.cmd.entity.ResponseObject;
+import com.comaymanagement.cmd.model.ApprovalStepModel;
 import com.comaymanagement.cmd.model.ProposalTypeDetailModel;
 import com.comaymanagement.cmd.model.ProposalTypeModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalOption_ViewRepository;
+import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalPermissionImpl;
@@ -51,10 +54,12 @@ public class ProposalTypeService {
 	ApprovalOption_ViewRepository approvalOptionReposiroty;
 	@Autowired
 	ProposalTypeDetailRepositoryImpl proposalTypeDetailReposiotory;
-
+	@Autowired
+	ApprovalStepRepositoryImpl approvalStepRepository;
 	// findAll for config
 	public ResponseEntity<Object> findAllConfig() {
 //		List<ApprovalOption_View> approvalOptionViews;
+
 		List<ProposalType> proposalTypes = new ArrayList<>();
 		proposalTypes = proposalTypeRepository.findAll();
 		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
@@ -62,6 +67,10 @@ public class ProposalTypeService {
 		List<ProposalTypeDetail> proposalTypeDetails = new ArrayList<>();
 		List<Map<String, Object>> results = new ArrayList<>();
 		for (ProposalType proposalType : proposalTypes) {
+			List<ApprovalStep> approvalSteps = new ArrayList<>();
+			List<ApprovalStepModel> approvalStepModels = new ArrayList<>();
+			approvalSteps = approvalStepRepository.findByProposalTypeId(proposalType.getId());
+			approvalStepModels = approvalStepRepository.toModel(approvalSteps);
 			proposalTypeDetails = proposalTypeDetailReposiotory.findById(proposalType.getId());
 			proposalTypeDetailModels = proposalTypeDetailReposiotory.toModel(proposalTypeDetails);
 			proposalTypeModels.add(proposalTypeRepository.toModel(proposalType));
@@ -71,6 +80,7 @@ public class ProposalTypeService {
 			result.put("activeFlag", proposalType.isActiveFlag());
 			result.put("createDate", proposalType.getCreateDate());
 			result.put("fields", proposalTypeDetailModels);
+			result.put("steps", approvalStepModels);
 			results.add(result);
 		}
 		if (proposalTypes.size() > 0) {
