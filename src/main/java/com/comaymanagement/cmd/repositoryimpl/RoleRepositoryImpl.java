@@ -244,5 +244,13 @@ public class RoleRepositoryImpl implements IRoleRepository {
 		return roleIds;
 	}
 	
+	public RoleModel toModel(Role role) {
+		RoleModel roleModel = new RoleModel();
+		roleModel.setId(role.getId());
+		roleModel.setName(role.getName());
+		List<PositionModel> positionModelList = positionRepositoryImpl.findAllByRoleId(role.getId());
+		roleModel.setPositions(positionModelList);
+		return roleModel;
+	}
 	
 }
