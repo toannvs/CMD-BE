@@ -2,6 +2,7 @@ package com.comaymanagement.cmd.service;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -659,6 +660,7 @@ public class EmployeeService {
 			emp.setEnableLogin(isEnableLogin);
 			// Cannot edit password
 			if (isEnableLogin) {
+				// Check username
 				boolean isUserNameExisted = employeeRepository.checkEmployeeUserNameExisted(id, userName);
 				if (isUserNameExisted) {
 					return ResponseEntity.status(HttpStatus.OK)
@@ -767,28 +769,35 @@ public class EmployeeService {
 			} else {
 				pathFull = path + "/src/main/resources/Import";
 			}
-			if (countFile == 0) {
-				File deleteAllFile = new File(pathFull);
-				FileUtils.cleanDirectory(deleteAllFile);
-			}
+//			if (countFile == 0) {
+//				File deleteAllFile = new File(pathFull);
+//				FileUtils.cleanDirectory(deleteAllFile);
+//			}
+			File dir = new File(pathFull);
+			File[] files = dir.listFiles();
+			countFile = files.length;
 			StringBuilder nameFile = new StringBuilder();
 			nameFile.append("CMD-");
 			nameFile.append(countFile);
 			nameFile.append(".csv");
-			File file = new File(pathFull + nameFile.toString());
-			if(file.exists() && file.isFile()) {
-				file.delete();
-			}
-			file = new File(pathFull + nameFile.toString());
+			File file = new File(pathFull + "/" + nameFile.toString());
+//			if(file.exists() && file.isFile()) {
+//				file.delete();
+//			}
+//			file = new File(pathFull + nameFile.toString());
 //			if (file.exists() && !file.isDirectory()) {
 //				PrintWriter writer = new PrintWriter(file);
 //				writer.print("");
 //				writer.close();
 //			}
+			PrintWriter writer = new PrintWriter(file);
+			writer.print("");
+			// other operations
+			writer.close();
 			multipartFile.transferTo(file);
 
 //			final File csvFile = new File(pathFull + nameFile.toString());
-			CSVReader reader = new CSVReaderBuilder(new FileReader(pathFull + nameFile.toString())).withSkipLines(1)
+			CSVReader reader = new CSVReaderBuilder(new FileReader(file.getAbsoluteFile())).withSkipLines(1)
 					.build();
 
 			Set<Employee> employees = reader.readAll().stream().map(data -> {
@@ -836,6 +845,32 @@ public class EmployeeService {
 				employee.setUsername(email);
 				return employee;
 			}).collect(Collectors.toSet());
+			for(Employee emp : employees) {
+				// Check lenght of code
+				String code = emp.getCode();
+				if (code.length() > 10) {
+					// because can't delete old file when have error. And can't reuse oldfile (or cleanDirectory)
+					countFile++;
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE9"), ""));
+				}
+//				Check employee id existed
+				boolean isExisted = employeeRepository.checkEmployeeCodeExisted(-1, code);
+				if (isExisted) {
+					// because can't delete old file when have error. And can't reuse oldfile (or cleanDirectory)
+					countFile++;
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE5"), ""));
+				}
+				// Check username
+				boolean isUserNameExisted = employeeRepository.checkEmployeeUserNameExisted(-1, emp.getUsername());
+				if (isUserNameExisted) {
+					// because can't delete old file when have error. And can't reuse oldfile (or cleanDirectory)
+					countFile++;
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE10"), ""));
+				}
+			}
 			boolean success = employeeRepository.add(employees);
 
 			if (success) {
@@ -844,6 +879,7 @@ public class EmployeeService {
 
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", messageSuccess, ""));
 			} else {
+				countFile++;
 				String messageError = message.getMessageByItemCode("EMPE3");
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", messageError, ""));
 			}
