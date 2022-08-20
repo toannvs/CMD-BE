@@ -115,12 +115,29 @@ public class ProposalTypeService {
 					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình tìm kiếm", ""));
 		}
 		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
+		List<ProposalTypeDetailModel> proposalTypeDetailModels = new ArrayList<>();
+		List<ProposalTypeDetail> proposalTypeDetails = new ArrayList<>();
+		List<Map<String, Object>> results = new ArrayList<>();
 		if (proposalTypes != null && proposalTypes.size() > 0) {
 			proposalTypes.addAll(proposalTypeEnableAll);
-			for (ProposalType proType : proposalTypes) {
-				proposalTypeModels.add(proposalTypeRepository.toModel(proType));
+			for (ProposalType proposalType : proposalTypes) {
+//				List<ApprovalStep> approvalSteps = new ArrayList<>();
+//				List<ApprovalStepModel> approvalStepModels = new ArrayList<>();
+//				approvalSteps = approvalStepRepository.findByProposalTypeId(proposalType.getId());
+//				approvalStepModels = approvalStepRepository.toModel(approvalSteps);
+				proposalTypeDetails = proposalTypeDetailReposiotory.findById(proposalType.getId());
+				proposalTypeDetailModels = proposalTypeDetailReposiotory.toModel(proposalTypeDetails);
+				proposalTypeModels.add(proposalTypeRepository.toModel(proposalType));
+				Map<String, Object> result = new LinkedHashMap<>();
+				result.put("id", proposalType.getId());
+				result.put("name", proposalType.getName());
+				result.put("activeFlag", proposalType.isActiveFlag());
+				result.put("createDate", proposalType.getCreateDate());
+				result.put("fields", proposalTypeDetailModels);
+//				result.put("steps", approvalStepModels);
+				results.add(result);
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", proposalTypeModels));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", results));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", proposalTypeModels));
 		}
