@@ -173,6 +173,7 @@ public class RoleService {
 		JsonNode jsonObjectOption;
 		List<RoleDetail> roleDetails = new ArrayList<>();
 		Role role = null;
+		RoleModel roleModel = new RoleModel();
 		try {
 			jsonObjectRole = jsonMapper.readTree(json);
 			jsonObjectOption = jsonObjectRole.get("options");
@@ -205,10 +206,13 @@ public class RoleService {
 				}
 			}
 			if (editSatatus != -1) {
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", message.getMessageByItemCode("ROLES3"), role));
+				roleModel = roleRepository.toModel(roleRepository.findById(roleId));
+				RoleDetailModel roleDetailModel = roleRepository.findRoleDetailByRoleId(roleModel.getId());
+				roleModel.setOptions(roleDetailModel.getOptions());
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", message.getMessageByItemCode("ROLES3"), roleModel));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("Error",  message.getMessageByItemCode("ROLEE4") , role));
+						.body(new ResponseObject("Error",  message.getMessageByItemCode("ROLEE4") , roleModel));
 				
 			}
 		} catch (Exception e) {
