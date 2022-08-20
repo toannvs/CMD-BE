@@ -122,7 +122,7 @@ public class EmployeesController {
 	}
 	
 	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
-	@DeleteMapping(value = "/notifies", produces = "application/json")
+	@PutMapping(value = "/notifies/delete", produces = "application/json")
 	public ResponseEntity<Object> deleteNotifies(@RequestBody String json) {
 		ResponseEntity<Object> result = employeeService.deleteNotifies(json);
 		return result;
