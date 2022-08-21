@@ -1,7 +1,6 @@
 package com.comaymanagement.cmd.model;
 
-import java.util.List;
-
+import com.comaymanagement.cmd.entity.Device;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -15,17 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-public class DepartmentModel {
+public class DepartmentHasDeviceModel {
 	private Integer id;
-	private String code;
-	private String name;
-	private Integer fatherDepartmentId;
-	private Integer headPosition;
+	Device device;
 	private String description;
-	private Integer level;
-	private List<PositionModel> positions;
-	private List<EmployeeModel> employees;
-	private PositionModel position;
-	private List<DepartmentHasDeviceModel> devices;
-	
+	private Boolean isActive;
 }
