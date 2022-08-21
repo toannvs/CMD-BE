@@ -440,6 +440,7 @@ public class DepartmentService {
 
 	public ResponseEntity<Object> addDeviceForDepartment( String json) {
 		JsonNode jsonOject = null;
+		JsonNode jsonDeviceOject = null;
 		JsonMapper jsonMapper = new JsonMapper();
 		Integer departmentId = null;
 		Integer deviceId = null;
@@ -447,12 +448,13 @@ public class DepartmentService {
 		Boolean active = false;
 		try {
 			jsonOject = jsonMapper.readTree(json);
+			jsonDeviceOject = jsonOject.get("device");
 			departmentId = ((null == jsonOject.get("departmentId")) || (jsonOject.get("departmentId").asInt() <= 0)) ? -1 : jsonOject.get("departmentId").asInt();
 			Department department = departmentRepository.findById(departmentId);
 			if(null == department) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR",message.getMessageByItemCode("DEPE6"), departmentId));
 			}
-			deviceId = ((null == jsonOject.get("deviceId")) || (jsonOject.get("deviceId").asInt() <= 0)) ? -1 : jsonOject.get("deviceId").asInt();
+			deviceId = ((null == jsonDeviceOject.get("id")) || (jsonDeviceOject.get("id").asInt() <= 0)) ? -1 : jsonDeviceOject.get("id").asInt();
 			Device device = departmentHasDeviceRepository.findById(deviceId);
 			if(null == device) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR",message.getMessageByItemCode("DEVE1"), ""));
