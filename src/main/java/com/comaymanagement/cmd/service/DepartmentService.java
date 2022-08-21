@@ -22,6 +22,7 @@ import com.comaymanagement.cmd.entity.Device;
 import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Role;
+import com.comaymanagement.cmd.model.DepartmentHasDeviceModel;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.DeviceModel;
 import com.comaymanagement.cmd.model.PositionModel;
@@ -411,22 +412,22 @@ public class DepartmentService {
 		List<DepartmentModel> depModelResults = new ArrayList<>();
 		try {
 			Set<Department> departmentWithDevices = new LinkedHashSet<>();
-			List<DeviceModel> deviceModels;
+			List<DepartmentHasDeviceModel> depHasDeviceModels;
 			departmentWithDevices = departmentHasDeviceRepository.findAllDeviceByDepartmentName(name);
 			for (Department dep : departmentWithDevices) {
 				List<DepartmentHasDevice> depHasDevices = dep.getDepartmentHasDevices();
-				deviceModels = new ArrayList<>();
+				depHasDeviceModels = new ArrayList<DepartmentHasDeviceModel>();
 				for (DepartmentHasDevice departmentHasDevice : depHasDevices) {
 					Device device = departmentHasDevice.getDevice();
-					DeviceModel deviceModel = new DeviceModel();
-					deviceModel.setId(departmentHasDevice.getId());
-					deviceModel.setName(device.getName());
-					deviceModel.setDescription(departmentHasDevice.getDescription());
-					deviceModel.setIsActive(departmentHasDevice.getIsActive());
-					deviceModels.add(deviceModel);
+					DepartmentHasDeviceModel depHasDeviceModel = new DepartmentHasDeviceModel();
+					depHasDeviceModel.setId(departmentHasDevice.getId());
+					depHasDeviceModel.setDevice(device);
+					depHasDeviceModel.setDescription(departmentHasDevice.getDescription());
+					depHasDeviceModel.setIsActive(departmentHasDevice.getIsActive());
+					depHasDeviceModels.add(depHasDeviceModel);
 				}
 				DepartmentModel depModel = departmentRepository.toModel(dep);
-				depModel.setDevices(deviceModels);
+				depModel.setDevices(depHasDeviceModels);
 				depModelResults.add(depModel);
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", depModelResults));
@@ -467,7 +468,13 @@ public class DepartmentService {
 			
 			DeviceModel deviceModel  = departmentHasDeviceRepository.add(departmentHasDevice);
 			if(null != deviceModel) {
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","", deviceModel));
+				// response data
+				DepartmentHasDeviceModel depHasDeviceModel = new DepartmentHasDeviceModel();
+				depHasDeviceModel.setId(departmentHasDevice.getId());
+				depHasDeviceModel.setDevice(device);
+				depHasDeviceModel.setDescription(departmentHasDevice.getDescription());
+				depHasDeviceModel.setIsActive(departmentHasDevice.getIsActive());
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","", depHasDeviceModel));
 			}else {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","", ""));
 			}
@@ -479,22 +486,33 @@ public class DepartmentService {
 	
 	public ResponseEntity<Object> editDeviceForDepartment( String json) {
 		JsonNode jsonOject = null;
+		JsonNode jsonDeviceOject = null;
 		JsonMapper jsonMapper = new JsonMapper();
 		Integer id = null;
+		Integer deviceId = null;
 		String description = null;
 		Boolean active = false;
 		try {
+			
 			jsonOject = jsonMapper.readTree(json);
+			jsonDeviceOject = jsonOject.get("device");
 			id = ((null == jsonOject.get("id")) || (jsonOject.get("id").asInt() <= 0)) ? -1 : jsonOject.get("id").asInt();
+			deviceId = ((null == jsonDeviceOject.get("id")) || (jsonDeviceOject.get("id").asInt() <= 0)) ? -1 : jsonDeviceOject.get("id").asInt();
 			description = ((null == jsonOject.get("description")) || (jsonOject.get("description").asText() == "")) ? "" : jsonOject.get("description").asText();
 			active = (((null == jsonOject.get("isActive")) || (jsonOject.get("isActive").asInt() <= 0)) ? 0 : jsonOject.get("isActive").asInt()) == 0 ? false : true;
 			DepartmentHasDevice departmentHasDevice  = departmentHasDeviceRepository.findDepartmentHasDeviceById(id);
 			departmentHasDevice.setDescription(description);
 			departmentHasDevice.setIsActive(active);
-			
+			Device device = departmentHasDeviceRepository.findById(deviceId);
 			DeviceModel deviceModel = departmentHasDeviceRepository.edit(departmentHasDevice);
 			if(null != deviceModel) {
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","", deviceModel));
+				// response data
+				DepartmentHasDeviceModel depHasDeviceModel = new DepartmentHasDeviceModel();
+				depHasDeviceModel.setId(departmentHasDevice.getId());
+				depHasDeviceModel.setDevice(device);
+				depHasDeviceModel.setDescription(departmentHasDevice.getDescription());
+				depHasDeviceModel.setIsActive(departmentHasDevice.getIsActive());
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","", depHasDeviceModel));
 			}else {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR","", ""));
 			}
