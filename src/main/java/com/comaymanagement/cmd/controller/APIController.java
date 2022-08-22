@@ -6,15 +6,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.poi.util.IOUtils;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -81,11 +81,28 @@ public class APIController {
     		) throws IOException {
 		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
 //		File image = new File(baseURL + name.trim());
-		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
+//		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
 //        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
-		byte[] fileContent  = IOUtils.toByteArray(in);
-		String encodedString = Base64.getEncoder().encodeToString(fileContent);
-		
-        return encodedString;
+	    
+	     
+		// Read picture byte arrays
+		        byte[] data = null;
+		        try {
+		   
+		     
+		     
+		            InputStream in = new FileInputStream(baseURL + name.trim());
+		System.out.println("file size (bytes)=" + in.available());
+		            data = new byte[in.available()];
+		            in.read(data);
+		            in.close();
+		        } catch (IOException e) {
+		   
+		     
+		     
+		            e.printStackTrace();
+		        }
+		//Base64 encoded by byte arrays with a string of Base64 encoded
+		        return new String(Objects.requireNonNull(Base64.encodeBase64(data)));
     }
 }
