@@ -38,71 +38,98 @@ import com.comaymanagement.cmd.entity.ResponseObject;
 public class APIController {
 	@Autowired
 	ServletContext context;
+
 	@PostMapping("/upload-images")
 	@ResponseBody
 	public ResponseEntity<Object> uploadFile(MultipartHttpServletRequest request) {
+		String base64Result = "";
 //		// Lay r ds ten file
-			MultiValueMap<String, MultipartFile>  form = request.getMultiFileMap();
-			List<MultipartFile> files = form.get("image");
-			StringBuilder pathSaveFile = new StringBuilder(System.getProperty("user.dir"));
-			for(MultipartFile mpf : files) {
-				if( mpf.getOriginalFilename().equals("")) {
-					continue;
-				}
-//				B1: lay ra duong dan se luu file
-				pathSaveFile.append("/image/");
-				
-//				pathSaveFile = "/com/comaymanagement/cmd/image/";
-				// Get extension
-				String[] extensions =  mpf.getOriginalFilename().split("\\.");
-				StringBuilder ext = new StringBuilder(".").append(extensions[extensions.length-1]);
-				String name = String.format("%s_%s",new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date().getTime()),RandomStringUtils.randomAlphanumeric(5)+ext);
-//				B2: Tao file
-				File file = new File(pathSaveFile + name);
-//				File file = new File(pathSaveFile + mpf.getOriginalFilename());
-				System.out.println("Path save file: " + pathSaveFile);
-//			B3: dung ham trong thu vien commmon de save
-				try {
-					mpf.transferTo(file);
-					return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", name));
-				} catch (IOException e) {
-					System.err.println(e.getMessage());
-					return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK",e.getMessage(), mpf.getOriginalFilename()));
-				}
+		MultiValueMap<String, MultipartFile> form = request.getMultiFileMap();
+		List<MultipartFile> files = form.get("image");
+		StringBuilder pathSaveFile = new StringBuilder(System.getProperty("user.dir"));
+		for (MultipartFile mpf : files) {
+			if (mpf.getOriginalFilename().equals("")) {
+				continue;
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","No image to save", ""));
-			
+//				B1: lay ra duong dan se luu file
+			pathSaveFile.append("/image/");
+
+//				pathSaveFile = "/com/comaymanagement/cmd/image/";
+			// Get extension
+			String[] extensions = mpf.getOriginalFilename().split("\\.");
+			StringBuilder ext = new StringBuilder(".").append(extensions[extensions.length - 1]);
+			String name = String.format("%s_%s", new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date().getTime()),
+					RandomStringUtils.randomAlphanumeric(5) + ext);
+//				B2: Tao file
+			File file = new File(pathSaveFile + name);
+//				File file = new File(pathSaveFile + mpf.getOriginalFilename());
+			System.out.println("Path save file: " + pathSaveFile);
+			try {
+				base64Result = convertToBase64(name);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+//			B3: dung ham trong thu vien commmon de save
+			try {
+				mpf.transferTo(file);
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", base64Result));
+			} catch (IOException e) {
+				System.err.println(e.getMessage());
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ResponseObject("OK", e.getMessage(), mpf.getOriginalFilename()));
+			}
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "No image to save", ""));
+
 	}
-	@GetMapping(value = "/get-image/{name}"
-//			, produces = MediaType.IMAGE_JPEG_VALUE
-			)
-    public @ResponseBody String getImageWithMediaType(
-    		@PathVariable String name
-    		) throws IOException {
+
+//	@GetMapping(value = "/get-image/{name}"
+////			, produces = MediaType.IMAGE_JPEG_VALUE
+//			)
+//    public @ResponseBody String getImageWithMediaType(
+//    		@PathVariable String name
+//    		) throws IOException {
+//		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
+////		File image = new File(baseURL + name.trim());
+////		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
+////        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
+//	    
+//	     
+//		// Read picture byte arrays
+//		        byte[] data = null;
+//		        try {
+//		   
+//		     
+//		     
+//		            InputStream in = new FileInputStream(baseURL + name.trim());
+//		System.out.println("file size (bytes)=" + in.available());
+//		            data = new byte[in.available()];
+//		            in.read(data);
+//		            in.close();
+//		        } catch (IOException e) {
+//		   
+//		     
+//		     
+//		            e.printStackTrace();
+//		        }
+//		//Base64 encoded by byte arrays with a string of Base64 encoded
+//		        return new String(Objects.requireNonNull(Base64.encodeBase64(data)));
+//    }
+	public String convertToBase64(String name) throws IOException {
 		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
-//		File image = new File(baseURL + name.trim());
-//		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
-//        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
-	    
-	     
-		// Read picture byte arrays
-		        byte[] data = null;
-		        try {
-		   
-		     
-		     
-		            InputStream in = new FileInputStream(baseURL + name.trim());
-		System.out.println("file size (bytes)=" + in.available());
-		            data = new byte[in.available()];
-		            in.read(data);
-		            in.close();
-		        } catch (IOException e) {
-		   
-		     
-		     
-		            e.printStackTrace();
-		        }
-		//Base64 encoded by byte arrays with a string of Base64 encoded
-		        return new String(Objects.requireNonNull(Base64.encodeBase64(data)));
-    }
+		byte[] data = null;
+		try {
+			InputStream in = new FileInputStream(baseURL + name.trim());
+			System.out.println("file size (bytes)=" + in.available());
+			data = new byte[in.available()];
+			in.read(data);
+			in.close();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+		// Base64 encoded by byte arrays with a string of Base64 encoded
+		return new String(Objects.requireNonNull(Base64.encodeBase64(data)));
+	}
 }
