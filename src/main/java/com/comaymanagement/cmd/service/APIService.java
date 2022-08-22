@@ -20,8 +20,8 @@ public class APIService {
 			in.read(data);
 			in.close();
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			return "";
 		}
 		// Base64 encoded by byte arrays with a string of Base64 encoded
 		return new String(Objects.requireNonNull(Base64.encodeBase64(data)));

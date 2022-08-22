@@ -737,7 +737,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 //					receiverHis.setId(itemTaskHis.getReceiver().getId());
 //					receiverHis.setCode(itemTaskHis.getReceiver().getCode());
 //					receiverHis.setName(itemTaskHis.getReceiver().getName());
-//					receiverHis.setAvatar();
+//					receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
 //					receiverHis.setGender(itemTaskHis.getReceiver().getGender());
 //					receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
 //					receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
