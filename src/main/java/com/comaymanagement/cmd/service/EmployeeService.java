@@ -40,13 +40,17 @@ import com.comaymanagement.cmd.entity.Team;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.NotifyModel;
+import com.comaymanagement.cmd.model.OptionModel;
+import com.comaymanagement.cmd.model.PermissionModel;
 import com.comaymanagement.cmd.model.PositionModel;
+import com.comaymanagement.cmd.model.RoleDetailModel;
 import com.comaymanagement.cmd.model.TeamModel;
 import com.comaymanagement.cmd.model.UserModel;
 import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.RoleRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TeamRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -81,6 +85,8 @@ public class EmployeeService {
 
 	@Autowired
 	CustomRoleService customRoleService;
+	@Autowired
+	RoleRepositoryImpl roleRepository;
 	static int countFile = 0;
 
 //	API for download
@@ -944,7 +950,7 @@ public class EmployeeService {
 			employeeModel.setActive(employee.isActive());
 			employeeModel.setCreateDate(employee.getCreateDate());
 			employeeModel.setDepartments(departmentModelList);
-			;
+			
 			employeeModel.setPositions(positionModelList);
 			employeeModel.setUser(user);
 			employeeModel.setCreateDate(employee.getCreateDate());
@@ -1094,8 +1100,49 @@ public class EmployeeService {
 		}
 	}
 	public ResponseEntity<Object> findById(Integer id) {
+		List<Integer> roleIds = new ArrayList<>();
+		List<RoleDetailModel> roleDetailModels = new ArrayList<>();
+		RoleDetailModel roleDetailModel = new RoleDetailModel();
 			Employee emp =  employeeRepository.findById(id);
-			EmployeeModel empModel =  employeeRepository.toModel(emp);   
+			EmployeeModel empModel =  employeeRepository.toModel(emp);  
+			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			if (userDetail != null) {
+				roleIds = roleRepository.findAllRoleIdByEmpId(userDetail.getId());
+				for(Integer roleId : roleIds) {
+					roleDetailModel = roleRepository.findRoleDetailByRoleId(roleId);
+					roleDetailModels.add(roleDetailModel);
+				} 
+				// Summary of role list
+				RoleDetailModel roleDetailResult = new RoleDetailModel();
+				
+				roleDetailResult = roleDetailModels.get(0);
+			  if(roleDetailModels.size()>1) {
+					// check each role's permission
+					for(int i =1; i<roleDetailModels.size();i++) {
+						List<OptionModel> optionsModels  = roleDetailModels.get(i).getOptions();
+						for(int j = 0;j < optionsModels.size(); j++) {
+							List<PermissionModel> permissionModels = optionsModels.get(j).getPermissions();
+							for(int k = 0; k < permissionModels.size(); k++) {
+								PermissionModel permissionNeeded = roleDetailResult.getOptions().get(j).getPermissions().get(k);
+								if(permissionModels.get(k).isSelected() && !permissionNeeded.isSelected()) {
+									permissionNeeded.setSelected(true);
+								}
+							}
+						}
+					}
+				}
+				
+				
+				Employee employee = employeeRepository.findById(userDetail.getId());
+//				EmployeeModel employeeModel = EmployeeService.toEmployeeModel(employee);
+				Map<String, Object> optionMap = AuthService.convertRoleForFEGantPermission(roleDetailModel);
+				empModel.setRole(optionMap);
+//				userModel.setPassword(null);
+//				userModel.setRoles(roleDetailModels);
+			}
+			 
+			
 			if(empModel!=null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "SUCCESSFULLY",empModel));
