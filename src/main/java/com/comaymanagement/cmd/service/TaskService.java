@@ -818,7 +818,7 @@ public class TaskService {
 			} else if (status.getIndex() == CMDConstrant.DONE_STATUS) {
 				notify = new Notify();
 				notify.setIsRead(false);
-				notify.setReceiver(task.getCreator());
+				notify.setReceiver(task.getReceiver());
 				notify.setTitle(message.getMessageByItemCode("TASKN7"));
 				notify.setDescription(
 						task.getCreator().getName() + CMDConstrant.SPACE + message.getMessageByItemCode("TASKN8"));
