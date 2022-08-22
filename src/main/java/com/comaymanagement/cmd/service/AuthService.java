@@ -174,7 +174,7 @@ public class AuthService {
 	public void resetPassword(String json) {
 
 	}
-	public Map<String, Object> convertRoleForFEGantPermission(RoleDetailModel roleDetailModel){
+	public static Map<String, Object> convertRoleForFEGantPermission(RoleDetailModel roleDetailModel){
 	
 		Map<String, Object> optionMaps = new LinkedHashMap<>();
 		for(OptionModel opModel : roleDetailModel.getOptions()) {
