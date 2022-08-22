@@ -732,7 +732,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			employee = (Employee) query.getSingleResult();
 
 			// Please don't delete this line, this fix lazy load error when load position
-			employee.setAvatar(APIService.convertToBase64(employee.getAvatar()));
 			employee.getPositions().size();
 			employee.getDepartments().size();
 			employee.getTeams().size();
