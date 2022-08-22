@@ -32,6 +32,7 @@ import com.comaymanagement.cmd.model.EmployeeModel;
 import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.model.ProposalModel;
 import com.comaymanagement.cmd.repository.IProposalRepository;
+import com.comaymanagement.cmd.service.APIService;
 import com.comaymanagement.cmd.service.UserDetailsImpl;
 
 @Repository
@@ -521,7 +522,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 					employeeModel.setId(e.getId());
 					employeeModel.setCode(e.getCode());
 					employeeModel.setName(e.getName());
-					employeeModel.setAvatar(e.getAvatar());
+					employeeModel.setAvatar(APIService.convertToBase64(e.getAvatar()));
 					employeeModel.setGender(e.getGender());
 					employeeModel.setDateOfBirth(e.getDateOfBirth());
 					employeeModel.setEmail(e.getEmail());
@@ -605,7 +606,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			creator.setId(proposal.getCreator().getId());
 			creator.setName(proposal.getCreator().getName());
 			creator.setCode(proposal.getCreator().getCode());
-			creator.setAvatar(proposal.getCreator().getAvatar());
+			creator.setAvatar(APIService.convertToBase64(proposal.getCreator().getAvatar()));
 			creator.setGender(proposal.getCreator().getGender());
 			creator.setDateOfBirth(proposal.getCreator().getDateOfBirth());
 			creator.setEmail(proposal.getCreator().getEmail());
