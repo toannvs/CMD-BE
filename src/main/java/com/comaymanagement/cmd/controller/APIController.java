@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.poi.util.IOUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -71,14 +73,19 @@ public class APIController {
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK","No image to save", ""));
 			
 	}
-	@GetMapping(value = "/get-image/{name}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] getImageWithMediaType(
+	@GetMapping(value = "/get-image/{name}"
+//			, produces = MediaType.IMAGE_JPEG_VALUE
+			)
+    public @ResponseBody String getImageWithMediaType(
     		@PathVariable String name
     		) throws IOException {
 		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
 //		File image = new File(baseURL + name.trim());
 		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
 //        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
-        return IOUtils.toByteArray(in);
+		byte[] fileContent  = IOUtils.toByteArray(in);
+		String encodedString = Base64.getEncoder().encodeToString(fileContent);
+		
+        return encodedString;
     }
 }
