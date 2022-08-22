@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.servlet.ServletContext;
@@ -31,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.comaymanagement.cmd.entity.ResponseObject;
+import com.comaymanagement.cmd.service.APIService;
 
 @RestController
 @RequestMapping("/api")
@@ -47,6 +50,7 @@ public class APIController {
 		MultiValueMap<String, MultipartFile> form = request.getMultiFileMap();
 		List<MultipartFile> files = form.get("image");
 		StringBuilder pathSaveFile = new StringBuilder(System.getProperty("user.dir"));
+		Map<String, String> result = new LinkedHashMap<>();
 		for (MultipartFile mpf : files) {
 			if (mpf.getOriginalFilename().equals("")) {
 				continue;
@@ -68,6 +72,8 @@ public class APIController {
 			try {
 				mpf.transferTo(file);
 //				base64Result = convertToBase64(name);
+				result.put("name", name);
+				result.put("base64Data", APIService.convertToBase64(name));
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", name));
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
