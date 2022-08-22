@@ -960,7 +960,7 @@ public class EmployeeService {
 				employeeModel.setModifyBy(employee.getModifyBy());
 				employeeModel.setTeams(teamModelList);
 			} catch (Exception e) {
-				
+				System.out.println(e.getMessage());
 			}
 			
 			return employeeModel;
