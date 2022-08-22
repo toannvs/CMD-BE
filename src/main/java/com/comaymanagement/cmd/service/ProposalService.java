@@ -523,9 +523,9 @@ public class ProposalService {
 				proposalDetails.add(proposalDetail);
 			}
 
-			Integer editStatus = proposalRepositoryImpl.edit(proposal, proposalDetails);
+			proposalModel = proposalRepositoryImpl.edit(proposal, proposalDetails);
 
-			if (editStatus > 0) {
+			if (proposalModel != null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			} else {
