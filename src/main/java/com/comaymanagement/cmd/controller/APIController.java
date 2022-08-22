@@ -64,15 +64,10 @@ public class APIController {
 			File file = new File(pathSaveFile + name);
 //				File file = new File(pathSaveFile + mpf.getOriginalFilename());
 			System.out.println("Path save file: " + pathSaveFile);
-			try {
-				base64Result = convertToBase64(name);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 //			B3: dung ham trong thu vien commmon de save
 			try {
 				mpf.transferTo(file);
+				base64Result = convertToBase64(name);
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", base64Result));
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
