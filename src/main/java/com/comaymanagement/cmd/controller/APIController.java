@@ -67,7 +67,7 @@ public class APIController {
 //			B3: dung ham trong thu vien commmon de save
 			try {
 				mpf.transferTo(file);
-				base64Result = convertToBase64(name);
+//				base64Result = convertToBase64(name);
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", base64Result));
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
@@ -79,52 +79,15 @@ public class APIController {
 
 	}
 
-//	@GetMapping(value = "/get-image/{name}"
-////			, produces = MediaType.IMAGE_JPEG_VALUE
-//			)
-//    public @ResponseBody String getImageWithMediaType(
-//    		@PathVariable String name
-//    		) throws IOException {
-//		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
-////		File image = new File(baseURL + name.trim());
-////		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
-////        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
-//	    
-//	     
-//		// Read picture byte arrays
-//		        byte[] data = null;
-//		        try {
-//		   
-//		     
-//		     
-//		            InputStream in = new FileInputStream(baseURL + name.trim());
-//		System.out.println("file size (bytes)=" + in.available());
-//		            data = new byte[in.available()];
-//		            in.read(data);
-//		            in.close();
-//		        } catch (IOException e) {
-//		   
-//		     
-//		     
-//		            e.printStackTrace();
-//		        }
-//		//Base64 encoded by byte arrays with a string of Base64 encoded
-//		        return new String(Objects.requireNonNull(Base64.encodeBase64(data)));
-//    }
-	public String convertToBase64(String name) throws IOException {
+	@GetMapping(value = "/get-image/{name}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getImageWithMediaType(
+    		@PathVariable String name
+    		) throws IOException {
 		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
-		byte[] data = null;
-		try {
-			InputStream in = new FileInputStream(baseURL + name.trim());
-			System.out.println("file size (bytes)=" + in.available());
-			data = new byte[in.available()];
-			in.read(data);
-			in.close();
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-		// Base64 encoded by byte arrays with a string of Base64 encoded
-		return new String(Objects.requireNonNull(Base64.encodeBase64(data)));
-	}
+//		File image = new File(baseURL + name.trim());
+		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
+//        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
+        return IOUtils.toByteArray(in);
+    }
+	
 }

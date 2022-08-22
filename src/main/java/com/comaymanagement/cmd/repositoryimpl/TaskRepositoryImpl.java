@@ -36,6 +36,7 @@ import com.comaymanagement.cmd.model.TaskHisModel;
 import com.comaymanagement.cmd.model.TaskHisModelTemp;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repository.ITaskRepository;
+import com.comaymanagement.cmd.service.APIService;
 import com.comaymanagement.cmd.service.UserDetailsImpl;
 
 @Repository
@@ -90,7 +91,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -103,7 +104,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -203,7 +204,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -216,7 +217,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -260,7 +261,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					editor.setId(itemTaskHis.getModifyBy().getId());
 					editor.setCode(itemTaskHis.getModifyBy().getCode());
 					editor.setName(itemTaskHis.getModifyBy().getName());
-					editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+					editor.setAvatar(APIService.convertToBase64(itemTaskHis.getModifyBy().getAvatar()));
 					editor.setGender(itemTaskHis.getModifyBy().getGender());
 					editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
 					editor.setEmail(itemTaskHis.getModifyBy().getEmail());
@@ -282,7 +283,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
 					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
 					taskHistoryModel.setModifyById(itemHisModelTemp.getModifyBy().getId());
-					taskHistoryModel.setAvatar(itemHisModelTemp.getModifyBy().getAvatar());
+					taskHistoryModel.setAvatar(APIService.convertToBase64(itemHisModelTemp.getModifyBy().getAvatar()));
 					taskHisModels.add(taskHistoryModel);
 				}
 				
@@ -465,7 +466,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -478,7 +479,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -551,7 +552,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -564,7 +565,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -673,7 +674,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -686,7 +687,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -736,7 +737,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 //					receiverHis.setId(itemTaskHis.getReceiver().getId());
 //					receiverHis.setCode(itemTaskHis.getReceiver().getCode());
 //					receiverHis.setName(itemTaskHis.getReceiver().getName());
-//					receiverHis.setAvatar(itemTaskHis.getReceiver().getAvatar());
+//					receiverHis.setAvatar();
 //					receiverHis.setGender(itemTaskHis.getReceiver().getGender());
 //					receiverHis.setDateOfBirth(itemTaskHis.getReceiver().getDateOfBirth());
 //					receiverHis.setEmail(itemTaskHis.getReceiver().getEmail());
@@ -749,7 +750,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					editor.setId(itemTaskHis.getModifyBy().getId());
 					editor.setCode(itemTaskHis.getModifyBy().getCode());
 					editor.setName(itemTaskHis.getModifyBy().getName());
-					editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+					editor.setAvatar(APIService.convertToBase64(itemTaskHis.getModifyBy().getAvatar()));
 					editor.setGender(itemTaskHis.getModifyBy().getGender());
 					editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
 					editor.setEmail(itemTaskHis.getModifyBy().getEmail());
@@ -771,7 +772,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
 					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
 					taskHistoryModel.setModifyById(itemHisModelTemp.getModifyBy().getId());
-					taskHistoryModel.setAvatar(itemHisModelTemp.getModifyBy().getAvatar());
+					taskHistoryModel.setAvatar(APIService.convertToBase64(itemHisModelTemp.getModifyBy().getAvatar()));
 					taskHisModels.add(taskHistoryModel);
 				}
 
@@ -819,7 +820,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			creatorTemp.setId(task.getCreator().getId());
 			creatorTemp.setCode(task.getCreator().getCode());
 			creatorTemp.setName(task.getCreator().getName());
-			creatorTemp.setAvatar(task.getCreator().getAvatar());
+			creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 			creatorTemp.setGender(task.getCreator().getGender());
 			creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 			creatorTemp.setEmail(task.getCreator().getEmail());
@@ -832,7 +833,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 			receiverTemp.setId(task.getReceiver().getId());
 			receiverTemp.setCode(task.getReceiver().getCode());
 			receiverTemp.setName(task.getReceiver().getName());
-			receiverTemp.setAvatar(task.getReceiver().getAvatar());
+			receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 			receiverTemp.setGender(task.getReceiver().getGender());
 			receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 			receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -917,7 +918,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				editor.setId(itemTaskHis.getModifyBy().getId());
 				editor.setCode(itemTaskHis.getModifyBy().getCode());
 				editor.setName(itemTaskHis.getModifyBy().getName());
-				editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+				editor.setAvatar(APIService.convertToBase64(itemTaskHis.getModifyBy().getAvatar()));
 				editor.setGender(itemTaskHis.getModifyBy().getGender());
 				editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
 				editor.setEmail(itemTaskHis.getModifyBy().getEmail());
@@ -1021,7 +1022,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -1034,7 +1035,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -1231,7 +1232,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -1244,7 +1245,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -1301,7 +1302,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					editor.setId(itemTaskHis.getModifyBy().getId());
 					editor.setCode(itemTaskHis.getModifyBy().getCode());
 					editor.setName(itemTaskHis.getModifyBy().getName());
-					editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+					editor.setAvatar(APIService.convertToBase64(itemTaskHis.getModifyBy().getAvatar()));
 					editor.setGender(itemTaskHis.getModifyBy().getGender());
 					editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
 					editor.setEmail(itemTaskHis.getModifyBy().getEmail());
@@ -1323,7 +1324,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
 					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
 					taskHistoryModel.setModifyById(itemHisModelTemp.getModifyBy().getId());
-					taskHistoryModel.setAvatar(itemHisModelTemp.getModifyBy().getAvatar());
+					taskHistoryModel.setAvatar(APIService.convertToBase64(itemHisModelTemp.getModifyBy().getAvatar()));
 					taskHisModels.add(taskHistoryModel);
 				}
 				customTask.setDepartment(departmentModels);
@@ -1486,7 +1487,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				creatorTemp.setId(task.getCreator().getId());
 				creatorTemp.setCode(task.getCreator().getCode());
 				creatorTemp.setName(task.getCreator().getName());
-				creatorTemp.setAvatar(task.getCreator().getAvatar());
+				creatorTemp.setAvatar(APIService.convertToBase64(task.getCreator().getAvatar()));
 				creatorTemp.setGender(task.getCreator().getGender());
 				creatorTemp.setDateOfBirth(task.getCreator().getDateOfBirth());
 				creatorTemp.setEmail(task.getCreator().getEmail());
@@ -1499,7 +1500,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 				receiverTemp.setId(task.getReceiver().getId());
 				receiverTemp.setCode(task.getReceiver().getCode());
 				receiverTemp.setName(task.getReceiver().getName());
-				receiverTemp.setAvatar(task.getReceiver().getAvatar());
+				receiverTemp.setAvatar(APIService.convertToBase64(task.getReceiver().getAvatar()));
 				receiverTemp.setGender(task.getReceiver().getGender());
 				receiverTemp.setDateOfBirth(task.getReceiver().getDateOfBirth());
 				receiverTemp.setEmail(task.getReceiver().getEmail());
@@ -1543,7 +1544,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					editor.setId(itemTaskHis.getModifyBy().getId());
 					editor.setCode(itemTaskHis.getModifyBy().getCode());
 					editor.setName(itemTaskHis.getModifyBy().getName());
-					editor.setAvatar(itemTaskHis.getModifyBy().getAvatar());
+					editor.setAvatar(APIService.convertToBase64(itemTaskHis.getModifyBy().getAvatar()));
 					editor.setGender(itemTaskHis.getModifyBy().getGender());
 					editor.setDateOfBirth(itemTaskHis.getModifyBy().getDateOfBirth());
 					editor.setEmail(itemTaskHis.getModifyBy().getEmail());
@@ -1565,7 +1566,7 @@ public class TaskRepositoryImpl implements ITaskRepository {
 					taskHistoryModel.setModifyBy(itemHisModelTemp.getModifyBy().getName());
 					taskHistoryModel.setModifyDate(itemHisModelTemp.getModifyDate());
 					taskHistoryModel.setModifyById(itemHisModelTemp.getModifyBy().getId());
-					taskHistoryModel.setAvatar(itemHisModelTemp.getModifyBy().getAvatar());
+					taskHistoryModel.setAvatar(APIService.convertToBase64(itemHisModelTemp.getModifyBy().getAvatar()));
 					taskHisModels.add(taskHistoryModel);
 				}
 				customTask.setDepartment(departmentModels);
