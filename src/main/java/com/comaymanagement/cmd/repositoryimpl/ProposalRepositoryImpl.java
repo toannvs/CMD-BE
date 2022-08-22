@@ -632,7 +632,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			proposalModel.setContents(contentModels);
 			proposalModel.setCreatedDate(proposal.getCreateDate());
 			proposalModel.setStatus(proposal.getStatus());
-
+			proposalModel.setCurrentStep(proposal.getCurrentStep());
+			proposalModel.setCanApprove(checkIfCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString()));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
@@ -656,7 +657,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			return null;
 		}
 	}
-	public Integer edit(Proposal proposal, List<ProposalDetail> proposalDetails) {
+	public ProposalModel edit(Proposal proposal, List<ProposalDetail> proposalDetails) {
+		ProposalModel proposalModel = new ProposalModel();
 		Integer resultEditedProposal = -1;
 		Integer resultAddProposalDetail = -1;
 		Session session = sessionFactory.getCurrentSession();
@@ -664,7 +666,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			session.update(proposal);
 			resultEditedProposal = 1;
 			if (resultEditedProposal < 0 ) {
-				return -1;
+				return null;
 			}
 			if(proposalDetails!=null) {
 				for (ProposalDetail proposalDetail : proposalDetails) {
@@ -672,14 +674,49 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 					session.update(proposalDetail);
 					resultAddProposalDetail = 1;
 					if (resultAddProposalDetail < 0) {
-						return -1;
+						return null;
 					}
 				}
 			}
-			return 1;
+			// response data
+			proposalModel = new ProposalModel();
+			proposalModel.setId(proposal.getId());
+			EmployeeModel creator = new EmployeeModel();
+			creator.setId(proposal.getCreator().getId());
+			creator.setName(proposal.getCreator().getName());
+			creator.setCode(proposal.getCreator().getCode());
+			creator.setAvatar(APIService.convertToBase64(proposal.getCreator().getAvatar()));
+			creator.setGender(proposal.getCreator().getGender());
+			creator.setDateOfBirth(proposal.getCreator().getDateOfBirth());
+			creator.setEmail(proposal.getCreator().getEmail());
+			creator.setPhoneNumber(proposal.getCreator().getPhoneNumber());
+			creator.setActive(proposal.getCreator().isActive());
+			creator.setCreateDate(proposal.getCreator().getCreateDate());
+			creator.setCreateDate(proposal.getCreator().getCreateDate());
+			creator.setModifyDate(proposal.getCreator().getModifyDate());
+			creator.setCreateBy(proposal.getCreator().getCreateBy());
+			creator.setModifyBy(proposal.getCreator().getModifyBy());
+			proposalModel.setCreator(creator);
+
+			proposalModel.setProposalType(proposal.getProposalType());
+
+			List<ContentModel> contentModels = new ArrayList<ContentModel>();
+			for (ProposalDetail proposalDetail : proposalDetails) {
+				ContentModel contentModel = new ContentModel();
+				contentModel.setFieldId(proposalDetail.getFieldId());
+				contentModel.setFieldName(proposalDetail.getFieldName());
+				contentModel.setContent(proposalDetail.getContent());
+				contentModels.add(contentModel);
+			}
+			proposalModel.setContents(contentModels);
+			proposalModel.setCreatedDate(proposal.getCreateDate());
+			proposalModel.setStatus(proposal.getStatus());
+			proposalModel.setCurrentStep(proposal.getCurrentStep());
+			proposalModel.setCanApprove(checkIfCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString()));
+			return proposalModel;
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit() ", e);
-			return -1;
+			return null;
 		}
 	}
 
