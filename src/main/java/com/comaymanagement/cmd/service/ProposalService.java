@@ -540,6 +540,7 @@ public class ProposalService {
 	}
 
 	public ResponseEntity<Object> accept(Integer proposalId) {
+		ProposalModel proposalModel = null;
 		Proposal proposal = proposalRepositoryImpl.findById(proposalId);
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
@@ -567,7 +568,8 @@ public class ProposalService {
 						"proposal");
 				proposal.setStatus(newStatus);
 			}
-			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
+			proposalModel = proposalRepositoryImpl.edit(proposal, null);
+			if (proposalModel!=null) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
@@ -601,7 +603,7 @@ public class ProposalService {
 					}
 				}
 				// Response data for FE to show
-				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(proposalId);
+				proposalModel = proposalRepositoryImpl.findModelById(proposalId);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			}
@@ -611,6 +613,7 @@ public class ProposalService {
 	}
 
 	public ResponseEntity<Object> denied(String json) {
+		ProposalModel proposalModel = null;
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		Employee userEmp = employeeRepositoryImpl.findById(userDetail.getId());
@@ -643,7 +646,8 @@ public class ProposalService {
 					"proposal");
 			proposal.setStatus(newStatus);
 			proposal.setReason(reason);
-			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
+			proposalModel = proposalRepositoryImpl.edit(proposal, null);
+			if (proposalModel != null) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
@@ -677,7 +681,7 @@ public class ProposalService {
 					}
 				}
 				// Response data for FE to show
-				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
+				proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			}
@@ -686,6 +690,7 @@ public class ProposalService {
 	}
 
 	public ResponseEntity<Object> cancel(String json) {
+		ProposalModel proposalModel = null;
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		Employee userEmp = employeeRepositoryImpl.findById(userDetail.getId());
@@ -718,7 +723,8 @@ public class ProposalService {
 					"proposal");
 			proposal.setStatus(newStatus);
 			proposal.setReason(reason);
-			if (proposalRepositoryImpl.edit(proposal, null) > 0) {
+			proposalModel = proposalRepositoryImpl.edit(proposal, null);
+			if ( proposalModel!=null) {
 				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
 				List<Integer> employeeIds = new ArrayList<>();
 				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
@@ -752,7 +758,7 @@ public class ProposalService {
 					}
 				}
 				// Response data for FE to show
-				ProposalModel proposalModel = proposalRepositoryImpl.findModelById(id);
+				proposalModel = proposalRepositoryImpl.findModelById(id);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", "Cập nhật đề xuất thành công", proposalModel));
 			}
