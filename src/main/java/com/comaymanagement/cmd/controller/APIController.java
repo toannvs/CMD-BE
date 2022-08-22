@@ -74,7 +74,7 @@ public class APIController {
 //				base64Result = convertToBase64(name);
 				result.put("name", name);
 				result.put("base64Data", APIService.convertToBase64(name));
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", name));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
 				return ResponseEntity.status(HttpStatus.OK)
