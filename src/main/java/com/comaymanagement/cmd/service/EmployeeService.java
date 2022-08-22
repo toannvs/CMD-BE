@@ -1139,7 +1139,7 @@ public class EmployeeService {
 				}
 				
 				
-				Employee employee = employeeRepository.findById(userDetail.getId());
+//				Employee employee = employeeRepository.findById(userDetail.getId());
 //				EmployeeModel employeeModel = EmployeeService.toEmployeeModel(employee);
 				Map<String, Object> optionMap = AuthService.convertRoleForFEGantPermission(roleDetailModel);
 				empModel.setRole(optionMap);
