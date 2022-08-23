@@ -701,13 +701,16 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			proposalModel.setProposalType(proposal.getProposalType());
 
 			List<ContentModel> contentModels = new ArrayList<ContentModel>();
-			for (ProposalDetail proposalDetail : proposalDetails) {
-				ContentModel contentModel = new ContentModel();
-				contentModel.setFieldId(proposalDetail.getFieldId());
-				contentModel.setFieldName(proposalDetail.getFieldName());
-				contentModel.setContent(proposalDetail.getContent());
-				contentModels.add(contentModel);
+			if(proposalDetails!=null) {
+				for (ProposalDetail proposalDetail : proposalDetails) {
+					ContentModel contentModel = new ContentModel();
+					contentModel.setFieldId(proposalDetail.getFieldId());
+					contentModel.setFieldName(proposalDetail.getFieldName());
+					contentModel.setContent(proposalDetail.getContent());
+					contentModels.add(contentModel);
+				}
 			}
+			
 			proposalModel.setContents(contentModels);
 			proposalModel.setCreatedDate(proposal.getCreateDate());
 			proposalModel.setStatus(proposal.getStatus());
