@@ -71,9 +71,9 @@ public class APIController {
 //			B3: dung ham trong thu vien commmon de save
 			try {
 				mpf.transferTo(file);
-//				base64Result = convertToBase64(name);
+				base64Result = APIService.convertToBase64(name);
 				result.put("name", name);
-				result.put("base64Data", APIService.convertToBase64(name));
+				result.put("base64Data", APIService.convertToBase64(base64Result));
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
