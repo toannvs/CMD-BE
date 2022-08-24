@@ -447,25 +447,14 @@ public class ProposalService {
 			proposalModel = proposalRepositoryImpl.add(proposal, proposalDetails);
 
 			if (null != proposalModel) {
-				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposalTypeId), proposal.getCurrentStep().toString());
-				List<Integer> employeeIds = new ArrayList<>();
-				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-				for(ApprovalStep appStep : approvalStep) {
-					// One app step have many appStepDetail
-					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
-					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-						// One appStepDetail have many record;
-						employeeIds.add(appStepDetail.getEmployeeId());
-						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-							employeeIds.add(emp.getId());
-						}
-						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-							employeeIds.add(emp.getId());
-						}
-						
-					}
+				List<Integer> listEmpCanApprove = proposalRepositoryImpl.checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),creator.getId());
+				if(listEmpCanApprove.contains(userDetail.getId())) {
+				proposalModel.setCanApprove(true);
+				}else {
+					proposalModel.setCanApprove(false);
 				}
-				for(Integer empId : employeeIds) {
+				
+				for(Integer empId : listEmpCanApprove) {
 						if(empId!=-1) {
 							Employee employee = employeeRepositoryImpl.findById(empId);	
 							Notify notify = null;
@@ -570,25 +559,14 @@ public class ProposalService {
 			}
 			proposalModel = proposalRepositoryImpl.edit(proposal, null);
 			if (proposalModel!=null) {
-				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
-				List<Integer> employeeIds = new ArrayList<>();
-				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-				for(ApprovalStep appStep : approvalStep) {
-					// One app step have many appStepDetail
-					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
-					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-						// One appStepDetail have many record;
-						employeeIds.add(appStepDetail.getEmployeeId());
-						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-							employeeIds.add(emp.getId());
-						}
-						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-							employeeIds.add(emp.getId());
-						}
-						
-					}
+				List<Integer> listEmpCanApprove = proposalRepositoryImpl.checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),proposalModel.getCreator().getId());
+				if(listEmpCanApprove.contains(userDetail.getId())) {
+				proposalModel.setCanApprove(true);
+				}else {
+					proposalModel.setCanApprove(false);
 				}
-				for(Integer empId : employeeIds) {
+				
+				for(Integer empId : listEmpCanApprove) {
 					if(empId!=-1) {
 						Employee employee = employeeRepositoryImpl.findById(empId);
 						Notify notify = null;
@@ -648,25 +626,14 @@ public class ProposalService {
 			proposal.setReason(reason);
 			proposalModel = proposalRepositoryImpl.edit(proposal, null);
 			if (proposalModel != null) {
-				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
-				List<Integer> employeeIds = new ArrayList<>();
-				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-				for(ApprovalStep appStep : approvalStep) {
-					// One app step have many appStepDetail
-					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
-					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-						// One appStepDetail have many record;
-						employeeIds.add(appStepDetail.getEmployeeId());
-						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-							employeeIds.add(emp.getId());
-						}
-						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-							employeeIds.add(emp.getId());
-						}
-						
-					}
+				List<Integer> listEmpCanApprove = proposalRepositoryImpl.checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),proposalModel.getCreator().getId());
+				if(listEmpCanApprove.contains(userDetail.getId())) {
+				proposalModel.setCanApprove(true);
+				}else {
+					proposalModel.setCanApprove(false);
 				}
-				for(Integer empId : employeeIds) {
+				
+				for(Integer empId : listEmpCanApprove) {
 					if(empId!=-1) {
 						Employee employee = employeeRepositoryImpl.findById(empId);
 						Notify notify = null;
@@ -725,25 +692,13 @@ public class ProposalService {
 			proposal.setReason(reason);
 			proposalModel = proposalRepositoryImpl.edit(proposal, null);
 			if ( proposalModel!=null) {
-				List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndex(Integer.valueOf(proposal.getProposalType().getId()), proposal.getCurrentStep().toString());
-				List<Integer> employeeIds = new ArrayList<>();
-				List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
-				for(ApprovalStep appStep : approvalStep) {
-					// One app step have many appStepDetail
-					approvalStepDetails = approvalStepDetailRepository.findAllByApprovalStepId(appStep.getId());
-					for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
-						// One appStepDetail have many record;
-						employeeIds.add(appStepDetail.getEmployeeId());
-						for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-							employeeIds.add(emp.getId());
-						}
-						for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
-							employeeIds.add(emp.getId());
-						}
-						
-					}
+				List<Integer> listEmpCanApprove = proposalRepositoryImpl.checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),proposalModel.getCreator().getId());
+				if(listEmpCanApprove.contains(userDetail.getId())) {
+				proposalModel.setCanApprove(true);
+				}else {
+					proposalModel.setCanApprove(false);
 				}
-				for(Integer empId : employeeIds) {
+				for(Integer empId : listEmpCanApprove) {
 					if(empId!=-1) {
 						Employee employee = employeeRepositoryImpl.findById(empId);
 						Notify notify = null;
