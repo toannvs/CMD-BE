@@ -776,7 +776,7 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				if(appStepDetail.getPositionId() == 9999) {
 					// check department manager of creator
 						// find all id of the creator's department head
-						List<Integer> empIds = departmentRepository.findAllDepartmentHeadIdsByEmpId(creatorId);
+						Set<Integer> empIds = departmentRepository.findAllDepartmentHeadIdsByEmpId(creatorId);
 						for(Integer id : empIds ) {
 							employeeIds.add(id);
 						}
