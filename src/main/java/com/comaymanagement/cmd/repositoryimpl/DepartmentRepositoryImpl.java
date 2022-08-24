@@ -237,11 +237,11 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 			return null;
 		}
 	}
-	public List<Integer> findAllDepartmentHeadIdsByEmpId(Integer empId){
+	public Set<Integer> findAllDepartmentHeadIdsByEmpId(Integer empId){
 		StringBuilder hql = new StringBuilder();
-		List<Integer> empIds = new ArrayList<>();
-		hql.append("FROM departments as dep");
-		hql.append("inner join dep.employees as emp");
+		Set<Integer> empIds = new LinkedHashSet<>();
+		hql.append("FROM departments as dep ");
+		hql.append("inner join dep.employees as emp ");
 		hql.append("WHERE emp.id = :empId");
 		
 		try {
@@ -252,14 +252,32 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				List<Department> listFatherDepartment = new ArrayList<>();
 				
-				Department tmp= (Department) it.next();
-				while(tmp.getFatherDepartmentId()!=-1) {
-					Department depFather = findById(tmp.getFatherDepartmentId());
-					listFatherDepartment.add(depFather);
+				Object[] obj= (Object[]) it.next();
+				Department tmp = (Department) obj[0];
+				if (tmp.getFatherDepartmentId() != -1) {
+					Boolean loop = true;
+					int idTemp = tmp.getFatherDepartmentId();
+					while (loop) {
+						Department departmentTemp = findById(idTemp);
+						Boolean addFlag = true;
+						for (Department item : listFatherDepartment) {
+							if (item.getId() == departmentTemp.getId()) {
+								addFlag = false;
+							}
+						}
+						if (addFlag) {
+							listFatherDepartment.add(departmentTemp);
+						}
+						if (departmentTemp.getFatherDepartmentId() != -1) {
+							idTemp = departmentTemp.getFatherDepartmentId();
+						} else {
+							loop = false;
+						}
+					}
 				}
 				for(Department dep : listFatherDepartment) {
-					Position pos = positionRepository.findById(tmp.getHeadPosition());
-					if(pos.getEmployees()!=null || pos.getEmployees().size()>0) {
+					Position pos = positionRepository.findById(dep.getHeadPosition());
+					if(pos.getEmployees()!=null && pos.getEmployees().size()>0) {
 						empIds.add(pos.getEmployees().get(0).getId()); // head possition have only 1 employee
 					}
 				}
