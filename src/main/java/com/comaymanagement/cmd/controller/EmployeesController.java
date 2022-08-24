@@ -132,7 +132,7 @@ public class EmployeesController {
 		return result;
 	}
 	
-	@GetMapping("/reset_password")
+	@GetMapping("/checkToken")
 	public ResponseEntity<Object> checkToken(@RequestParam String token) {
 		return authService.checkToken(token);
 	}
