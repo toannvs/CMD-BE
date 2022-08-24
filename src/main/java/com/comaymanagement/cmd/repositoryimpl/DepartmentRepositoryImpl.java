@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Position;
+import com.comaymanagement.cmd.entity.Proposal;
 import com.comaymanagement.cmd.entity.Role;
 import com.comaymanagement.cmd.model.DepartmentModel;
 import com.comaymanagement.cmd.model.PositionModel;
@@ -28,7 +29,8 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentRepositoryImpl.class);
 	@Autowired
 	private SessionFactory sessionFactory;
-
+	@Autowired 
+	PositionRepositoryImpl positionRepository;
 
 	
 	@Override
@@ -235,6 +237,39 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
 			return null;
 		}
 	}
-
+	public List<Integer> findAllDepartmentHeadIdsByEmpId(Integer empId){
+		StringBuilder hql = new StringBuilder();
+		List<Integer> empIds = new ArrayList<>();
+		hql.append("FROM departments as dep");
+		hql.append("inner join dep.employees as emp");
+		hql.append("WHERE emp.id = :empId");
+		
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			LOGGER.info(hql.toString());
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("empId", empId);
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				List<Department> listFatherDepartment = new ArrayList<>();
+				
+				Department tmp= (Department) it.next();
+				while(tmp.getFatherDepartmentId()!=-1) {
+					Department depFather = findById(tmp.getFatherDepartmentId());
+					listFatherDepartment.add(depFather);
+				}
+				for(Department dep : listFatherDepartment) {
+					Position pos = positionRepository.findById(tmp.getHeadPosition());
+					if(pos.getEmployees()!=null || pos.getEmployees().size()>0) {
+						empIds.add(pos.getEmployees().get(0).getId()); // head possition have only 1 employee
+					}
+				}
+				
+			}
+			return empIds;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+	}
 	
 }

@@ -478,6 +478,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	@Override
 	public ProposalModel findModelById(Integer id) {
 		ProposalModel proposalModel = new ProposalModel();
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			/*
@@ -498,11 +500,12 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			query.setParameter("id", id);
 			Proposal proposal = new Proposal();
 			List<ContentModel> contents = new ArrayList<ContentModel>();
-			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object[] obj = (Object[]) it.next();
+//			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+//				Object[] obj = (Object[]) it.next();
+				Object[] obj = (Object[]) query.getSingleResult();
 				proposal = (Proposal) obj[0];
 				Status status = (Status) obj[1];
-				Employee e = (Employee) obj[2];
+				Employee e = (Employee) obj[2]; // creator
 				ProposalType proposalType = (ProposalType) obj[3];
 				ProposalDetail proposalDetail = (ProposalDetail) obj[4];
 
@@ -568,11 +571,16 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				contentModel.setContent(proposalDetail.getContent());
 				contentModel.setFieldName(proposalDetail.getFieldName());
 				contents.add(contentModel);
-			}
+//			}
 			proposalModel.setCurrentStep(proposal.getCurrentStep());
 			proposalModel.setContents(contents);
 			proposalModel.setReason(proposal.getReason());
-			proposalModel.setCanApprove(checkIfCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString()));
+			List<Integer> listEmpCanApprove = checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),e.getId());
+			if(listEmpCanApprove.contains(userDetail.getId())) {
+			proposalModel.setCanApprove(true);
+			}else {
+				proposalModel.setCanApprove(false);
+			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
@@ -581,6 +589,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 
 	@Override
 	public ProposalModel add(Proposal proposal, List<ProposalDetail> proposalDetails) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		ProposalModel proposalModel = null;
 		try {
 			Session session = sessionFactory.getCurrentSession();
@@ -632,7 +642,6 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			proposalModel.setCreatedDate(proposal.getCreateDate());
 			proposalModel.setStatus(proposal.getStatus());
 			proposalModel.setCurrentStep(proposal.getCurrentStep());
-			proposalModel.setCanApprove(checkIfCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString()));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
@@ -657,6 +666,8 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 	}
 	public ProposalModel edit(Proposal proposal, List<ProposalDetail> proposalDetails) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+		.getPrincipal();
 		ProposalModel proposalModel = new ProposalModel();
 		Integer resultEditedProposal = -1;
 		Integer resultAddProposalDetail = -1;
@@ -714,7 +725,12 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			proposalModel.setCreatedDate(proposal.getCreateDate());
 			proposalModel.setStatus(proposal.getStatus());
 			proposalModel.setCurrentStep(proposal.getCurrentStep());
-			proposalModel.setCanApprove(checkIfCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString()));
+			List<Integer> listEmpCanApprove = checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),creator.getId());
+			if(listEmpCanApprove.contains(userDetail.getId())) {
+			proposalModel.setCanApprove(true);
+			}else {
+				proposalModel.setCanApprove(false);
+			}
 			return proposalModel;
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit() ", e);
@@ -745,9 +761,9 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 	public void setCountAllForProposalCratedByMe(int countAllForProposalCratedByMe) {
 		this.countAllForProposalCratedByMe = countAllForProposalCratedByMe;
 	}
-	public boolean checkIfCanApprove(Integer proposalTypeId, String currentStep) {
-		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
+	public List checkListCanApprove(Integer proposalTypeId, String currentStep, Integer creatorId) {
+//		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+//				.getPrincipal();
 		List<ApprovalStep> approvalStep = approvalStepRepository.findByProposalTypeIdAndIndexForCheck(proposalTypeId, currentStep);
 		List<Integer> employeeIds = new ArrayList<>();
 		List<ApprovalStepDetail> approvalStepDetails = new ArrayList<>();
@@ -757,8 +773,17 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			for(ApprovalStepDetail appStepDetail : approvalStepDetails) {
 				// One appStepDetail have many record;
 				employeeIds.add(appStepDetail.getEmployeeId());
-				for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
-					employeeIds.add(emp.getId());
+				if(appStepDetail.getPositionId() == 9999) {
+					// check department manager of creator
+						// find all id of the creator's department head
+						List<Integer> empIds = departmentRepository.findAllDepartmentHeadIdsByEmpId(creatorId);
+						for(Integer id : empIds ) {
+							employeeIds.add(id);
+						}
+				}else {
+					for(Employee emp : employeeRepositoryImpl.findByPositionId(appStepDetail.getPositionId())) {
+						employeeIds.add(emp.getId());
+					}
 				}
 				for(Employee emp : employeeRepositoryImpl.findByDepartmentId(appStepDetail.getDepartmentId())) {
 					employeeIds.add(emp.getId());
@@ -766,9 +791,11 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				
 			}
 		}
-		if(employeeIds.contains(userDetail.getId())) {
-			return true;
-		}
-		return false;
+	
+//		if(employeeIds.contains(userDetail.getId())) {
+//			return true;
+//		}
+		return employeeIds;
 	}
+	
 }
