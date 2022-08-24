@@ -114,12 +114,13 @@ public class ProposalTypeService {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("ERROR", "Có lỗi xảy ra trong quá trình tìm kiếm", ""));
 		}
+		proposalTypes.addAll(proposalTypeEnableAll);
 		List<ProposalTypeModel> proposalTypeModels = new ArrayList<>();
 		List<ProposalTypeDetailModel> proposalTypeDetailModels = new ArrayList<>();
 		List<ProposalTypeDetail> proposalTypeDetails = new ArrayList<>();
 		List<Map<String, Object>> results = new ArrayList<>();
 		if (proposalTypes != null && proposalTypes.size() > 0) {
-			proposalTypes.addAll(proposalTypeEnableAll);
+			
 			for (ProposalType proposalType : proposalTypes) {
 //				List<ApprovalStep> approvalSteps = new ArrayList<>();
 //				List<ApprovalStepModel> approvalStepModels = new ArrayList<>();
