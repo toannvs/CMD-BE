@@ -500,9 +500,9 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 			query.setParameter("id", id);
 			Proposal proposal = new Proposal();
 			List<ContentModel> contents = new ArrayList<ContentModel>();
-//			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-//				Object[] obj = (Object[]) it.next();
-				Object[] obj = (Object[]) query.getSingleResult();
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object[] obj = (Object[]) it.next();
+//				Object[] obj = (Object[]) query.getSingleResult();
 				proposal = (Proposal) obj[0];
 				Status status = (Status) obj[1];
 				Employee e = (Employee) obj[2]; // creator
@@ -571,11 +571,11 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 				contentModel.setContent(proposalDetail.getContent());
 				contentModel.setFieldName(proposalDetail.getFieldName());
 				contents.add(contentModel);
-//			}
+			}
 			proposalModel.setCurrentStep(proposal.getCurrentStep());
 			proposalModel.setContents(contents);
 			proposalModel.setReason(proposal.getReason());
-			List<Integer> listEmpCanApprove = checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),e.getId());
+			List<Integer> listEmpCanApprove = checkListCanApprove(proposalModel.getProposalType().getId(), proposalModel.getCurrentStep().toString(),proposalModel.getCreator().getId());
 			if(listEmpCanApprove.contains(userDetail.getId())) {
 			proposalModel.setCanApprove(true);
 			}else {
