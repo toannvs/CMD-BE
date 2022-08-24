@@ -2,6 +2,7 @@ package com.comaymanagement.cmd.service;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -507,7 +508,7 @@ public class EmployeeService {
 			emp.setCode(jsonObjectEmployee.get("code").asText());
 			emp.setName(jsonObjectEmployee.get("name").asText());
 			if(avatar.equals("")) {
-				emp.setAvatar(CMDConstrant.AVATAR);
+				emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
 			}else {
 				emp.setAvatar(avatar);
 			}
@@ -653,7 +654,7 @@ public class EmployeeService {
 			emp.setCode(jsonObjectEmployee.get("code").asText());
 			emp.setName(jsonObjectEmployee.get("name").asText());
 			if(avatar.equals("")) {
-				emp.setAvatar(CMDConstrant.AVATAR);
+				emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
 			}else {
 				emp.setAvatar(avatar);
 			}
@@ -846,7 +847,12 @@ public class EmployeeService {
 				employee.setActive(true);
 				employee.setPassword(encoder.encode(CMDConstrant.PASSWORD));
 				employee.setEnableLogin(true);
-				employee.setAvatar(CMDConstrant.AVATAR);
+				try {
+					employee.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				employee.setGender(gender);
 				employee.setUsername(email);
 				return employee;
