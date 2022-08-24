@@ -105,11 +105,6 @@ public class AuthController {
 		return authService.updateResetPasswordToken(json);
 	}
 	
-	@GetMapping("/reset_password")
-	public ResponseEntity<Object> checkToken(@RequestParam String token) {
-		return authService.checkToken(token);
-	}
-	
 	@PostMapping("/reset_password")
 	public ResponseEntity<Object> resetPassword(@RequestBody String json) {
 		return authService.updatePassword(json);

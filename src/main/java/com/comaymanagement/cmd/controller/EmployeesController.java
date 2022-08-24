@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.comaymanagement.cmd.service.AuthService;
 import com.comaymanagement.cmd.service.DepartmentService;
 import com.comaymanagement.cmd.service.EmployeeService;
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,6 +29,9 @@ public class EmployeesController {
 	EmployeeService employeeService;
 	@Autowired
 	DepartmentService departmentService;
+	
+	@Autowired
+	AuthService authService;
 	
 	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@PostMapping(value = "", produces = "application/json")
@@ -128,4 +132,8 @@ public class EmployeesController {
 		return result;
 	}
 	
+	@GetMapping("/reset_password")
+	public ResponseEntity<Object> checkToken(@RequestParam String token) {
+		return authService.checkToken(token);
+	}
 }
