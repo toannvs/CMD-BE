@@ -73,7 +73,7 @@ public class APIController {
 				mpf.transferTo(file);
 				base64Result = APIService.convertToBase64(name);
 				result.put("name", name);
-				result.put("base64Data", APIService.convertToBase64(base64Result));
+				result.put("base64Data", base64Result);
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
