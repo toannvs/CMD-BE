@@ -26,7 +26,6 @@ import com.comaymanagement.cmd.model.PositionModel;
 import com.comaymanagement.cmd.model.TeamModel;
 import com.comaymanagement.cmd.model.UserModel;
 import com.comaymanagement.cmd.repository.IEmployeeRepository;
-import com.comaymanagement.cmd.service.APIService;
 
 @Repository
 @Transactional(rollbackFor = Exception.class)
@@ -41,12 +40,11 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	// find all employee with position in department
 	@Override
-	public Set<EmployeeModel> findAll(String code, String name, String dob, String email, String phone,
-			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer limit,
-			Integer offset) {
+	public Set<EmployeeModel> findAll(String code, String name, String dob, String email, String phone, List<Integer> departmentIds,
+			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("from employees emp ");
 		hql.append("inner join emp.positions as pos inner join emp.departments as dep ");
@@ -86,7 +84,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				query.setParameter("code", code);
 			}
 			if (!name.equals("")) {
-				query.setParameter("name", name);
+				query.setParameter("name",name);
 			}
 			if (!dob.equals("")) {
 				query.setParameter("dob", dob);
@@ -105,9 +103,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 			}
 			query.setFirstResult(offset);
-			if (limit > 0) {
+			if(limit>0) {
 				query.setMaxResults(limit);
-
+				
 			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] ob = (Object[]) it.next();
@@ -163,7 +161,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setId(e.getId());
 				employeeModel.setCode(e.getCode());
 				employeeModel.setName(e.getName());
-				employeeModel.setAvatar(APIService.convertToBase64(e.getAvatar()));
+				employeeModel.setAvatar(e.getAvatar());
 				employeeModel.setGender(e.getGender());
 				employeeModel.setDateOfBirth(e.getDateOfBirth());
 				employeeModel.setEmail(e.getEmail());
@@ -207,7 +205,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return false;
 	}
-
 	public boolean checkEmployeeUserNameExisted(Integer id, String username) {
 		Session session = sessionFactory.getCurrentSession();
 		String hql = "select count(*) from employees emp where emp.username = :username and emp.id != :id";
@@ -223,7 +220,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in checkEmployeeUserNameExisted() ", e);
 		}
-
+		
 		return false;
 	}
 
@@ -263,9 +260,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	}
 
 	@Override
-	public Integer countAllPaging(String code, String name, String dob, String email, String phone,
-			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
-			Integer limit) {
+	public Integer countAllPaging(String code, String name, String dob, String email, String phone, List<Integer> departmentIds,
+			List<Integer> positionIds, String sort, String order, Integer offset, Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
 		StringBuilder hql = new StringBuilder();
 		hql.append("from ");
@@ -296,7 +292,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			hql.append("and pos.id IN (:positionIds) ");
 
 		}
-
+		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -345,6 +341,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		return 0;
 	}
 
+
 	public Integer countAllPagingIncludeDuplicate(String code, String name, String dob, String email, String phone,
 			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
@@ -355,53 +352,53 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("where pos.team.id is null ");
 		hql.append("and pos.department.id is not null ");
 		hql.append("and emp.activeFlag = true ");
-		if (!code.equals("")) {
+		if(!code.equals("")) {
 			hql.append("and emp.code like CONCAT('%',:code,'%') ");
 		}
-		if (!name.equals("")) {
+		if(!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
 		}
-		if (!dob.equals("")) {
+		if(!dob.equals("")) {
 			hql.append("and emp.dateOfBirth like CONCAT('%',:dob,'%') ");
 		}
-		if (!email.equals("")) {
+		if(!email.equals("")) {
 			hql.append("and emp.email like CONCAT('%',:email,'%') ");
 		}
-		if (!phone.equals("")) {
+		if(!phone.equals("")) {
 			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
 		}
-		if (departmentIds.size() > 0) {
+		if(departmentIds.size()>0) {
 			hql.append("and dep.id IN (:departmentIds) ");
 		}
-		if (positionIds.size() > 0) {
+		if(positionIds.size()>0) {
 			hql.append("and pos.id IN (:positionIds) ");
 
 		}
-
+		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
 		List<EmployeeModel> employeeModelList = new ArrayList();
 		try {
 			Query query = session.createQuery(hql.toString());
-			if (!code.equals("")) {
+			if(!code.equals("")) {
 				query.setParameter("code", code);
 			}
-			if (!name.equals("")) {
+			if(!name.equals("")) {
 				query.setParameter("name", name);
 			}
-			if (!dob.equals("")) {
+			if(!dob.equals("")) {
 				query.setParameter("dob", dob);
 			}
-			if (!email.equals("")) {
+			if(!email.equals("")) {
 				query.setParameter("email", email);
 			}
-			if (!phone.equals("")) {
+			if(!phone.equals("")) {
 				query.setParameter("phone", phone);
 			}
-			if (departmentIds.size() > 0) {
+			if(departmentIds.size()>0) {
 				query.setParameter("departmentIds", departmentIds);
 			}
-			if (positionIds.size() > 0) {
+			if(positionIds.size()>0) {
 				query.setParameter("positionIds", positionIds);
 
 			}
@@ -425,7 +422,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return 0;
 	}
-
 // Paging with team - start
 	public Set<EmployeeModel> findAllTeams(String name, String dob, String email, String phone, List<Integer> teamIds,
 			List<Integer> positionIds, String sort, String order, Integer limit, Integer offset) {
@@ -462,7 +458,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		try {
 			Query query = session.createQuery(hql.toString());
 			if (!name.equals("")) {
-				query.setParameter("name", "\\" + name);
+				query.setParameter("name","\\" +  name);
 			}
 			if (!dob.equals("")) {
 				query.setParameter("dob", dob);
@@ -481,9 +477,9 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 			}
 			query.setFirstResult(offset);
-			if (limit > 0) {
+			if(limit>0) {
 				query.setMaxResults(limit);
-
+				
 			}
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object[] ob = (Object[]) it.next();
@@ -539,7 +535,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setId(e.getId());
 				employeeModel.setCode(e.getCode());
 				employeeModel.setName(e.getName());
-				employeeModel.setAvatar(APIService.convertToBase64(e.getAvatar()));
+				employeeModel.setAvatar(e.getAvatar());
 				employeeModel.setGender(e.getGender());
 				employeeModel.setDateOfBirth(e.getDateOfBirth());
 				employeeModel.setEmail(e.getEmail());
@@ -564,7 +560,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return employeeModelSet;
 	}
-
 	public Integer countAllPagingTeams(String name, String dob, String email, String phone, List<Integer> teamIds,
 			List<Integer> positionIds, String sort, String order, Integer offset, Integer limit) {
 		Set<Employee> employeeSet = new LinkedHashSet<>();
@@ -594,7 +589,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			hql.append("and pos.id IN (:positionIds) ");
 
 		}
-
+		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -639,7 +634,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
 		return 0;
 	}
-
 	public Integer countAllPagingIncludeDuplicateTeams(String name, String dob, String email, String phone,
 			List<Integer> teamIds, List<Integer> positionIds, String sort, String order, Integer offset,
 			Integer limit) {
@@ -650,46 +644,46 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		hql.append("where pos.team.id is not null ");
 		hql.append("and pos.department.id is null ");
 		hql.append("and emp.activeFlag = true ");
-		if (!name.equals("")) {
+		if(!name.equals("")) {
 			hql.append("and emp.name like CONCAT('%',:name,'%') ");
 		}
-		if (!dob.equals("")) {
+		if(!dob.equals("")) {
 			hql.append("and emp.dateOfBirth like CONCAT('%',:dob,'%') ");
 		}
-		if (!email.equals("")) {
+		if(!email.equals("")) {
 			hql.append("and emp.email like CONCAT('%',:email,'%') ");
 		}
-		if (!phone.equals("")) {
+		if(!phone.equals("")) {
 			hql.append("and emp.phoneNumber like CONCAT('%',:phone,'%') ");
 		}
-		if (teamIds.size() > 0) {
+		if(teamIds.size()>0) {
 			hql.append("and pos.team.id IN (:teamIds) ");
 		}
-		if (positionIds.size() > 0) {
+		if(positionIds.size()>0) {
 			hql.append("and pos.id IN (:positionIds) ");
 
 		}
-
+		
 		hql.append("order by " + sort + " " + order);
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			Query query = session.createQuery(hql.toString());
-			if (!name.equals("")) {
+			if(!name.equals("")) {
 				query.setParameter("name", name);
 			}
-			if (!dob.equals("")) {
+			if(!dob.equals("")) {
 				query.setParameter("dob", dob);
 			}
-			if (!email.equals("")) {
+			if(!email.equals("")) {
 				query.setParameter("email", email);
 			}
-			if (!phone.equals("")) {
+			if(!phone.equals("")) {
 				query.setParameter("phone", phone);
 			}
-			if (teamIds.size() > 0) {
+			if(teamIds.size()>0) {
 				query.setParameter("teamIds", teamIds);
 			}
-			if (positionIds.size() > 0) {
+			if(positionIds.size()>0) {
 				query.setParameter("positionIds", positionIds);
 
 			}
@@ -715,7 +709,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 	}
 
 // Paging with team - end
-
+	
 	@Override
 	public Employee findById(Integer id) {
 		Session session = sessionFactory.getCurrentSession();
@@ -730,7 +724,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 //			Iterator it = query.getResultList().iterator();
 //			Object ob = (Object) it.next();
 			employee = (Employee) query.getSingleResult();
-
+			
 			// Please don't delete this line, this fix lazy load error when load position
 			employee.getPositions().size();
 			employee.getDepartments().size();
@@ -769,7 +763,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setId(employee.getId());
 				employeeModel.setCode(employee.getCode());
 				employeeModel.setName(employee.getName());
-				employeeModel.setAvatar(APIService.convertToBase64(employee.getAvatar()));
+				employeeModel.setAvatar(employee.getAvatar());
 				empModelSet.add(employeeModel);
 			}
 			return empModelSet;
@@ -778,8 +772,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			return null;
 		}
 	}
-
-	public List<Employee> findByPositionId(Integer positionId) {
+	public List<Employee> findByPositionId(Integer positionId){
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
 		List<Employee> employees = new ArrayList();
@@ -790,7 +783,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("positionId", positionId);
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object[] ob = (Object[]) it.next();
+				Object[] ob =  (Object[]) it.next();
 				Employee employee = (Employee) ob[0];
 				employees.add(employee);
 			}
@@ -800,8 +793,8 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			return null;
 		}
 	}
-
-	public List<Employee> findByDepartmentId(Integer departmentId) {
+	
+	public List<Employee> findByDepartmentId(Integer departmentId){
 		Session session = sessionFactory.getCurrentSession();
 		StringBuilder hql = new StringBuilder();
 		List<Employee> employees = new ArrayList();
@@ -812,7 +805,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("departmentId", departmentId);
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
-				Object[] ob = (Object[]) it.next();
+				Object[] ob =  (Object[]) it.next();
 				Employee employee = (Employee) ob[0];
 				employees.add(employee);
 			}
@@ -822,7 +815,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			return null;
 		}
 	}
-
 	public EmployeeModel toModel(Employee e) {
 		EmployeeModel employeeModel = new EmployeeModel();
 		List<PositionModel> positionModelList = new ArrayList<>();
@@ -840,7 +832,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			positionModel.setName(p.getName());
 			positionModel.setIsManager(p.getIsManager());
 			positionModel.setRole(role);
-
 			if (p.getDepartment() != null && p.getTeam() == null) {
 				Department department = p.getDepartment();
 				DepartmentModel departmentModel = new DepartmentModel();
@@ -865,35 +856,29 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				teamModelList.add(teamModel);
 			}
 		}
-		try {
-			UserModel user = new UserModel();
-			user.setUsername(e.getUsername());
-			user.setEnableLogin(e.isEnableLogin());
-			employeeModel.setId(e.getId());
-			employeeModel.setCode(e.getCode());
-			employeeModel.setName(e.getName());
-			employeeModel.setAvatar(APIService.convertToBase64(e.getAvatar()));
-			employeeModel.setGender(e.getGender());
-			employeeModel.setDateOfBirth(e.getDateOfBirth());
-			employeeModel.setEmail(e.getEmail());
-			employeeModel.setPhoneNumber(e.getPhoneNumber());
-			employeeModel.setActive(e.isActive());
-			employeeModel.setCreateDate(e.getCreateDate());
-			employeeModel.setDepartments(departmentModelList);
-			employeeModel.setPositions(positionModelList);
-			employeeModel.setUser(user);
-			employeeModel.setCreateDate(e.getCreateDate());
-			employeeModel.setModifyDate(e.getModifyDate());
-			employeeModel.setCreateBy(e.getCreateBy());
-			employeeModel.setModifyBy(e.getModifyBy());
-			employeeModel.setTeams(teamModelList);
-		} catch (Exception e2) {
-			LOGGER.error(e2.getMessage());
-		}
-
+		UserModel user = new UserModel();
+		user.setUsername(e.getUsername());
+		user.setEnableLogin(e.isEnableLogin());
+		employeeModel.setId(e.getId());
+		employeeModel.setCode(e.getCode());
+		employeeModel.setName(e.getName());
+		employeeModel.setAvatar(e.getAvatar());
+		employeeModel.setGender(e.getGender());
+		employeeModel.setDateOfBirth(e.getDateOfBirth());
+		employeeModel.setEmail(e.getEmail());
+		employeeModel.setPhoneNumber(e.getPhoneNumber());
+		employeeModel.setActive(e.isActive());
+		employeeModel.setCreateDate(e.getCreateDate());
+		employeeModel.setDepartments(departmentModelList);
+		employeeModel.setPositions(positionModelList);
+		employeeModel.setUser(user);
+		employeeModel.setCreateDate(e.getCreateDate());
+		employeeModel.setModifyDate(e.getModifyDate());
+		employeeModel.setCreateBy(e.getCreateBy());
+		employeeModel.setModifyBy(e.getModifyBy());
+		employeeModel.setTeams(teamModelList);
 		return employeeModel;
 	}
-
 	public EmployeeModel toModelForTeam(Employee e, Integer teamId) {
 		EmployeeModel employeeModel = new EmployeeModel();
 		PositionModel positionModel = new PositionModel();
@@ -943,7 +928,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("token", token);
 			employee = (Employee) query.getSingleResult();
-
+			
 			// Please don't delete this line, this fix lazy load error when load position
 			employee.getPositions().size();
 			employee.getDepartments().size();
@@ -966,7 +951,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 			Query query = session.createQuery(hql.toString());
 			query.setParameter("username", username);
 			employee = (Employee) query.getSingleResult();
-
+			
 			// Please don't delete this line, this fix lazy load error when load position
 			employee.getPositions().size();
 			employee.getDepartments().size();

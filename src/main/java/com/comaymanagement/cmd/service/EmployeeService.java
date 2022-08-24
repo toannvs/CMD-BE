@@ -936,33 +936,28 @@ public class EmployeeService {
 					teamModelList.add(teamModel);
 				}
 			}
-			try {
-				UserModel user = new UserModel();
-				user.setUsername(employee.getUsername());
-				user.setEnableLogin(employee.isEnableLogin());
-				employeeModel.setId(employee.getId());
-				employeeModel.setCode(employee.getCode());
-				employeeModel.setName(employee.getName());
-				employeeModel.setAvatar(APIService.convertToBase64(employee.getAvatar()));
-				employeeModel.setGender(employee.getGender());
-				employeeModel.setDateOfBirth(employee.getDateOfBirth());
-				employeeModel.setEmail(employee.getEmail());
-				employeeModel.setPhoneNumber(employee.getPhoneNumber());
-				employeeModel.setActive(employee.isActive());
-				employeeModel.setCreateDate(employee.getCreateDate());
-				employeeModel.setDepartments(departmentModelList);
-				
-				employeeModel.setPositions(positionModelList);
-				employeeModel.setUser(user);
-				employeeModel.setCreateDate(employee.getCreateDate());
-				employeeModel.setModifyDate(employee.getModifyDate());
-				employeeModel.setCreateBy(employee.getCreateBy());
-				employeeModel.setModifyBy(employee.getModifyBy());
-				employeeModel.setTeams(teamModelList);
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
+			UserModel user = new UserModel();
+			user.setUsername(employee.getUsername());
+			user.setEnableLogin(employee.isEnableLogin());
+			employeeModel.setId(employee.getId());
+			employeeModel.setCode(employee.getCode());
+			employeeModel.setName(employee.getName());
+			employeeModel.setAvatar(employee.getAvatar());
+			employeeModel.setGender(employee.getGender());
+			employeeModel.setDateOfBirth(employee.getDateOfBirth());
+			employeeModel.setEmail(employee.getEmail());
+			employeeModel.setPhoneNumber(employee.getPhoneNumber());
+			employeeModel.setActive(employee.isActive());
+			employeeModel.setCreateDate(employee.getCreateDate());
+			employeeModel.setDepartments(departmentModelList);
 			
+			employeeModel.setPositions(positionModelList);
+			employeeModel.setUser(user);
+			employeeModel.setCreateDate(employee.getCreateDate());
+			employeeModel.setModifyDate(employee.getModifyDate());
+			employeeModel.setCreateBy(employee.getCreateBy());
+			employeeModel.setModifyBy(employee.getModifyBy());
+			employeeModel.setTeams(teamModelList);
 			return employeeModel;
 		}
 		return null;
@@ -1139,7 +1134,7 @@ public class EmployeeService {
 				}
 				
 				
-//				Employee employee = employeeRepository.findById(userDetail.getId());
+				Employee employee = employeeRepository.findById(userDetail.getId());
 //				EmployeeModel employeeModel = EmployeeService.toEmployeeModel(employee);
 				Map<String, Object> optionMap = AuthService.convertRoleForFEGantPermission(roleDetailModel);
 				empModel.setRole(optionMap);
