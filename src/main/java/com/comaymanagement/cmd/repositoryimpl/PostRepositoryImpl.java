@@ -165,5 +165,21 @@ public class PostRepositoryImpl implements IPostRepository{
 		postModel.setLikeTotal(post.getLikeTotal());
 		return postModel;
 	}
-
+	public boolean checkIsLike(Integer postId) {
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		List<Employee> employees = new ArrayList<>();
+		Post post = findById(postId);
+		boolean isLike = false;
+		if(null != post && null != post.getEmployees()) {
+			employees = post.getEmployees();
+			for(Employee item: employees) {
+				if(item.getId()==userDetail.getId()) {
+					isLike = true;
+					break;
+				}
+			}
+		}
+		return isLike;
+	}
 }
