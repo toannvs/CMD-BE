@@ -40,7 +40,7 @@ public class PositionController {
 	@Autowired
 	PositionService positionService;
 
-	@PreAuthorize("@customRoleService.canView('position',principal)")
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal) or @customRoleService.canCreate('employee',principal) or @customRoleService.canView('position',principal)")
 	@GetMapping("/{roleId}")
 	public ResponseEntity<Object> findAll(@PathVariable(value = "roleId", required = true) Integer roleId) {
 		return positionService.findAllByRoleId(roleId);

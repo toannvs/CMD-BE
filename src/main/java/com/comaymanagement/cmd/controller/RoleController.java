@@ -45,7 +45,7 @@ public class RoleController {
 	@Autowired
 	RoleDetailService roleDetailService;
 	
-	@PreAuthorize("@customRoleService.canView('role',principal) or @customRoleService.canViewAll('role',principal)")
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal) or @customRoleService.canCreate('employee',principal) or @customRoleService.canView('role',principal) or @customRoleService.canViewAll('role',principal)")
 	@GetMapping("")
 	public ResponseEntity<Object> findAll(
 			@RequestParam(value = "name", required = false) String name,

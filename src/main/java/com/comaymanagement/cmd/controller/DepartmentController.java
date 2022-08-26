@@ -53,7 +53,7 @@ public class DepartmentController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
-	@PreAuthorize("@customRoleService.canView('department', principal) or @customRoleService.canViewAll('department', principal)")
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal) or @customRoleService.canCreate('employee',principal) or @customRoleService.canView('department', principal) or @customRoleService.canViewAll('department', principal)")
 	@GetMapping("")
 	public ResponseEntity<Object> findAll(@RequestParam(value = "name", required = false) String name) {
 		return departmentService.findAll(name);
