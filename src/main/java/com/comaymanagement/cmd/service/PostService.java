@@ -54,7 +54,10 @@ public class PostService {
 		List<PostModel> postModels = new ArrayList<>();
 		if (posts.size() > 0) {
 			for(Post p : posts) {
-				postModels.add(postRepositoryImpl.toModel(p));
+				PostModel postModel = postRepositoryImpl.toModel(p);
+				postModel.setLike(postRepositoryImpl.checkIsLike(p.getId()));
+				postModels.add(postModel);
+				
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", postModels));
 		} else {

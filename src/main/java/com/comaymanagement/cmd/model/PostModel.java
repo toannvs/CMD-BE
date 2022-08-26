@@ -26,4 +26,5 @@ public class PostModel {
 	private String createDate;
 	private String modifyDate;
 	private Integer likeTotal;
+	private boolean isLike;
 }
