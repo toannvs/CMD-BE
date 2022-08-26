@@ -42,7 +42,7 @@ public class TeamController {
 	@Autowired
 	TeamService teamService;
 	
-	@PreAuthorize("@customRoleService.canView('team',principal)")
+	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal) or @customRoleService.canCreate('employee',principal) or @customRoleService.canView('team',principal)")
 	@GetMapping("")
 	public ResponseEntity<Object> findAll(@RequestParam(value = "name", required = false) String name) {
 		return teamService.findAll(name);
