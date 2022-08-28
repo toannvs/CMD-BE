@@ -1673,10 +1673,13 @@ public class TaskRepositoryImpl implements ITaskRepository {
 	@Override
 	public void ScanOverDueTask() {
 		StringBuilder hql = new StringBuilder("FROM tasks AS t ");
+		hql.append("WHERE t.status.type = 'task' ");
+		hql.append("AND t.status.index IN (1,2,3)");
 		try {
+			LOGGER.info(hql.toString());
 			Session session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql.toString());
-			LOGGER.info(hql.toString());
+
 			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
 				Object obj = (Object) it.next();
 				Task task = (Task) obj;
