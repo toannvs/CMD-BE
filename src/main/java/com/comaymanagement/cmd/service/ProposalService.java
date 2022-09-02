@@ -580,6 +580,20 @@ public class ProposalService {
 						notifyRepositoryImpl.add(notify);
 					}
 				}
+				// Save notify for creator
+				if(!listEmpCanApprove.contains(proposalModel.getCreator().getId())) {
+					Employee employee = employeeRepositoryImpl.findById(proposalModel.getCreator().getId());
+					Notify notify = null;
+					notify = new Notify();
+					notify.setIsRead(false);
+					notify.setReceiver(employee);
+					notify.setTitle("Duyệt đề xuất");
+					notify.setDescription("Đề xuất vừa được duyệt bởi "+ userEmp.getName());
+					notify.setType("proposal");
+					notify.setDetailId(proposal.getId());
+					notifyRepositoryImpl.add(notify);
+				}
+				
 				// Response data for FE to show
 				proposalModel = proposalRepositoryImpl.findModelById(proposalId);
 				return ResponseEntity.status(HttpStatus.OK)
