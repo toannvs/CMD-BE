@@ -72,7 +72,7 @@ public class TaskDiscussionRepositoryImpl implements ITaskDiscussionRepository{
 		taskDiscussionModel.setModifyBy(modifyBy.getName());
 		taskDiscussionModel.setModifyById(modifyBy.getId());
 		taskDiscussionModel.setAvatar(modifyBy.getAvatar());
-		taskDiscussionModel.setModifyDate(modifyBy.getModifyDate());
+		taskDiscussionModel.setModifyDate(taskDiscussion.getModifyDate());
 		return taskDiscussionModel;
 	}
 }
