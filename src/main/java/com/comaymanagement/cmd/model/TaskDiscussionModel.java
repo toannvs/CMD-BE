@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
 public class TaskDiscussionModel {
+	private Integer id;
 	private String content;
 	private String modifyDate;
 	private String modifyBy;

@@ -55,7 +55,7 @@ public class TaskDiscussionService {
 			task.setId(taskId);
 			Employee emp = new Employee();
 			emp = employeeRepository.findById(modifyBy);
-			taskDiscussion.setTask(task);
+			taskDiscussion.setTask(task);	
 			taskDiscussion.setContent(content);
 			taskDiscussion.setModifyBy(emp);
 			taskDiscussion.setModifyDate(modifyDate);

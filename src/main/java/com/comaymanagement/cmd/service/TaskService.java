@@ -441,7 +441,8 @@ public class TaskService {
 			if(now.isAfter(dt)) {
 				status = statusRepositotyImpl.findByIndexAndType(6, "task");
 			}else {
-				status = statusRepositotyImpl.findById(statusId);
+//				status = statusRepositotyImpl.findById(statusId);
+				status = statusRepositotyImpl.findByIndexAndType(1,"task");
 				if (status == null) {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
