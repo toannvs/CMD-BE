@@ -67,6 +67,7 @@ public class TaskDiscussionRepositoryImpl implements ITaskDiscussionRepository{
 	}
 	public TaskDiscussionModel toModel(TaskDiscussion taskDiscussion) {
 		TaskDiscussionModel taskDiscussionModel = new TaskDiscussionModel();
+		taskDiscussionModel.setId(taskDiscussion.getId());
 		taskDiscussionModel.setContent(taskDiscussion.getContent());
 		Employee modifyBy = taskDiscussion.getModifyBy();
 		taskDiscussionModel.setModifyBy(modifyBy.getName());
