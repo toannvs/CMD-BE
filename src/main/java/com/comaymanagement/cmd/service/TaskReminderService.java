@@ -116,9 +116,9 @@ public class TaskReminderService {
 				// Save schedule start 
 				if(task!=null) {
 					Request request = new Request();
-					request.setSubject("Nhắc việc CMD");
-					request.setMessage("Bạn có công việc " + task.getTitle() + " cần hoàn thành trước " + task.getFinishDate());
-					request.setToEmail(userDetail.getEmail());
+					request.setSubject("Nhắc việc CMD - " + task.getTitle());
+					request.setMessage("Bạn có công việc " + task.getDescription() + " - cần hoàn thành trước " + task.getFinishDate());
+					request.setToEmail(task.getReceiver().getEmail());
 					request.setUsername(userDetail.getUsername());
 					request.setScheduledTime(time);
 					request.setZoneId("Asia/Ho_Chi_Minh");
@@ -198,13 +198,13 @@ public class TaskReminderService {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", "Lỗi sửa nhắc việc", taskReminder));
 				}
-				//Update schedule start 
+				//Update schedule start Request request = new Request();
 				task = taskRepository.findByIdToEdit(taskId);
 				Request request = new Request();
 				request.setScheduleId(taskReminder.getMailSchedule().getScheduleId());
-				request.setSubject("Nhắc việc CMD");
-				request.setMessage("Bạn có công việc " + task.getTitle() + " cần hoàn thành trước " + task.getFinishDate());
-				request.setToEmail(userDetail.getEmail());
+				request.setSubject("Nhắc việc CMD - " + task.getTitle());
+				request.setMessage("Bạn có công việc " + task.getDescription() + " - cần hoàn thành trước " + task.getFinishDate());
+				request.setToEmail(task.getReceiver().getEmail());
 				request.setUsername(userDetail.getUsername());
 				request.setScheduledTime(time);
 				request.setZoneId("Asia/Ho_Chi_Minh");
