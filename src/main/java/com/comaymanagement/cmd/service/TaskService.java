@@ -795,7 +795,11 @@ public class TaskService {
 			Status status = null;
 			if (task.getCreator().getId() != task.getReceiver().getId()) {
 				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1, "task");
-			} else if (task.getCreator().getId() == task.getReceiver().getId()
+			//Nếu trạng thái "Mới" thì + 2 cho qua "Đang làm"
+			}else if((task.getCreator().getId() != task.getReceiver().getId()) && task.getStatus().getIndex()==1 ) {
+				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 2, "task");
+			}
+			else if (task.getCreator().getId() == task.getReceiver().getId()
 					&& task.getStatus().getIndex() == CMDConstrant.INPROGESS_STATUS) {
 				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 2, "task");
 			} else {
@@ -872,7 +876,7 @@ public class TaskService {
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("TASKE5"), ""));
 			}
 //			Status status = statusRepositotyImpl.findById(CMDConstrant.NEW_STATUS);
-			Status status = statusRepositotyImpl.findByIndexAndType(7,"task");
+			Status status = statusRepositotyImpl.findByIndexAndType(2,"task");
 			if (status == null) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
