@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.comaymanagement.cmd.entity.Employee;
+import com.comaymanagement.cmd.entity.MailSchedule;
 import com.comaymanagement.cmd.entity.ResponseObject;
 import com.comaymanagement.cmd.entity.Role;
 import com.comaymanagement.cmd.entity.RoleDetail;
@@ -26,11 +27,13 @@ import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskDiscussion;
 import com.comaymanagement.cmd.entity.TaskReminder;
 import com.comaymanagement.cmd.model.PositionModel;
+import com.comaymanagement.cmd.model.Request;
 import com.comaymanagement.cmd.model.RoleDetailModel;
 import com.comaymanagement.cmd.model.RoleModel;
 import com.comaymanagement.cmd.model.TaskDiscussionModel;
 import com.comaymanagement.cmd.model.TaskReminderModel;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.MailScheduleRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskReminderRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskRepositoryImpl;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,6 +48,10 @@ public class TaskReminderService {
 	TaskRepositoryImpl taskRepository;
 	@Autowired
 	EmployeeRepositoryImpl employeeRepository;
+	@Autowired
+	private MailScheduleService mailScheduleService;
+	@Autowired
+	MailScheduleRepositoryImpl mailScheduleRepository;
 	public ResponseEntity<Object> findByTaskId(Integer taskId) {
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
@@ -59,8 +66,7 @@ public class TaskReminderService {
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		JsonMapper jsonMapper = new JsonMapper();
-		JsonNode jsonObject;
-		JsonNode jsonRecordReminders;
+		JsonNode jsonRecordReminder;
 		Integer taskId = -1;
 		String time="";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");  
@@ -68,15 +74,14 @@ public class TaskReminderService {
 		long minutes = 0; 
 		long hour = 0; 
 		long day = 0; 
+		Task task = null;
+		String scheduleId = "";
 		try {
-			jsonObject = jsonMapper.readTree(json);
-			jsonRecordReminders = jsonObject.get("reminders");
+			jsonRecordReminder = jsonMapper.readTree(json);
 			String startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date().getTime());
 			
-			for(JsonNode reminderNode : jsonRecordReminders) {
-				
-				taskId = reminderNode.get("taskId").asInt();
-				time = reminderNode.get("time").asText();
+				taskId = jsonRecordReminder.get("taskId").asInt();
+				time = jsonRecordReminder.get("time").asText();
 				if(time.equals("")) {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", "Thời gian không được để trống", ""));
@@ -96,7 +101,7 @@ public class TaskReminderService {
 							.body(new ResponseObject("ERROR", "Lỗi tính time remaining", ""));
 				}
 				String timeRemaining = day + " ngày " + hour + " giờ " + minutes + " phút ";
-				Task task = taskRepository.findByIdToEdit(taskId);
+				task = taskRepository.findByIdToEdit(taskId);
 				Employee modifyBy = employeeRepository.findById(userDetail.getId());
 				TaskReminder taskReminder = new TaskReminder();
 				taskReminder.setTask(task);
@@ -108,10 +113,30 @@ public class TaskReminderService {
 							.body(new ResponseObject("ERROR", "Lỗi thêm nhắc việc", taskReminder));
 				}
 				
-			}
+				// Save schedule start 
+				if(task!=null) {
+					Request request = new Request();
+					request.setSubject("Nhắc việc CMD");
+					request.setMessage("Bạn có công việc " + task.getTitle() + " cần hoàn thành trước " + task.getFinishDate());
+					request.setToEmail(userDetail.getEmail());
+					request.setUsername(userDetail.getUsername());
+					request.setScheduledTime(time);
+					request.setZoneId("Asia/Ho_Chi_Minh");
+					scheduleId = mailScheduleService.createSchedule(request);
+					System.out.println("SCHEDULE CREATED WITH ID " + scheduleId );
+				}
 			
-			//response data
+				// Save schedule end
+				// Update schedule for task reminder
+				MailSchedule mailSchedule = mailScheduleRepository.findById(Integer.valueOf(scheduleId));
+				taskReminder.setMailSchedule(mailSchedule);
+				taskReminderRepository.edit(taskReminder);
+			
+			//response data start
 			taskReminders = taskReminderRepository.findByTaskId(taskId, userDetail.getId());
+			//response data end
+		
+			
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ResponseObject("OK","Thêm nhắc việc thành công", taskReminders));
 		} catch (Exception e) {
@@ -126,8 +151,7 @@ public class TaskReminderService {
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		JsonMapper jsonMapper = new JsonMapper();
-		JsonNode jsonObject;
-		JsonNode jsonRecordReminders;
+		JsonNode jsonRecordReminder;
 		Integer id = -1;
 		Integer taskId = -1;
 		String time="";
@@ -136,15 +160,14 @@ public class TaskReminderService {
 		long minutes = 0; 
 		long hour = 0; 
 		long day = 0; 
+		Task task = null;
 		try {
-			jsonObject = jsonMapper.readTree(json);
-			jsonRecordReminders = jsonObject.get("reminders");
+			jsonRecordReminder = jsonMapper.readTree(json);
 			String startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date().getTime());
 			
-			for(JsonNode reminderNode : jsonRecordReminders) {
-				id = reminderNode.get("id").asInt();
-				taskId = reminderNode.get("taskId").asInt();
-				time = reminderNode.get("time").asText();
+				id = jsonRecordReminder.get("id").asInt();
+				taskId = jsonRecordReminder.get("taskId").asInt();
+				time = jsonRecordReminder.get("time").asText();
 				if(time.equals("")) {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", "Thời gian không được để trống", ""));
@@ -170,13 +193,24 @@ public class TaskReminderService {
 				TaskReminder taskReminder = taskReminderRepository.findById(id);
 				taskReminder.setTime(time);
 				taskReminder.setTimeRemaining(timeRemaining);
+				
 				if (taskReminderRepository.edit(taskReminder)<0) {
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", "Lỗi sửa nhắc việc", taskReminder));
 				}
-				
-			}
-			
+				//Update schedule start 
+				task = taskRepository.findByIdToEdit(taskId);
+				Request request = new Request();
+				request.setScheduleId(taskReminder.getMailSchedule().getScheduleId());
+				request.setSubject("Nhắc việc CMD");
+				request.setMessage("Bạn có công việc " + task.getTitle() + " cần hoàn thành trước " + task.getFinishDate());
+				request.setToEmail(userDetail.getEmail());
+				request.setUsername(userDetail.getUsername());
+				request.setScheduledTime(time);
+				request.setZoneId("Asia/Ho_Chi_Minh");
+				mailScheduleService.updateSchedule(request);
+				System.out.println("SCHEDULE UPDATED WITH ID " + request.getScheduleId() );
+				//Update schedule end
 			//response data
 			taskReminders = taskReminderRepository.findByTaskId(taskId, userDetail.getId());
 			return ResponseEntity.status(HttpStatus.OK)
@@ -190,11 +224,16 @@ public class TaskReminderService {
 	}
 	
 	public ResponseEntity<Object> delete(Integer id) {
+		TaskReminder taskReminder = taskReminderRepository.findById(id);
+		Integer scheduleId = taskReminder.getMailSchedule().getScheduleId();
 		Integer deleteStatus = taskReminderRepository.delete(id);
 		try {
 			if (deleteStatus>0) {
+				mailScheduleService.deleteSchedule(scheduleId);
+				System.out.println("SCHEDULE DELETED WITH ID " + scheduleId);
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK","Xóa nhắc việc thành công", id));
+				
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Xóa nhắc việc thất bại", id));
