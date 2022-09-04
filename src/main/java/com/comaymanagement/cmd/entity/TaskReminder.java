@@ -34,4 +34,7 @@ public class TaskReminder {
 	@OneToOne
 	@JoinColumn(name = "modify_by")
 	private Employee modifyBy;
+	@OneToOne
+	@JoinColumn(name = "schedule_id")
+	private MailSchedule mailSchedule;
 }
