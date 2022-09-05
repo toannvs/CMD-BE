@@ -117,7 +117,11 @@ public class TaskReminderService {
 				if(task!=null) {
 					Request request = new Request();
 					request.setSubject("Nhắc việc CMD - " + task.getTitle());
-					request.setMessage("Bạn có công việc " + task.getDescription() + " - cần hoàn thành trước " + task.getFinishDate());
+					StringBuilder message = new StringBuilder();
+					message.append("Bạn có công việc cần hoàn thành trước " + task.getFinishDate() + ".");
+					message.append("<br>");
+					message.append("Nội dung: " + task.getDescription());
+					request.setMessage(message.toString());
 					request.setToEmail(task.getReceiver().getEmail());
 					request.setUsername(userDetail.getUsername());
 					request.setScheduledTime(time);
@@ -200,16 +204,22 @@ public class TaskReminderService {
 				}
 				//Update schedule start Request request = new Request();
 				task = taskRepository.findByIdToEdit(taskId);
+				Integer oldScheduleId = taskReminder.getMailSchedule().getScheduleId();
+				mailScheduleService.deleteSchedule(oldScheduleId);
 				Request request = new Request();
-				request.setScheduleId(taskReminder.getMailSchedule().getScheduleId());
+//				request.setScheduleId(taskReminder.getMailSchedule().getScheduleId());
 				request.setSubject("Nhắc việc CMD - " + task.getTitle());
-				request.setMessage("Bạn có công việc " + task.getDescription() + " - cần hoàn thành trước " + task.getFinishDate());
+				StringBuilder message = new StringBuilder();
+				message.append("Bạn có công việc cần hoàn thành trước " + task.getFinishDate() + ".");
+				message.append("<br>");
+				message.append("Nội dung: " + task.getDescription());
+				request.setMessage(message.toString());
 				request.setToEmail(task.getReceiver().getEmail());
 				request.setUsername(userDetail.getUsername());
 				request.setScheduledTime(time);
 				request.setZoneId("Asia/Ho_Chi_Minh");
-				mailScheduleService.updateSchedule(request);
-				System.out.println("SCHEDULE UPDATED WITH ID " + request.getScheduleId() );
+				String scheduleId = mailScheduleService.createSchedule(request);
+				System.out.println("SCHEDULE DELETED WITH ID " + oldScheduleId + " AND SCHEDULE CREATED WITH ID " + scheduleId );
 				//Update schedule end
 			//response data
 			taskReminders = taskReminderRepository.findByTaskId(taskId, userDetail.getId());
