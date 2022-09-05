@@ -43,7 +43,7 @@ public class EmployeesController {
 		ResponseEntity<Object> result = employeeService.employeePaging(page, sort, order, json);
 		return result;
 	}
-	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@PostMapping(value = "/teams", produces = "application/json")
 	public ResponseEntity<Object> paggingAllEmployeeTeam(
 			@RequestParam(value = "page", required = false) String page,
@@ -53,7 +53,7 @@ public class EmployeesController {
 		ResponseEntity<Object> result = employeeService.employeePagingTeams(page, sort, order, json);
 		return result;
 	}
-	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@PostMapping(value = "/download", produces = "application/json")
 	public ResponseEntity<Object> findAllWithParamAndNotLimit(
 			@RequestParam(value = "page", required = false) String page,
@@ -71,7 +71,7 @@ public class EmployeesController {
 		return employeeService.addEmployee(json);
 	}
 
-//	@PreAuthorize("@customRoleService.canUpdate('employee',principal) ")
+	@PreAuthorize("@customRoleService.canUpdate('employee',principal) ")
 	@PutMapping(value = "/edit")
 	@ResponseBody
 	public ResponseEntity<Object> editEmployee(@RequestBody String json) {
@@ -84,7 +84,7 @@ public class EmployeesController {
 	public ResponseEntity<Object> deleteEmployee(@PathVariable Integer id) {
 		return employeeService.delete(id);
 	}
-	@PreAuthorize("@customRoleService.canView('employee',principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal)")
 	@GetMapping(value = "/name")
 	@ResponseBody
 	public ResponseEntity<Object> findByName(
