@@ -91,7 +91,7 @@ public class EmployeesController {
 			@RequestParam(value = "name", required = false) String name) {
 		return employeeService.findByName(name);
 	}
-	@PreAuthorize("@customRoleService.canView('employee',principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal)")
 	@GetMapping(value = "/{id}")
 	@ResponseBody
 	public ResponseEntity<Object> findByName(
@@ -107,7 +107,7 @@ public class EmployeesController {
 		return employeeService.importEmployees(multipartFile);
 	}
 	
-	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@GetMapping(value = "/notifies", produces = "application/json")
 	public ResponseEntity<Object> findAllNotifies(
 			@RequestParam(value = "page", required = false) String page,
@@ -118,14 +118,14 @@ public class EmployeesController {
 		return result;
 	}
 	
-	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@PostMapping(value = "/notifies/allRead", produces = "application/json")
 	public ResponseEntity<Object> allReadNotifies(@RequestBody String json) {
 		ResponseEntity<Object> result = employeeService.markIsReadNotifies(json);
 		return result;
 	}
 	
-	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
+//	@PreAuthorize("@customRoleService.canView('employee',principal) or @customRoleService.canViewAll('employee', principal)")
 	@PutMapping(value = "/notifies/delete", produces = "application/json")
 	public ResponseEntity<Object> deleteNotifies(@RequestBody String json) {
 		ResponseEntity<Object> result = employeeService.deleteNotifies(json);
