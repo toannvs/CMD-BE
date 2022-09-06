@@ -129,16 +129,22 @@ public class PostRepositoryImpl implements IPostRepository{
 				}
 			}
 			if(like) {
-				employees.add(employee);
-				post.setLikeTotal(post.getLikeTotal()+1);
+				if(post.getLikeTotal()!=null) {
+					employees.add(employee);
+					post.setLikeTotal(post.getLikeTotal()+1);
+				}else {
+					post.setLikeTotal(1);
+				}
+				
 			}else {
-				employees.remove(employee);
-				post.setLikeTotal(post.getLikeTotal()-1);
+				if(post.getLikeTotal()!=null) {
+					employees.remove(employee);
+					post.setLikeTotal(post.getLikeTotal()-1);
+				}else {
+					post.setLikeTotal(0);
+				}
+				
 			}
-		}else {
-			employees = new ArrayList<Employee>();
-			employees.add(employee);
-			post.setLikeTotal(post.getLikeTotal()+1);
 		}
 		Integer result = edit(post);
 		if(result != 1) {
