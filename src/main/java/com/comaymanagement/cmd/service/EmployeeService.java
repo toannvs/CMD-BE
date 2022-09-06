@@ -150,12 +150,12 @@ public class EmployeeService {
 		Map<String, Integer> caculatorOffset = new LinkedHashMap<>();
 		while (count > 0) {
 			if ((offset + limit) > totalItemEmployeeDup) {
-				limit = employeeRepository.countAllPaging(code, name, dob, email, phone, departmentIds, positionIds, sort,
-						order, offset, -1);
+				limit = employeeRepository.countAllPaging(code, name, dob, email, phone, departmentIds, positionIds,
+						sort, order, offset, -1);
 				;
 			}
-			caculatorOffset = caculatorOffset(code, name, dob, email, phone, departmentIds, positionIds, sort, order, limit,
-					offset);
+			caculatorOffset = caculatorOffset(code, name, dob, email, phone, departmentIds, positionIds, sort, order,
+					limit, offset);
 			if (count > 1) {
 				offset = caculatorOffset.get("offset");
 			}
@@ -166,13 +166,13 @@ public class EmployeeService {
 		try {
 
 			// Get with limit = -1
-			employeeModelSetTMP = employeeRepository.findAll(code, name, dob, email, phone, departmentIds, positionIds, sort,
-					order, limit, offset);
+			employeeModelSetTMP = employeeRepository.findAll(code, name, dob, email, phone, departmentIds, positionIds,
+					sort, order, limit, offset);
 			for (EmployeeModel employeeModel : employeeModelSetTMP) {
 				employeeModelSet.add(employeeModel);
 			}
 			Pagination pagination = new Pagination();
-			
+
 			pagination.setLimit(limit);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
@@ -253,12 +253,12 @@ public class EmployeeService {
 		Map<String, Integer> caculatorOffset = new LinkedHashMap<>();
 		while (count > 0) {
 			if ((offset + limit) > totalItemEmployeeDup) {
-				limit = employeeRepository.countAllPaging(code, name, dob, email, phone, departmentIds, positionIds, sort,
-						order, offset, -1);
+				limit = employeeRepository.countAllPaging(code, name, dob, email, phone, departmentIds, positionIds,
+						sort, order, offset, -1);
 				;
 			}
-			caculatorOffset = caculatorOffset(code, name, dob, email, phone, departmentIds, positionIds, sort, order, limit,
-					offset);
+			caculatorOffset = caculatorOffset(code, name, dob, email, phone, departmentIds, positionIds, sort, order,
+					limit, offset);
 			if (count > 1) {
 				offset = caculatorOffset.get("offset");
 			}
@@ -269,11 +269,11 @@ public class EmployeeService {
 		try {
 			// if duplicate => limit will alway be >= CMDConstrant.LIMIT
 			if (limitCaculated < 15) {
-				employeeModelSetTMP = employeeRepository.findAll(code, name, dob, email, phone, departmentIds, positionIds,
-						sort, order, CMDConstrant.LIMIT, offset);
+				employeeModelSetTMP = employeeRepository.findAll(code, name, dob, email, phone, departmentIds,
+						positionIds, sort, order, CMDConstrant.LIMIT, offset);
 			} else {
-				employeeModelSetTMP = employeeRepository.findAll(code, name, dob, email, phone, departmentIds, positionIds,
-						sort, order, limitCaculated, offset);
+				employeeModelSetTMP = employeeRepository.findAll(code, name, dob, email, phone, departmentIds,
+						positionIds, sort, order, limitCaculated, offset);
 			}
 
 			for (EmployeeModel employeeModel : employeeModelSetTMP) {
@@ -281,9 +281,9 @@ public class EmployeeService {
 			}
 			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			
+
 			Pagination pagination = new Pagination();
-			
+
 			pagination.setLimit(CMDConstrant.LIMIT);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
@@ -312,8 +312,8 @@ public class EmployeeService {
 		Map<String, Integer> result = new LinkedHashMap<>();
 		do {
 
-			int countPaging = employeeRepository.countAllPaging(code, name, dob, email, phone, departmentIds, positionIds,
-					sort, order, newOffset, newLimit); // 10, 3
+			int countPaging = employeeRepository.countAllPaging(code, name, dob, email, phone, departmentIds,
+					positionIds, sort, order, newOffset, newLimit); // 10, 3
 			quantityDifference = newLimit - countPaging; // , , 0
 			// store old offset
 //				newOffset = offset;
@@ -412,7 +412,7 @@ public class EmployeeService {
 				employeeModelSet.add(employeeModel);
 			}
 			Pagination pagination = new Pagination();
-			
+
 			pagination.setLimit(CMDConstrant.LIMIT);
 			pagination.setPage(Integer.valueOf(page));
 			pagination.setTotalItem(totalItemEmployee);
@@ -432,6 +432,7 @@ public class EmployeeService {
 		}
 
 	}
+
 	public Map<String, Integer> caculatorOffsetTeams(String name, String dob, String email, String phone,
 			List<Integer> departmentIds, List<Integer> positionIds, String sort, String order, Integer limit,
 			Integer offset) {
@@ -441,8 +442,8 @@ public class EmployeeService {
 		Map<String, Integer> result = new LinkedHashMap<>();
 		do {
 
-			int countPaging = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds, positionIds,
-					sort, order, newOffset, newLimit); // 10, 3
+			int countPaging = employeeRepository.countAllPagingTeams(name, dob, email, phone, departmentIds,
+					positionIds, sort, order, newOffset, newLimit); // 10, 3
 			quantityDifference = newLimit - countPaging; // , , 0
 			// store old offset
 //				newOffset = offset;
@@ -457,6 +458,7 @@ public class EmployeeService {
 
 		return result;
 	}
+
 // Paging team - end
 	// Add and edit employee
 	public ResponseEntity<Object> addEmployee(String json) {
@@ -475,7 +477,7 @@ public class EmployeeService {
 		Integer id = -1;
 
 		try {
-			jsonObjectEmployee = jsonMapper.readTree (json);
+			jsonObjectEmployee = jsonMapper.readTree(json);
 			jsonObjectTeam = jsonObjectEmployee.get("teams");
 			jsonObjectDepartment = jsonObjectEmployee.get("departments");
 			jsonLoginAccount = jsonObjectEmployee.get("user");
@@ -492,7 +494,9 @@ public class EmployeeService {
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE5"), ""));
 			}
 
-			String avatar = (jsonObjectEmployee.get("avatar") != null &&  !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText() : "";
+			String avatar = (jsonObjectEmployee.get("avatar") != null
+					&& !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText()
+							: "";
 			String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText() : "";
 			String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
 					: jsonObjectEmployee.get("dateOfBirth").asText() == "null" ? ""
@@ -507,9 +511,9 @@ public class EmployeeService {
 
 			emp.setCode(jsonObjectEmployee.get("code").asText());
 			emp.setName(jsonObjectEmployee.get("name").asText());
-			if(avatar.equals("")) {
+			if (avatar.equals("")) {
 				emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
-			}else {
+			} else {
 				emp.setAvatar(avatar);
 			}
 			emp.setGender(gender);
@@ -603,122 +607,126 @@ public class EmployeeService {
 			jsonObjectDepartment = jsonObjectEmployee.get("departments");
 			Integer id = jsonObjectEmployee.get("id") != null ? jsonObjectEmployee.get("id").asInt() : -1;
 			// Check with id if can edit or Update personal information
-			if (!customRoleService.canUpdate("employee", userDetail)
-					&& !customRoleService.isTheSameUser(id, userDetail)) {
+			if (customRoleService.canUpdate("employee", userDetail)
+					|| customRoleService.isTheSameUser(id, userDetail)) {
+				emp = employeeRepository.findById(id);
+				// Check lenght of code
+				String code = jsonObjectEmployee.get("code").asText();
+				if (code.length() > 10) {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE9"), ""));
+				}
+//							Check employee id existed
+				boolean isExisted = employeeRepository.checkEmployeeCodeExisted(id, code);
+				if (isExisted) {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE5"), ""));
+				}
+
+				jsonLoginAccount = jsonObjectEmployee.get("user");
+				boolean active = jsonObjectEmployee.get("active").asBoolean();
+				/*
+				 * Check if active == false Check if the employee is the head of the department,
+				 * do not allow the lock
+				 */
+				if (!active) {
+					for (Position p : emp.getPositions()) {
+						if (p.getIsManager()) {
+							return ResponseEntity.status(HttpStatus.OK)
+									.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE1"), ""));
+						}
+					}
+				}
+				String avatar = (jsonObjectEmployee.get("avatar") != null
+						&& !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText()
+								: "";
+				String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText()
+						: "";
+				String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
+						: jsonObjectEmployee.get("dateOfBirth").asText() == "null" ? ""
+								: jsonObjectEmployee.get("dateOfBirth").asText();
+				String email = jsonObjectEmployee.get("email") == null ? ""
+						: jsonObjectEmployee.get("email").asText() == "null" ? ""
+								: jsonObjectEmployee.get("email").asText();
+				String phoneNumber = jsonObjectEmployee.get("phoneNumber") == null ? ""
+						: jsonObjectEmployee.get("phoneNumber").asText() == "null" ? ""
+								: jsonObjectEmployee.get("phoneNumber").asText();
+				String userName = jsonLoginAccount.get("username") != null ? jsonLoginAccount.get("username").asText()
+						: "";
+				emp.setId(jsonObjectEmployee.get("id").asInt());
+				emp.setCode(jsonObjectEmployee.get("code").asText());
+				emp.setName(jsonObjectEmployee.get("name").asText());
+				if (avatar.equals("")) {
+					emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
+				} else {
+					emp.setAvatar(avatar);
+				}
+				emp.setGender(gender);
+				emp.setDateOfBirth(dateOfBirth);
+				emp.setEmail(email);
+				emp.setPhoneNumber(phoneNumber);
+				emp.setActive(jsonObjectEmployee.get("active").asBoolean());
+				Boolean isEnableLogin = jsonLoginAccount.get("enableLogin").asBoolean();
+				emp.setEnableLogin(isEnableLogin);
+				// Cannot edit password
+				if (isEnableLogin) {
+					// Check username
+					boolean isUserNameExisted = employeeRepository.checkEmployeeUserNameExisted(id, userName);
+					if (isUserNameExisted) {
+						return ResponseEntity.status(HttpStatus.OK)
+								.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE10"), ""));
+					}
+					emp.setUsername(userName);
+					emp.setPassword(encoder.encode(CMDConstrant.PASSWORD));
+				} else {
+					emp.setUsername("");
+					emp.setPassword("");
+				}
+				for (JsonNode t : jsonObjectTeam) {
+					Integer teamId = t.get("id") != null ? t.get("id").asInt() : -1;
+					Team team = teamRepository.findById(teamId);
+					if (team != null) {
+						Position pos = positionRepository.findById(t.get("position").get("id").asInt());
+						positionList.add(pos);
+						teamList.add(team);
+					}
+
+				}
+				for (JsonNode d : jsonObjectDepartment) {
+					Integer depId = d.get("id") != null ? d.get("id").asInt() : -1;
+					Department department = departmentRepository.findById(depId);
+					if (department != null) {
+						Position pos = positionRepository.findById(d.get("position").get("id").asInt());
+						positionList.add(pos);
+						departmentList.add(department);
+
+					}
+
+				}
+				emp.setPositions(positionList);
+				emp.setTeams(teamList);
+				emp.setDepartments(departmentList);
+				emp.setActiveFlag(true);
+				emp.setActive(jsonObjectEmployee.get("active").asBoolean());
+				emp.setCreateDate(jsonObjectEmployee.get("createDate").asText());
+				emp.setModifyDate(modifyDate);
+				emp.setCreateBy(jsonObjectEmployee.get("createBy").asInt());
+				emp.setModifyBy(jsonObjectEmployee.get("modifyBy").asInt());
+				Integer status = employeeRepository.edit(emp);
+				if (status != 0) {
+					EmployeeModel employeeModel = toEmployeeModel(emp);
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("OK", message.getMessageByItemCode("EMPS3"), employeeModel));
+				} else {
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE6"), emp));
+
+				}
+			} else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", "Không có quyền chỉnh sửa", ""));
 			}
 
-			emp = employeeRepository.findById(id);
-// Check lenght of code
-			String code = jsonObjectEmployee.get("code").asText();
-			if (code.length() > 10) {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE9"), ""));
-			}
-//			Check employee id existed
-			boolean isExisted = employeeRepository.checkEmployeeCodeExisted(id, code);
-			if (isExisted) {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE5"), ""));
-			}
-
-		
-			jsonLoginAccount = jsonObjectEmployee.get("user");
-			boolean active = jsonObjectEmployee.get("active").asBoolean();
-			/*
-			 * Check if active == false Check if the employee is the head of the department,
-			 * do not allow the lock
-			 */
-			if (!active) {
-				for (Position p : emp.getPositions()) {
-					if (p.getIsManager()) {
-						return ResponseEntity.status(HttpStatus.OK)
-								.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE1"), ""));
-					}
-				}
-			}
-			String avatar = (jsonObjectEmployee.get("avatar") != null &&  !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText() : "";
-			String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText() : "";
-			String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
-					: jsonObjectEmployee.get("dateOfBirth").asText() == "null" ? ""
-							: jsonObjectEmployee.get("dateOfBirth").asText();
-			String email = jsonObjectEmployee.get("email") == null ? ""
-					: jsonObjectEmployee.get("email").asText() == "null" ? ""
-							: jsonObjectEmployee.get("email").asText();
-			String phoneNumber = jsonObjectEmployee.get("phoneNumber") == null ? ""
-					: jsonObjectEmployee.get("phoneNumber").asText() == "null" ? ""
-							: jsonObjectEmployee.get("phoneNumber").asText();
-			String userName = jsonLoginAccount.get("username") != null ? jsonLoginAccount.get("username").asText() : "";
-			emp.setId(jsonObjectEmployee.get("id").asInt());
-			emp.setCode(jsonObjectEmployee.get("code").asText());
-			emp.setName(jsonObjectEmployee.get("name").asText());
-			if(avatar.equals("")) {
-				emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
-			}else {
-				emp.setAvatar(avatar);
-			}
-			emp.setGender(gender);
-			emp.setDateOfBirth(dateOfBirth);
-			emp.setEmail(email);
-			emp.setPhoneNumber(phoneNumber);
-			emp.setActive(jsonObjectEmployee.get("active").asBoolean());
-			Boolean isEnableLogin = jsonLoginAccount.get("enableLogin").asBoolean();
-			emp.setEnableLogin(isEnableLogin);
-			// Cannot edit password
-			if (isEnableLogin) {
-				// Check username
-				boolean isUserNameExisted = employeeRepository.checkEmployeeUserNameExisted(id, userName);
-				if (isUserNameExisted) {
-					return ResponseEntity.status(HttpStatus.OK)
-							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE10"), ""));
-				}
-				emp.setUsername(userName);
-				emp.setPassword(encoder.encode(CMDConstrant.PASSWORD));
-			} else {
-				emp.setUsername("");
-				emp.setPassword("");
-			}
-			for (JsonNode t : jsonObjectTeam) {
-				Integer teamId = t.get("id") != null ? t.get("id").asInt() : -1;
-				Team team = teamRepository.findById(teamId);
-				if (team != null) {
-					Position pos = positionRepository.findById(t.get("position").get("id").asInt());
-					positionList.add(pos);
-					teamList.add(team);
-				}
-
-			}
-			for (JsonNode d : jsonObjectDepartment) {
-				Integer depId = d.get("id") != null ? d.get("id").asInt() : -1;
-				Department department = departmentRepository.findById(depId);
-				if (department != null) {
-					Position pos = positionRepository.findById(d.get("position").get("id").asInt());
-					positionList.add(pos);
-					departmentList.add(department);
-
-				}
-
-			}
-			emp.setPositions(positionList);
-			emp.setTeams(teamList);
-			emp.setDepartments(departmentList);
-			emp.setActiveFlag(true);
-			emp.setActive(jsonObjectEmployee.get("active").asBoolean());
-			emp.setCreateDate(jsonObjectEmployee.get("createDate").asText());
-			emp.setModifyDate(modifyDate);
-			emp.setCreateBy(jsonObjectEmployee.get("createBy").asInt());
-			emp.setModifyBy(jsonObjectEmployee.get("modifyBy").asInt());
-			Integer status = employeeRepository.edit(emp);
-			if (status != 0) {
-				EmployeeModel employeeModel = toEmployeeModel(emp);
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", message.getMessageByItemCode("EMPS3"), employeeModel));
-			} else {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE6"), emp));
-
-			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -804,8 +812,7 @@ public class EmployeeService {
 			multipartFile.transferTo(file);
 
 //			final File csvFile = new File(pathFull + nameFile.toString());
-			CSVReader reader = new CSVReaderBuilder(new FileReader(file.getAbsoluteFile())).withSkipLines(1)
-					.build();
+			CSVReader reader = new CSVReaderBuilder(new FileReader(file.getAbsoluteFile())).withSkipLines(1).build();
 
 			Set<Employee> employees = reader.readAll().stream().map(data -> {
 				Employee employee = new Employee();
@@ -857,11 +864,12 @@ public class EmployeeService {
 				employee.setUsername(email);
 				return employee;
 			}).collect(Collectors.toSet());
-			for(Employee emp : employees) {
+			for (Employee emp : employees) {
 				// Check lenght of code
 				String code = emp.getCode();
 				if (code.length() > 10) {
-					// because can't delete old file when have error. And can't reuse oldfile (or cleanDirectory)
+					// because can't delete old file when have error. And can't reuse oldfile (or
+					// cleanDirectory)
 					countFile++;
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE9"), ""));
@@ -869,7 +877,8 @@ public class EmployeeService {
 //				Check employee id existed
 				boolean isExisted = employeeRepository.checkEmployeeCodeExisted(-1, code);
 				if (isExisted) {
-					// because can't delete old file when have error. And can't reuse oldfile (or cleanDirectory)
+					// because can't delete old file when have error. And can't reuse oldfile (or
+					// cleanDirectory)
 					countFile++;
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE5"), ""));
@@ -877,7 +886,8 @@ public class EmployeeService {
 				// Check username
 				boolean isUserNameExisted = employeeRepository.checkEmployeeUserNameExisted(-1, emp.getUsername());
 				if (isUserNameExisted) {
-					// because can't delete old file when have error. And can't reuse oldfile (or cleanDirectory)
+					// because can't delete old file when have error. And can't reuse oldfile (or
+					// cleanDirectory)
 					countFile++;
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseObject("ERROR", message.getMessageByItemCode("EMPE10"), ""));
@@ -956,7 +966,7 @@ public class EmployeeService {
 			employeeModel.setActive(employee.isActive());
 			employeeModel.setCreateDate(employee.getCreateDate());
 			employeeModel.setDepartments(departmentModelList);
-			
+
 			employeeModel.setPositions(positionModelList);
 			employeeModel.setUser(user);
 			employeeModel.setCreateDate(employee.getCreateDate());
@@ -972,9 +982,9 @@ public class EmployeeService {
 	public ResponseEntity<Object> findByName(String name) {
 		name = ((name != null) && name != "") ? name : "";
 		Set<EmployeeModel> employeeModelSet = new LinkedHashSet<>();
-		
+
 		employeeModelSet = employeeRepository.findByName(name);
-		
+
 		Map<String, Object> result = new TreeMap<>();
 		result.put("employees", employeeModelSet);
 		if (employeeModelSet.size() > 0) {
@@ -1007,10 +1017,10 @@ public class EmployeeService {
 			Pagination paginationOfNotify = new Pagination();
 			paginationOfNotify.setLimit(CMDConstrant.LIMIT);
 			paginationOfNotify.setPage(Integer.valueOf(1));
-			paginationOfNotify.setTotalItem(notifyRepositoryImpl.countAll(userDetail.getId(), keySearch, offset, limit, sort,
-					order));
+			paginationOfNotify.setTotalItem(
+					notifyRepositoryImpl.countAll(userDetail.getId(), keySearch, offset, limit, sort, order));
 			Long countAllUnread = notifyRepositoryImpl.countAllUnread(userDetail.getId());
-		
+
 			notifyMap.put("items", notifyModels);
 			notifyMap.put("pagination", paginationOfNotify);
 			notifyMap.put("countUnread", countAllUnread);
@@ -1018,12 +1028,12 @@ public class EmployeeService {
 			if (notifyModels.size() > 0) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", notifyMap));
 			} else {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", "Not found", notifyMap));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ERROR", "Not found", notifyMap));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyMap));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "", notifyMap));
 		}
 
 	}
@@ -1071,7 +1081,8 @@ public class EmployeeService {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyIds));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "", notifyIds));
 		}
 	}
 
@@ -1095,68 +1106,67 @@ public class EmployeeService {
 			Boolean result = notifyRepositoryImpl.allRead(userDetail.getId(), notifyIds);
 			if (result) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"),notifyIds));
+						.body(new ResponseObject("OK", message.getMessageByItemCode("NOTIS1"), notifyIds));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("ERROR", message.getMessageByItemCode("NOTIE1"), notifyIds));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error has occured in edit()", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseObject("ERROR", "", notifyIds));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseObject("ERROR", "", notifyIds));
 		}
 	}
+
 	public ResponseEntity<Object> findById(Integer id) {
 		List<Integer> roleIds = new ArrayList<>();
 		List<RoleDetailModel> roleDetailModels = new ArrayList<>();
 		RoleDetailModel roleDetailModel = new RoleDetailModel();
-			Employee emp =  employeeRepository.findById(id);
-			EmployeeModel empModel =  employeeRepository.toModel(emp);  
-			UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
-			if (userDetail != null) {
-				roleIds = roleRepository.findAllRoleIdByEmpId(userDetail.getId());
-				for(Integer roleId : roleIds) {
-					roleDetailModel = roleRepository.findRoleDetailByRoleId(roleId);
-					roleDetailModels.add(roleDetailModel);
-				} 
-				// Summary of role list
-				RoleDetailModel roleDetailResult = new RoleDetailModel();
-				
-				roleDetailResult = roleDetailModels.get(0);
-			  if(roleDetailModels.size()>1) {
-					// check each role's permission
-					for(int i =1; i<roleDetailModels.size();i++) {
-						List<OptionModel> optionsModels  = roleDetailModels.get(i).getOptions();
-						for(int j = 0;j < optionsModels.size(); j++) {
-							List<PermissionModel> permissionModels = optionsModels.get(j).getPermissions();
-							for(int k = 0; k < permissionModels.size(); k++) {
-								PermissionModel permissionNeeded = roleDetailResult.getOptions().get(j).getPermissions().get(k);
-								if(permissionModels.get(k).isSelected() && !permissionNeeded.isSelected()) {
-									permissionNeeded.setSelected(true);
-								}
+		Employee emp = employeeRepository.findById(id);
+		EmployeeModel empModel = employeeRepository.toModel(emp);
+		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		if (userDetail != null) {
+			roleIds = roleRepository.findAllRoleIdByEmpId(userDetail.getId());
+			for (Integer roleId : roleIds) {
+				roleDetailModel = roleRepository.findRoleDetailByRoleId(roleId);
+				roleDetailModels.add(roleDetailModel);
+			}
+			// Summary of role list
+			RoleDetailModel roleDetailResult = new RoleDetailModel();
+
+			roleDetailResult = roleDetailModels.get(0);
+			if (roleDetailModels.size() > 1) {
+				// check each role's permission
+				for (int i = 1; i < roleDetailModels.size(); i++) {
+					List<OptionModel> optionsModels = roleDetailModels.get(i).getOptions();
+					for (int j = 0; j < optionsModels.size(); j++) {
+						List<PermissionModel> permissionModels = optionsModels.get(j).getPermissions();
+						for (int k = 0; k < permissionModels.size(); k++) {
+							PermissionModel permissionNeeded = roleDetailResult.getOptions().get(j).getPermissions()
+									.get(k);
+							if (permissionModels.get(k).isSelected() && !permissionNeeded.isSelected()) {
+								permissionNeeded.setSelected(true);
 							}
 						}
 					}
 				}
-				
-				
-				Employee employee = employeeRepository.findById(userDetail.getId());
+			}
+
+			Employee employee = employeeRepository.findById(userDetail.getId());
 //				EmployeeModel employeeModel = EmployeeService.toEmployeeModel(employee);
-				Map<String, Object> optionMap = AuthService.convertRoleForFEGantPermission(roleDetailModel);
-				empModel.setRole(optionMap);
+			Map<String, Object> optionMap = AuthService.convertRoleForFEGantPermission(roleDetailModel);
+			empModel.setRole(optionMap);
 //				userModel.setPassword(null);
 //				userModel.setRoles(roleDetailModels);
-			}
-			 
-			
-			if(empModel!=null) {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", "SUCCESSFULLY",empModel));
-			}else {
-				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", "Not found", ""));
-			}
-			
+		}
+
+		if (empModel != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "SUCCESSFULLY", empModel));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Not found", ""));
+		}
+
 	}
-	
+
 }

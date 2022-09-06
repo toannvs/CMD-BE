@@ -84,7 +84,6 @@ public class CustomRoleService {
 			}
 			return false;
 	}
-	
 	public boolean authorization(String option, UserDetailsImpl userDetail, String action) {
 		// loop through roles
 		for(RoleDetailModel r : userDetail.getRoles()) {

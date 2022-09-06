@@ -71,7 +71,8 @@ public class EmployeesController {
 		return employeeService.addEmployee(json);
 	}
 
-	@PreAuthorize("@customRoleService.canUpdate('employee',principal) ")
+//	@PreAuthorize("@customRoleService.canUpdate('employee',principal) ")
+	// Check role in service class for edit profile when canUpdate=false
 	@PutMapping(value = "/edit")
 	@ResponseBody
 	public ResponseEntity<Object> editEmployee(@RequestBody String json) {
@@ -101,7 +102,7 @@ public class EmployeesController {
 
 
 	
-//	@PreAuthorize("@customRoleService.canImport('employee',principal)")
+	@PreAuthorize("@customRoleService.canImport('employee',principal)")
 	@PostMapping("/import")
 	public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
 		return employeeService.importEmployees(multipartFile);
