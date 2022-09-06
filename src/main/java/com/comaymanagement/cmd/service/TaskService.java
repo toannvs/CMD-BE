@@ -794,12 +794,13 @@ public class TaskService {
 			}
 			Status status = null;
 			if (task.getCreator().getId() != task.getReceiver().getId()) {
-				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1, "task");
-			//Nếu trạng thái "Mới" thì + 2 cho qua "Đang làm"
-			}else if((task.getCreator().getId() != task.getReceiver().getId()) && task.getStatus().getIndex()==7 ) {
-				status = statusRepositotyImpl.findByIndexAndType(2, "task");
-			}
-			else if (task.getCreator().getId() == task.getReceiver().getId()
+				if(task.getStatus().getIndex()!=7) {
+					status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 1, "task");
+				}else {
+					//Nếu trạng thái "Mới" thì + 2 cho qua "Đang làm"
+					status = statusRepositotyImpl.findByIndexAndType(2, "task");
+				}
+			}else if (task.getCreator().getId() == task.getReceiver().getId()
 					&& task.getStatus().getIndex() == CMDConstrant.INPROGESS_STATUS) {
 				status = statusRepositotyImpl.findByIndexAndType(task.getStatus().getIndex() + 2, "task");
 			} else {
