@@ -438,11 +438,26 @@ public class TaskService {
 			}
 
 
-			// statusId 3 = Đã hủy
-			if (statusId == 3) {
+			// statusId 5 = Đã hủy
+			if (statusId == 5) {
 				messageCode = "TASKS3";
+				status = statusRepositotyImpl.findByIndexAndType(5, "task");
 			} else {
 				messageCode = "TASKS2";
+				DateTimeFormatter dtf = null;
+				LocalDate now = LocalDate.now();
+				dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate dt = LocalDate.parse(finishDate, dtf);
+				if(now.isAfter(dt)) {
+					status = statusRepositotyImpl.findByIndexAndType(6, "task");
+				}else {
+//					status = statusRepositotyImpl.findById(statusId);
+					status = statusRepositotyImpl.findByIndexAndType(1,"task");
+					if (status == null) {
+						return ResponseEntity.status(HttpStatus.OK)
+								.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
+					}
+				}
 			}
 			task = taskRepository.findByIdToEdit(id);
 			if (task == null) {
@@ -459,20 +474,7 @@ public class TaskService {
 				notify.setDetailId(task.getId());
 			}
 			
-			DateTimeFormatter dtf = null;
-			LocalDate now = LocalDate.now();
-			dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate dt = LocalDate.parse(finishDate, dtf);
-			if(now.isAfter(dt)) {
-				status = statusRepositotyImpl.findByIndexAndType(6, "task");
-			}else {
-//				status = statusRepositotyImpl.findById(statusId);
-				status = statusRepositotyImpl.findByIndexAndType(1,"task");
-				if (status == null) {
-					return ResponseEntity.status(HttpStatus.OK)
-							.body(new ResponseObject("NOT FOUND", message.getMessageByItemCode("STAE1"), ""));
-				}
-			}
+			
 
 			task.setId(id);
 			task.setCreator(creator);
