@@ -219,7 +219,8 @@ public class DepartmentService {
 			String name = jsonObjectDepartment.get("name") != null ? jsonObjectDepartment.get("name").asText() : "";
 			Integer fatherDepartmentId = jsonObjectDepartment.get("fatherDepartmentId") != null
 					? jsonObjectDepartment.get("fatherDepartmentId").asInt()
-					: !jsonObjectDepartment.get("fatherDepartmentId").asText().equals("null") ? jsonObjectDepartment.get("fatherDepartmentId").asInt() : -1;
+					: -1;
+			fatherDepartmentId = fatherDepartmentId == 0 ? -1 : fatherDepartmentId;
 			String description = jsonObjectDepartment.get("description") != null
 					? jsonObjectDepartment.get("description").asText()
 					: "";
