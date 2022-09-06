@@ -29,9 +29,11 @@ import com.comaymanagement.cmd.entity.Status;
 import com.comaymanagement.cmd.entity.Task;
 import com.comaymanagement.cmd.entity.TaskHis;
 import com.comaymanagement.cmd.model.NotifyModel;
+import com.comaymanagement.cmd.model.Request;
 import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.model.TaskModel;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.MailScheduleRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.StatusRepositotyImpl;
 import com.comaymanagement.cmd.repositoryimpl.TaskHistoryRepositoryImpl;
@@ -62,7 +64,10 @@ public class TaskService {
 
 	@Autowired
 	Message message;
-
+	@Autowired
+	private MailScheduleService mailScheduleService;
+	@Autowired
+	MailScheduleRepositoryImpl mailScheduleRepository;
 	public ResponseEntity<Object> findByStatusId(String statusId, String sort, String order, String page) {
 		order = order == null ? "DESC" : order;
 		sort = sort == null ? "id" : sort;
@@ -294,6 +299,24 @@ public class TaskService {
 				notify.setType("task");
 				notify.setDetailId(task.getId());
 				notifyRepositoryImpl.add(notify);
+				// Save schedule start 
+				if(task!=null) {
+					Request request = new Request();
+					request.setSubject("Nhắc việc CMD - " + task.getTitle());
+					StringBuilder message = new StringBuilder();
+					message.append("Bạn có công việc cần hoàn thành trước " + task.getFinishDate() + ".");
+					message.append("<br>");
+					message.append("Nội dung: " + task.getDescription());
+					request.setMessage(message.toString());
+					request.setToEmail(task.getReceiver().getEmail());
+					request.setUsername(userDetail.getUsername());
+					request.setScheduledTime(finishDate+" 23:59");
+					request.setZoneId("Asia/Ho_Chi_Minh");
+					String scheduleId = mailScheduleService.createSchedule(request);
+					System.out.println("SCHEDULE CREATED WITH ID " + scheduleId + " FOR OVERDUE ALERT");
+				}
+			
+				// Save schedule end
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode("TASKS1"), taskModel));
 			} else {
@@ -465,6 +488,24 @@ public class TaskService {
 					!CMDConstrant.REOPEN_TASK, null);
 			if (null != taskModel) {
 				notifyRepositoryImpl.add(notify);
+				// Save schedule start 
+				if(task!=null) {
+					Request request = new Request();
+					request.setSubject("Nhắc việc CMD - " + task.getTitle());
+					StringBuilder message = new StringBuilder();
+					message.append("Bạn có công việc cần hoàn thành trước " + task.getFinishDate() + ".");
+					message.append("<br>");
+					message.append("Nội dung: " + task.getDescription());
+					request.setMessage(message.toString());
+					request.setToEmail(task.getReceiver().getEmail());
+					request.setUsername(userDetail.getUsername());
+					request.setScheduledTime(finishDate+" 23:59");
+					request.setZoneId("Asia/Ho_Chi_Minh");
+					String scheduleId = mailScheduleService.createSchedule(request);
+					System.out.println("SCHEDULE CREATED WITH ID " + scheduleId + " FOR OVERDUE ALERT");
+				}
+			
+				// Save schedule end
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseObject("OK", message.getMessageByItemCode(messageCode), taskModel));
 			} else {
