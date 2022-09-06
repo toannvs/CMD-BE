@@ -113,7 +113,7 @@ public class PostRepositoryImpl implements IPostRepository{
 		}
 	}
 	@Override
-	public LikeModel like(Integer postId) {
+	public PostModel like(Integer postId) {
 		List<Employee> employees = null;
 		UserDetailsImpl userDetail = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
@@ -129,15 +129,11 @@ public class PostRepositoryImpl implements IPostRepository{
 				}
 			}
 			if(like) {
-				if(post.getLikeTotal()!=null) {
 					employees.add(employee);
 					post.setLikeTotal(post.getLikeTotal()+1);
-				}else {
-					post.setLikeTotal(1);
-				}
 				
 			}else {
-				if(post.getLikeTotal()!=null) {
+				if(post.getLikeTotal()!=0) {
 					employees.remove(employee);
 					post.setLikeTotal(post.getLikeTotal()-1);
 				}else {
@@ -145,17 +141,22 @@ public class PostRepositoryImpl implements IPostRepository{
 				}
 				
 			}
+		}else {
+			return null;
 		}
 		Integer result = edit(post);
 		if(result != 1) {
 			return null;
 		}
-		LikeModel likeModel = new LikeModel();
-		likeModel.setPostId(postId);
-		likeModel.setLikeTotal(post.getLikeTotal());
-		String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
-		likeModel.setCreateDate(createDate);
-		return likeModel;
+		// Response data
+		PostModel postModel = toModel(post);
+		postModel.setLike(checkIsLike(post.getId()));
+//		LikeModel likeModel = new LikeModel();
+//		likeModel.setPostId(postId);
+//		likeModel.setLikeTotal(post.getLikeTotal());
+//		String createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
+//		likeModel.setCreateDate(createDate);
+		return postModel;
 	}
 	
 	public PostModel toModel(Post post) {

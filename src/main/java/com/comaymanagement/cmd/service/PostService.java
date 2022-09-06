@@ -151,15 +151,15 @@ public class PostService {
 		}
 	}
 	public ResponseEntity<Object> like(Integer postId) {
-		LikeModel likeModel = null;
+		PostModel postModel = null;
 		try {
-			likeModel = postRepositoryImpl.like(postId);
-			if (null != likeModel) {
+			postModel = postRepositoryImpl.like(postId);
+			if (null != postModel) {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("OK", message.getMessageByItemCode("POSTS4"), likeModel));
+						.body(new ResponseObject("OK", message.getMessageByItemCode("POSTS4"), postModel));
 			} else {
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseObject("ERROR", message.getMessageByItemCode("POSTE4"), likeModel));
+						.body(new ResponseObject("ERROR", message.getMessageByItemCode("POSTE4"), postModel));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Has error: ", e);
