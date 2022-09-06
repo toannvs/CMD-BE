@@ -304,9 +304,11 @@ public class TaskService {
 					Request request = new Request();
 					request.setSubject("Nhắc việc CMD - " + task.getTitle());
 					StringBuilder message = new StringBuilder();
-					message.append("Bạn có công việc cần hoàn thành trước " + task.getFinishDate() + ".");
+					message.append("Đã qua thời gian hoàn thành công việc " + task.getFinishDate() + ".");
 					message.append("<br>");
 					message.append("Nội dung: " + task.getDescription());
+					message.append("<br>");
+					message.append("Vui lòng liên hệ người giao việc để gia hạn thời gian hoàn thành!");
 					request.setMessage(message.toString());
 					request.setToEmail(task.getReceiver().getEmail());
 					request.setUsername(userDetail.getUsername());
@@ -493,9 +495,11 @@ public class TaskService {
 					Request request = new Request();
 					request.setSubject("Nhắc việc CMD - " + task.getTitle());
 					StringBuilder message = new StringBuilder();
-					message.append("Bạn có công việc cần hoàn thành trước " + task.getFinishDate() + ".");
+					message.append("Đã qua thời gian hoàn thành công việc " + task.getFinishDate() + ".");
 					message.append("<br>");
 					message.append("Nội dung: " + task.getDescription());
+					message.append("<br>");
+					message.append("Vui lòng liên hệ người giao việc để gia hạn thời gian hoàn thành!");
 					request.setMessage(message.toString());
 					request.setToEmail(task.getReceiver().getEmail());
 					request.setUsername(userDetail.getUsername());
