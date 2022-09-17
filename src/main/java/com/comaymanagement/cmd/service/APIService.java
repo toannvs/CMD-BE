@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class APIService {
-	public static String convertToBase64(String name) throws IOException {
-		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
+	public static String convertToBase64(String fileName) throws IOException {
+//		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
 		byte[] data = null;
 		try {
-			InputStream in = new FileInputStream(baseURL + name.trim());
+			InputStream in = new FileInputStream(fileName);
 			System.out.println("file size (bytes)=" + in.available());
 			data = new byte[in.available()];
 			in.read(data);
