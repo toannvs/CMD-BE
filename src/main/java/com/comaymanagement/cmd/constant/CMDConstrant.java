@@ -24,7 +24,7 @@ public class CMDConstrant {
 	public static final String SPACE = " ";
 	public static final String AVATAR = "default-avatar.jpg";
 	public static final String SERVER_LINK = "cmd.ktxcomay.com.vn";
-	public static final String SERVER_IP = "222.255.238.159:9090";
+	public static final String SERVER_IP = "http://222.255.238.159:9090";
 	public static final String LOCAL_LINK = "http://localhost:9090";
 	public static final String IMAGE_FOLDER = new StringBuilder(System.getProperty("user.dir")).toString();
 	public static final Integer IMAGE_HEIGHT = 100;
