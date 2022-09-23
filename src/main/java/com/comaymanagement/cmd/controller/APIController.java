@@ -85,7 +85,7 @@ public class APIController {
 					if (newFileName!="") {
 						base64Result = APIService.convertToBase64(newFileName);
 						result.put("name", fileUploaded.getName());
-						result.put("link", CMDConstrant.SERVER_IP + "/api/get-image/" + fileUploaded.getName() );
+						result.put("avatarLink", CMDConstrant.SERVER_IP + "/api/get-image/" + fileUploaded.getName() );
 						result.put("base64Data", base64Result);
 						return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "", result));
 					}else {
