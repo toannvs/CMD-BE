@@ -520,7 +520,7 @@ public class EmployeeService {
 				emp.setAvatar(avatar);
 			}
 			if (avatarLink.equals("")) {
-				emp.setAvatarLink(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR);
+				emp.setAvatarLink(CMDConstrant.SERVER_IP + "/api/get-image/"+CMDConstrant.AVATAR);
 			} else {
 				emp.setAvatarLink(avatarLink);
 			}
