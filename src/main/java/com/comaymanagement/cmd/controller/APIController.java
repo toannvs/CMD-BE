@@ -111,7 +111,7 @@ public class APIController {
 						RandomStringUtils.randomAlphanumeric(5) + ext);
 	        	String imageFolder = CMDConstrant.IMAGE_FOLDER + "/image/";
 	            Path path = Paths.get(imageFolder, name);
-	            LOGGER.debug("Path save file: " + path.toString());
+	            LOGGER.info("Path save file: " + path.toString());
 //	            Path path = Paths.get(imageFolder, imageFile.getOriginalFilename());
 	            Files.write(path, imageFile.getBytes());
 	            return path.toFile();
@@ -136,9 +136,9 @@ public class APIController {
 	            BufferedImage outputImage = Scalr.resize(bufferedImage, targetWidth);
 //	            String newFileName ="(" + CMDConstrant.IMAGE_WIDTH + ")" + sourceFile.getName() ;
 	            String newFileName = "(" + targetWidth + ")" + sourceFile.getName();
-	            LOGGER.debug("resizeImage: file name: " +  newFileName);
+	            LOGGER.info("resizeImage: file name: " +  newFileName);
 	            Path path = Paths.get(CMDConstrant.IMAGE_FOLDER + "/image/",newFileName);
-	            LOGGER.debug("resizeImage: path save: " +  path.toString());
+	            LOGGER.info("resizeImage: path save: " +  path.toString());
 	            File newImageFile = path.toFile();
 	            ImageIO.write(outputImage, "jpg", newImageFile);
 	            outputImage.flush();
