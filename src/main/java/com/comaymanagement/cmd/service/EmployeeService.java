@@ -515,7 +515,7 @@ public class EmployeeService {
 			emp.setCode(jsonObjectEmployee.get("code").asText());
 			emp.setName(jsonObjectEmployee.get("name").asText());
 			if (avatar.equals("")) {
-				emp.setAvatar(APIService.convertToBase64(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR));
+				emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
 			} else {
 				emp.setAvatar(avatar);
 			}
@@ -668,7 +668,7 @@ public class EmployeeService {
 				emp.setCode(jsonObjectEmployee.get("code").asText());
 				emp.setName(jsonObjectEmployee.get("name").asText());
 				if (avatar.equals("")) {
-					emp.setAvatar(APIService.convertToBase64(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR));
+					emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
 				} else {
 					emp.setAvatar(avatar);
 				}
