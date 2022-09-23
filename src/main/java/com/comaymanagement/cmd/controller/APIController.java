@@ -143,7 +143,7 @@ public class APIController {
 	            File newImageFile = path.toFile();
 	            ImageIO.write(outputImage, extensions[extensions.length-1], newImageFile);
 	            outputImage.flush();
-	            return path.toString();
+	            return newFileName;
 	        } catch (IOException e) {
 	            LOGGER.error(e.getMessage(), e);
 	            return "";
