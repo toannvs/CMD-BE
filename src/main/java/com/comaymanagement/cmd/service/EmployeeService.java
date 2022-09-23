@@ -497,6 +497,9 @@ public class EmployeeService {
 			String avatar = (jsonObjectEmployee.get("avatar") != null
 					&& !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText()
 							: "";
+			String avatarLink = (jsonObjectEmployee.get("avatarLink") != null
+					&& !jsonObjectEmployee.get("avatarLink").equals("null")) ? jsonObjectEmployee.get("avatarLink").asText()
+							: "";
 			String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText() : "";
 			String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
 					: jsonObjectEmployee.get("dateOfBirth").asText() == "null" ? ""
@@ -512,9 +515,14 @@ public class EmployeeService {
 			emp.setCode(jsonObjectEmployee.get("code").asText());
 			emp.setName(jsonObjectEmployee.get("name").asText());
 			if (avatar.equals("")) {
-				emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
+				emp.setAvatar(APIService.convertToBase64(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR));
 			} else {
 				emp.setAvatar(avatar);
+			}
+			if (avatarLink.equals("")) {
+				emp.setAvatarLink(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR);
+			} else {
+				emp.setAvatarLink(avatarLink);
 			}
 			emp.setGender(gender);
 			emp.setDateOfBirth(dateOfBirth);
@@ -640,6 +648,9 @@ public class EmployeeService {
 				String avatar = (jsonObjectEmployee.get("avatar") != null
 						&& !jsonObjectEmployee.get("avatar").equals("null")) ? jsonObjectEmployee.get("avatar").asText()
 								: "";
+				String avatarLink = (jsonObjectEmployee.get("avatarLink") != null
+						&& !jsonObjectEmployee.get("avatarLink").equals("null")) ? jsonObjectEmployee.get("avatarLink").asText()
+								: "";
 				String gender = jsonObjectEmployee.get("gender") != null ? jsonObjectEmployee.get("gender").asText()
 						: "";
 				String dateOfBirth = jsonObjectEmployee.get("dateOfBirth") == null ? ""
@@ -657,9 +668,14 @@ public class EmployeeService {
 				emp.setCode(jsonObjectEmployee.get("code").asText());
 				emp.setName(jsonObjectEmployee.get("name").asText());
 				if (avatar.equals("")) {
-					emp.setAvatar(APIService.convertToBase64(CMDConstrant.AVATAR));
+					emp.setAvatar(APIService.convertToBase64(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR));
 				} else {
 					emp.setAvatar(avatar);
+				}
+				if (avatarLink.equals("")) {
+					emp.setAvatarLink(CMDConstrant.SERVER_IP + "/api/get-imgae/"+CMDConstrant.AVATAR);
+				} else {
+					emp.setAvatarLink(avatarLink);
 				}
 				emp.setGender(gender);
 				emp.setDateOfBirth(dateOfBirth);
@@ -959,6 +975,7 @@ public class EmployeeService {
 			employeeModel.setCode(employee.getCode());
 			employeeModel.setName(employee.getName());
 			employeeModel.setAvatar(employee.getAvatar());
+			employeeModel.setAvatarLink(employee.getAvatarLink());
 			employeeModel.setGender(employee.getGender());
 			employeeModel.setDateOfBirth(employee.getDateOfBirth());
 			employeeModel.setEmail(employee.getEmail());

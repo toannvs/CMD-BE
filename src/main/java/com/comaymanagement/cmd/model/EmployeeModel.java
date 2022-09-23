@@ -24,6 +24,7 @@ public class EmployeeModel {
 	private String email;
 	private String phoneNumber;
 	private String avatar;
+	private String avatarLink;
 	private String gender;
 	private List<PositionModel> positions;
 	// for team list api
