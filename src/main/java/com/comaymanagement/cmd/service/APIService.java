@@ -8,13 +8,15 @@ import java.util.Objects;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
+import com.comaymanagement.cmd.constant.CMDConstrant;
+
 @Service
 public class APIService {
 	public static String convertToBase64(String fileName) throws IOException {
-//		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
+		StringBuilder baseURL = new StringBuilder(CMDConstrant.IMAGE_FOLDER).append("/image/");
 		byte[] data = null;
 		try {
-			InputStream in = new FileInputStream(fileName);
+			InputStream in = new FileInputStream(baseURL + fileName);
 			System.out.println("file size (bytes)=" + in.available());
 			data = new byte[in.available()];
 			in.read(data);
