@@ -135,12 +135,13 @@ public class APIController {
 	            BufferedImage bufferedImage = ImageIO.read(sourceFile);
 	            BufferedImage outputImage = Scalr.resize(bufferedImage, targetWidth);
 //	            String newFileName ="(" + CMDConstrant.IMAGE_WIDTH + ")" + sourceFile.getName() ;
+	            String[] extensions = sourceFile.getName().split("\\.");
 	            String newFileName = "(" + targetWidth + ")" + sourceFile.getName();
 	            LOGGER.info("resizeImage: file name: " +  newFileName);
 	            Path path = Paths.get(CMDConstrant.IMAGE_FOLDER + "/image/",newFileName);
 	            LOGGER.info("resizeImage: path save: " +  path.toString());
 	            File newImageFile = path.toFile();
-	            ImageIO.write(outputImage, "jpg", newImageFile);
+	            ImageIO.write(outputImage, extensions[extensions.length-1], newImageFile);
 	            outputImage.flush();
 	            return path.toString();
 	        } catch (IOException e) {
