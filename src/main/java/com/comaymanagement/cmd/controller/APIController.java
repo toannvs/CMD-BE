@@ -105,8 +105,8 @@ public class APIController {
 	}
 	 public File upload(MultipartFile imageFile) {
 	        try {
-	        	String[] extensions = imageFile.getOriginalFilename().split("\\.");
-				StringBuilder ext = new StringBuilder(".").append(extensions[extensions.length - 1]);
+//	        	String[] extensions = imageFile.getOriginalFilename().split("\\.");
+				StringBuilder ext = new StringBuilder(".").append("png");
 	        	String name = String.format("%s_%s", new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date().getTime()),
 						RandomStringUtils.randomAlphanumeric(5) + ext);
 	        	String imageFolder = CMDConstrant.IMAGE_FOLDER + "/image/";
