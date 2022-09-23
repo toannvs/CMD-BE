@@ -162,6 +162,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setCode(e.getCode());
 				employeeModel.setName(e.getName());
 				employeeModel.setAvatar(e.getAvatar());
+				employeeModel.setAvatarLink(e.getAvatarLink());
 				employeeModel.setGender(e.getGender());
 				employeeModel.setDateOfBirth(e.getDateOfBirth());
 				employeeModel.setEmail(e.getEmail());
@@ -169,7 +170,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setActive(e.isActive());
 				employeeModel.setCreateDate(e.getCreateDate());
 				employeeModel.setDepartments(departmentModelList);
-				;
 				employeeModel.setPositions(positionModelList);
 				employeeModel.setUser(user);
 				employeeModel.setCreateDate(e.getCreateDate());
@@ -536,6 +536,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setCode(e.getCode());
 				employeeModel.setName(e.getName());
 				employeeModel.setAvatar(e.getAvatar());
+				employeeModel.setAvatarLink(e.getAvatarLink());
 				employeeModel.setGender(e.getGender());
 				employeeModel.setDateOfBirth(e.getDateOfBirth());
 				employeeModel.setEmail(e.getEmail());
@@ -543,7 +544,6 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setActive(e.isActive());
 				employeeModel.setCreateDate(e.getCreateDate());
 				employeeModel.setDepartments(departmentModelList);
-				;
 				employeeModel.setPositions(positionModelList);
 				employeeModel.setUser(user);
 				employeeModel.setCreateDate(e.getCreateDate());
@@ -764,6 +764,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 				employeeModel.setCode(employee.getCode());
 				employeeModel.setName(employee.getName());
 				employeeModel.setAvatar(employee.getAvatar());
+				employeeModel.setAvatarLink(employee.getAvatarLink());
 				empModelSet.add(employeeModel);
 			}
 			return empModelSet;
@@ -863,6 +864,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		employeeModel.setCode(e.getCode());
 		employeeModel.setName(e.getName());
 		employeeModel.setAvatar(e.getAvatar());
+		employeeModel.setAvatarLink(e.getAvatarLink());
 		employeeModel.setGender(e.getGender());
 		employeeModel.setDateOfBirth(e.getDateOfBirth());
 		employeeModel.setEmail(e.getEmail());
@@ -900,6 +902,7 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 		employeeModel.setCode(e.getCode());
 		employeeModel.setName(e.getName());
 		employeeModel.setAvatar(e.getAvatar());
+		employeeModel.setAvatarLink(e.getAvatarLink());
 		employeeModel.setGender(e.getGender());
 		employeeModel.setDateOfBirth(e.getDateOfBirth());
 		employeeModel.setEmail(e.getEmail());

@@ -49,6 +49,8 @@ public class Employee{
 	@Column(name="modify_date")
 	private String modifyDate;
 	private String avatar;
+	@Column(name="avatar_link")
+	private String avatarLink;
 	private String gender;
 	private String username;
 	private String password;
