@@ -153,7 +153,7 @@ public class APIController {
     public @ResponseBody byte[] getImageWithMediaType(
     		@PathVariable String name
     		) throws IOException {
-		StringBuilder baseURL = new StringBuilder(System.getProperty("user.dir")).append("/image/");
+		StringBuilder baseURL = new StringBuilder(CMDConstrant.IMAGE_FOLDER).append("/image/");
 //		File image = new File(baseURL + name.trim());
 		final InputStream in = new BufferedInputStream(new FileInputStream(baseURL + name.trim())); 
 //        final InputStream in = getClass().getResourceAsStream(baseURL + name.trim());
