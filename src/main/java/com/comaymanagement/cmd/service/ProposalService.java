@@ -137,20 +137,18 @@ public class ProposalService {
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}
-				List<ProposalModel> proposalModelForCount = proposalRepositoryImpl.findAllProposalForAll(new ArrayList<Integer>(),statusIds, new ArrayList<Integer>(),
-						null, null, sort, order, -1, -1);
+				Map<Integer, Integer> count = proposalRepositoryImpl.countStatusProposalForAll();
 				List<StatusModel> statusModels = new ArrayList<>();
 				for (Status status : statuses) {
-					int count = 0;
-					for (ProposalModel pModel : proposalModelForCount) {
-						if (pModel.getStatus().getId() == status.getId()) {
-							count++;
-						}
-					}
+					Integer amount = count.get(status.getId());
 					StatusModel statusModel = new StatusModel();
 					statusModel.setId(status.getId());
 					statusModel.setName(status.getName());
-					statusModel.setCountByStatus(count);
+					if(amount!=null) {
+						statusModel.setCountByStatus(amount);
+					}else {
+						statusModel.setCountByStatus(0);
+					}
 					statusModels.add(statusModel);
 				}
 				results.put("countByStatuses", statusModels);

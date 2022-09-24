@@ -2,8 +2,10 @@ package com.comaymanagement.cmd.repositoryimpl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Query;
@@ -93,7 +95,26 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		
 		return proposalModelResult;
 	}
-
+	public  Map<Integer, Integer> countStatusProposalForAll() {
+		Map<Integer, Integer> result = new LinkedHashMap<>();
+		StringBuilder hql = new StringBuilder("select pro.status.id, count(*) from proposals AS pro ");
+		hql.append("group by status.id ");
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			LOGGER.info(hql.toString());
+			Query query = session.createQuery(hql.toString());
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object[] objects = (Object[]) it.next();
+				Integer statusId = (Integer) objects[0];
+				Long amount = (Long) objects[1];
+				result.put(statusId, Integer.valueOf(amount.toString()));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+		return result;
+	}
 	@Override
 	public List<ProposalModel> findAllProposalApproveByMe(Integer employeeId, List<Integer> proposalTypeIds,
 			List<Integer> statusIds, List<Integer> creatorIds, String createDateFrom, String createDateTo, String sort,
