@@ -3,6 +3,7 @@ package com.comaymanagement.cmd.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,9 +20,11 @@ import com.comaymanagement.cmd.constant.CMDConstrant;
 import com.comaymanagement.cmd.constant.Message;
 import com.comaymanagement.cmd.entity.ApprovalStep;
 import com.comaymanagement.cmd.entity.ApprovalStepDetail;
+import com.comaymanagement.cmd.entity.Department;
 import com.comaymanagement.cmd.entity.Employee;
 import com.comaymanagement.cmd.entity.Notify;
 import com.comaymanagement.cmd.entity.Pagination;
+import com.comaymanagement.cmd.entity.Position;
 import com.comaymanagement.cmd.entity.Proposal;
 import com.comaymanagement.cmd.entity.ProposalDetail;
 import com.comaymanagement.cmd.entity.ProposalType;
@@ -32,8 +35,10 @@ import com.comaymanagement.cmd.model.ProposalModel;
 import com.comaymanagement.cmd.model.StatusModel;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepDetailRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ApprovalStepRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.DepartmentRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.EmployeeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.NotifyRepositoryImpl;
+import com.comaymanagement.cmd.repositoryimpl.PositionRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.ProposalTypeRepositoryImpl;
 import com.comaymanagement.cmd.repositoryimpl.StatusRepositotyImpl;
@@ -66,7 +71,13 @@ public class ProposalService {
 	NotifyRepositoryImpl notifyRepositoryImpl;
 
 	@Autowired
-	ApprovalStepDetailRepositoryImpl approvalStepDetailRepository;
+	PositionRepositoryImpl posi;
+	
+	@Autowired
+	PositionRepositoryImpl positionRepository;
+	
+	@Autowired
+	DepartmentRepositoryImpl departmentRepository;
 
 	public ResponseEntity<Object> findAllForAll(String json, String sort, String order, String page) {
 		List<ProposalModel> proposalModels = new ArrayList<>();
@@ -220,7 +231,23 @@ public class ProposalService {
 			if (order == null || order == "") {
 				order = "desc";
 			}
-			proposalModels = proposalRepositoryImpl.findAllProposalApproveByMe(userDetail.getId(), proposalTypeIds,
+			List<ApprovalStep> appSteps = new ArrayList<>();
+		
+			List<Integer> positionIds = new ArrayList<>();
+			List<Integer> departmentIds = new ArrayList<>();
+			Integer employeeId = userDetail.getId();
+			List<Position> positionTMPs = positionRepository.findAllByEmployeeId(employeeId);
+			List<Department> departmentTMPs = departmentRepository.findAllByEmployeeId(employeeId);
+			for (Department d : departmentTMPs) {
+				departmentIds.add(d.getId());
+			}
+			for (Position p : positionTMPs) {
+				positionIds.add(p.getId());
+			}
+
+			appSteps = proposalRepositoryImpl.findApprovalStepDetail(employeeId, positionIds, departmentIds);
+
+			proposalModels = proposalRepositoryImpl.findAllProposalApproveByMe(appSteps, proposalTypeIds,
 					statusIds, creatorIds, createDateFrom, createDateTo, sort, order, offset, limit);
 
 //			Integer totalProposal  = 0;
@@ -240,21 +267,33 @@ public class ProposalService {
 				for (Status status : statuses) {
 					statusIds.add(status.getId());
 				}				
-				List<ProposalModel> proposalModelForCount = proposalRepositoryImpl.findAllProposalApproveByMe(userDetail.getId(), new ArrayList<Integer>(),
-						statusIds, new ArrayList<Integer>(), null, null, sort, order, -1, -1);
-
-				List<StatusModel> statusModels = new ArrayList<>();
-				for (Status status : statuses) {
-					int count = 0;
-					for (ProposalModel pModel : proposalModelForCount) {
-						if (pModel.getStatus().getId() == status.getId()) {
-							count++;
+//				List<ProposalModel> proposalModelForCount = proposalRepositoryImpl.findAllProposalApproveByMe(userDetail.getId(), new ArrayList<Integer>(),
+//						statusIds, new ArrayList<Integer>(), null, null, sort, order, -1, -1);
+				Map<Integer, Integer> finalResult = new LinkedHashMap<>();
+				for(ApprovalStep appStep : appSteps) {
+					Map<Integer, Integer> count = proposalRepositoryImpl.countStatusProposalApproveByMe(appStep.getProposalType().getId(), appStep.getApprovalStepIndex());
+					if(count.size()>0) {
+						for (Map.Entry<Integer, Integer> entry : count.entrySet()) {
+							Integer valueCheckIfExist = finalResult.get(entry.getKey());
+							if(valueCheckIfExist!=null) {
+								finalResult.put(entry.getKey(),valueCheckIfExist +  entry.getValue());
+							}else {
+								finalResult.put(entry.getKey(),entry.getValue());
+							}
 						}
 					}
+				}
+				List<StatusModel> statusModels = new ArrayList<>();
+				for (Status status : statuses) {
+					Integer amount = finalResult.get(status.getId());
 					StatusModel statusModel = new StatusModel();
 					statusModel.setId(status.getId());
 					statusModel.setName(status.getName());
-					statusModel.setCountByStatus(count);
+					if(amount!=null) {
+						statusModel.setCountByStatus(amount);
+					}else {
+						statusModel.setCountByStatus(0);
+					}
 					statusModels.add(statusModel);
 				}
 				results.put("countByStatuses", statusModels);

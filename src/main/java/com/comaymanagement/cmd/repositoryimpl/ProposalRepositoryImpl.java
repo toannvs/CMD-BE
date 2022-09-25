@@ -116,25 +116,11 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		return result;
 	}
 	@Override
-	public List<ProposalModel> findAllProposalApproveByMe(Integer employeeId, List<Integer> proposalTypeIds,
+	public List<ProposalModel> findAllProposalApproveByMe(List<ApprovalStep> appSteps, List<Integer> proposalTypeIds,
 			List<Integer> statusIds, List<Integer> creatorIds, String createDateFrom, String createDateTo, String sort,
 			String order, Integer offset, Integer limit) {
-		List<ApprovalStep> appSteps = new ArrayList<>();
 		List<Proposal> proposals = new ArrayList<>();
 		List<ProposalModel> proposalModelResult = new ArrayList<>();
-		List<Integer> positionIds = new ArrayList<>();
-		List<Integer> departmentIds = new ArrayList<>();
-		List<Position> positionTMPs = positionRepository.findAllByEmployeeId(employeeId);
-		List<Department> departmentTMPs = departmentRepository.findAllByEmployeeId(employeeId);
-		for (Department d : departmentTMPs) {
-			departmentIds.add(d.getId());
-		}
-		for (Position p : positionTMPs) {
-			positionIds.add(p.getId());
-		}
-
-		appSteps = findApprovalStepDetail(employeeId, positionIds, departmentIds);
-
 		for (ApprovalStep appStep : appSteps) {
 			// Check if fillter with proposal type id
 			if (proposalTypeIds.size() > 0) {
@@ -183,7 +169,31 @@ public class ProposalRepositoryImpl implements IProposalRepository {
 		}
 		return proposalModelResult;
 	}
-
+	public Map<Integer, Integer> countStatusProposalApproveByMe(Integer proposalTypeId, Integer step){
+		Map<Integer, Integer> result = new LinkedHashMap<>();
+		
+		StringBuilder hql = new StringBuilder();
+			hql.append("select pro.status.id as statusId, count(pro.status.id) as amount from proposals as pro ");
+			hql.append("where pro.proposalType.id = :proposalTypeId and pro.currentStep >= :step" );
+			hql.append(" group by pro.status.id ");
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			LOGGER.info(hql.toString());
+			Query query = session.createQuery(hql.toString());
+			query.setParameter("proposalTypeId", proposalTypeId);
+			query.setParameter("step", step);
+			for (Iterator it = query.getResultList().iterator(); it.hasNext();) {
+				Object[] objects = (Object[]) it.next();
+				Integer statusId = (Integer) objects[0];
+				Long amount = (Long) objects[1];
+				result.put(statusId, Integer.valueOf(amount.toString()));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		}
+		return result;
+	}
 	public List<ProposalModel> findAllProposalCratedByMe(Integer employeeId, List<Integer> proposalTypeIds,
 			List<Integer> statusIds, String createDateFrom, String createDateTo, String sort, String order,
 			Integer offset, Integer limit) {
