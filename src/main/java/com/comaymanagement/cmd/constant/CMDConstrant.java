@@ -27,8 +27,8 @@ public class CMDConstrant {
 	public static final String SERVER_IP = "http://222.255.238.159:9090";
 	public static final String LOCAL_LINK = "http://localhost:9090";
 	public static final String IMAGE_FOLDER = new StringBuilder(System.getProperty("user.dir")).toString();
-	public static final Integer IMAGE_HEIGHT = 100;
-	public static final Integer IMAGE_WIDTH = 100;
+	public static final Integer IMAGE_HEIGHT = 50;
+	public static final Integer IMAGE_WIDTH = 50;
 	
 }
 
